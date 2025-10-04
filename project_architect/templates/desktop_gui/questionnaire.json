@@ -1,0 +1,460 @@
+{
+  "questionnaire": {
+    "name": "Desktop GUI Application Questionnaire",
+    "description": "Gather requirements for desktop GUI application development",
+    "version": "1.0.0"
+  },
+  
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "What is the name of your project?",
+      "description": "Enter a descriptive name for your desktop application",
+      "required": true,
+      "section": "project_basics",
+      "order": 1,
+      "validation_pattern": "^[a-zA-Z0-9\\s\\-_]+$"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Provide a brief description of your project",
+      "description": "Describe what your application will do and its main purpose",
+      "required": true,
+      "section": "project_basics",
+      "order": 2
+    },
+    {
+      "id": "project_version",
+      "type": "version",
+      "prompt": "What is the initial version number?",
+      "description": "Use semantic versioning (e.g., 1.0.0)",
+      "required": true,
+      "default": "1.0.0",
+      "section": "project_basics",
+      "order": 3
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "What is your name (author)?",
+      "description": "Your name will appear in documentation and code headers",
+      "required": true,
+      "section": "project_basics",
+      "order": 4
+    },
+    {
+      "id": "author_email",
+      "type": "email",
+      "prompt": "What is your email address?",
+      "description": "Contact email for the project",
+      "required": false,
+      "section": "project_basics",
+      "order": 5
+    },
+    {
+      "id": "organization",
+      "type": "text",
+      "prompt": "Organization or company name (optional)",
+      "description": "Name of your organization or company",
+      "required": false,
+      "section": "project_basics",
+      "order": 6
+    },
+    
+    {
+      "id": "gui_framework",
+      "type": "choice",
+      "prompt": "Which GUI framework would you like to use?",
+      "description": "Select the GUI framework for your desktop application",
+      "required": true,
+      "options": ["customtkinter", "pyqt6", "tkinter", "kivy"],
+      "default": "customtkinter",
+      "section": "technical_stack",
+      "order": 10
+    },
+    {
+      "id": "app_theme",
+      "type": "choice",
+      "prompt": "What theme should the application use?",
+      "description": "Choose the default appearance theme",
+      "required": true,
+      "options": ["dark", "light", "system"],
+      "default": "dark",
+      "section": "technical_stack",
+      "order": 11,
+      "depends_on": "gui_framework",
+      "depends_value": "customtkinter"
+    },
+    {
+      "id": "color_scheme",
+      "type": "choice",
+      "prompt": "Select a color scheme",
+      "description": "Choose the primary color scheme for the application",
+      "required": true,
+      "options": ["blue", "green", "dark-blue", "red", "orange", "purple"],
+      "default": "blue",
+      "section": "technical_stack",
+      "order": 12,
+      "depends_on": "gui_framework",
+      "depends_value": "customtkinter"
+    },
+    {
+      "id": "window_resizable",
+      "type": "boolean",
+      "prompt": "Should the main window be resizable?",
+      "description": "Allow users to resize the application window",
+      "required": true,
+      "default": true,
+      "section": "technical_stack",
+      "order": 13
+    },
+    {
+      "id": "minimum_resolution",
+      "type": "choice",
+      "prompt": "What is the minimum screen resolution to support?",
+      "description": "Minimum screen resolution the application should support",
+      "required": true,
+      "options": ["1366x768", "1280x720", "1920x1080", "1024x768"],
+      "default": "1366x768",
+      "section": "technical_stack",
+      "order": 14
+    },
+    
+    {
+      "id": "has_database",
+      "type": "boolean",
+      "prompt": "Will your application use a database?",
+      "description": "Does your application need to store data in a database?",
+      "required": true,
+      "default": false,
+      "section": "features",
+      "order": 20
+    },
+    {
+      "id": "database_type",
+      "type": "choice",
+      "prompt": "What type of database?",
+      "description": "Select the database system to use",
+      "required": true,
+      "options": ["sqlite", "postgresql", "mysql", "mongodb"],
+      "default": "sqlite",
+      "section": "features",
+      "order": 21,
+      "depends_on": "has_database",
+      "depends_value": true
+    },
+    {
+      "id": "has_config_file",
+      "type": "boolean",
+      "prompt": "Does your application need configuration files?",
+      "description": "Will users need to configure application settings?",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 22
+    },
+    {
+      "id": "config_format",
+      "type": "choice",
+      "prompt": "What configuration file format?",
+      "description": "Choose the format for configuration files",
+      "required": true,
+      "options": ["json", "yaml", "ini", "toml"],
+      "default": "json",
+      "section": "features",
+      "order": 23,
+      "depends_on": "has_config_file",
+      "depends_value": true
+    },
+    {
+      "id": "has_logging",
+      "type": "boolean",
+      "prompt": "Include logging functionality?",
+      "description": "Add comprehensive logging to your application",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 24
+    },
+    {
+      "id": "log_level",
+      "type": "choice",
+      "prompt": "Default logging level?",
+      "description": "Choose the default logging level",
+      "required": true,
+      "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+      "default": "INFO",
+      "section": "features",
+      "order": 25,
+      "depends_on": "has_logging",
+      "depends_value": true
+    },
+    {
+      "id": "has_menu_bar",
+      "type": "boolean",
+      "prompt": "Include a menu bar?",
+      "description": "Add a traditional menu bar to the application",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 26
+    },
+    {
+      "id": "has_toolbar",
+      "type": "boolean",
+      "prompt": "Include a toolbar?",
+      "description": "Add a toolbar with common action buttons",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 27
+    },
+    {
+      "id": "has_status_bar",
+      "type": "boolean",
+      "prompt": "Include a status bar?",
+      "description": "Add a status bar at the bottom of the window",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 28
+    },
+    
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include unit testing framework?",
+      "description": "Set up pytest and testing infrastructure",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 30
+    },
+    {
+      "id": "test_coverage",
+      "type": "boolean",
+      "prompt": "Include code coverage reporting?",
+      "description": "Add pytest-cov for test coverage analysis",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 31,
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include code linting tools?",
+      "description": "Set up flake8 and pylint for code quality",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 32
+    },
+    {
+      "id": "include_formatting",
+      "type": "boolean",
+      "prompt": "Include code formatting tools?",
+      "description": "Set up Black for automatic code formatting",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 33
+    },
+    {
+      "id": "include_type_checking",
+      "type": "boolean",
+      "prompt": "Include type checking?",
+      "description": "Set up MyPy for static type checking",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 34
+    },
+    
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create virtual environment?",
+      "description": "Automatically create and configure a virtual environment",
+      "required": true,
+      "default": true,
+      "section": "development_setup",
+      "order": 40
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git repository?",
+      "description": "Set up Git version control with initial commit",
+      "required": true,
+      "default": true,
+      "section": "development_setup",
+      "order": 41
+    },
+    {
+      "id": "create_github_repo",
+      "type": "boolean",
+      "prompt": "Create GitHub repository? (requires GitHub CLI)",
+      "description": "Automatically create a GitHub repository",
+      "required": false,
+      "default": false,
+      "section": "development_setup",
+      "order": 42,
+      "depends_on": "init_git",
+      "depends_value": true
+    },
+    {
+      "id": "github_visibility",
+      "type": "choice",
+      "prompt": "GitHub repository visibility",
+      "description": "Choose repository visibility on GitHub",
+      "required": true,
+      "options": ["public", "private"],
+      "default": "private",
+      "section": "development_setup",
+      "order": 43,
+      "depends_on": "create_github_repo",
+      "depends_value": true
+    }
+  ],
+  
+  "update_project_questions": [
+    {
+      "id": "update_reason",
+      "type": "choice",
+      "prompt": "What type of update are you making?",
+      "description": "Select the primary reason for this project update",
+      "required": true,
+      "options": ["feature_addition", "bug_fix", "performance_improvement", "architecture_change", "dependency_update", "documentation_update"],
+      "section": "update_info",
+      "order": 1
+    },
+    {
+      "id": "update_description",
+      "type": "text",
+      "prompt": "Describe the changes you want to make",
+      "description": "Provide a detailed description of the updates",
+      "required": true,
+      "section": "update_info",
+      "order": 2
+    },
+    {
+      "id": "breaking_changes",
+      "type": "boolean",
+      "prompt": "Will this update include breaking changes?",
+      "description": "Changes that might break existing functionality",
+      "required": true,
+      "default": false,
+      "section": "update_info",
+      "order": 3
+    }
+  ],
+  
+  "tech_spec_update_questions": [
+    {
+      "id": "spec_section",
+      "type": "multiple_choice",
+      "prompt": "Which sections of the technical specification need updates?",
+      "description": "Select all sections that will be modified",
+      "required": true,
+      "options": ["project_overview", "core_features", "technical_architecture", "user_interface", "quality_assurance", "performance_requirements", "security_considerations", "deployment"],
+      "section": "spec_updates",
+      "order": 1
+    },
+    {
+      "id": "new_requirements",
+      "type": "text",
+      "prompt": "Describe any new requirements",
+      "description": "Detail any new functional or non-functional requirements",
+      "required": false,
+      "section": "spec_updates",
+      "order": 2
+    },
+    {
+      "id": "modified_requirements",
+      "type": "text",
+      "prompt": "Describe any modified requirements",
+      "description": "Detail any changes to existing requirements",
+      "required": false,
+      "section": "spec_updates",
+      "order": 3
+    },
+    {
+      "id": "removed_requirements",
+      "type": "text",
+      "prompt": "Describe any removed requirements",
+      "description": "Detail any requirements that are no longer needed",
+      "required": false,
+      "section": "spec_updates",
+      "order": 4
+    }
+  ],
+  
+  "feature_addition_questions": [
+    {
+      "id": "feature_name",
+      "type": "text",
+      "prompt": "What is the name of the new feature?",
+      "description": "Provide a clear, descriptive name for the feature",
+      "required": true,
+      "section": "feature_details",
+      "order": 1
+    },
+    {
+      "id": "feature_description",
+      "type": "text",
+      "prompt": "Describe the new feature in detail",
+      "description": "Explain what the feature does and how it works",
+      "required": true,
+      "section": "feature_details",
+      "order": 2
+    },
+    {
+      "id": "feature_priority",
+      "type": "choice",
+      "prompt": "What is the priority of this feature?",
+      "description": "Select the development priority level",
+      "required": true,
+      "options": ["low", "medium", "high", "critical"],
+      "default": "medium",
+      "section": "feature_details",
+      "order": 3
+    },
+    {
+      "id": "feature_complexity",
+      "type": "choice",
+      "prompt": "What is the estimated complexity?",
+      "description": "Estimate the development complexity",
+      "required": true,
+      "options": ["simple", "moderate", "complex", "very_complex"],
+      "default": "moderate",
+      "section": "feature_details",
+      "order": 4
+    },
+    {
+      "id": "requires_new_dependencies",
+      "type": "boolean",
+      "prompt": "Does this feature require new dependencies?",
+      "description": "Will you need to add new Python packages?",
+      "required": true,
+      "default": false,
+      "section": "feature_details",
+      "order": 5
+    },
+    {
+      "id": "new_dependencies",
+      "type": "text",
+      "prompt": "List the new dependencies needed",
+      "description": "Provide a comma-separated list of new packages",
+      "required": true,
+      "section": "feature_details",
+      "order": 6,
+      "depends_on": "requires_new_dependencies",
+      "depends_value": true
+    }
+  ]
+}

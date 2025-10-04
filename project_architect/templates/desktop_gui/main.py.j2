@@ -1,0 +1,361 @@
+#!/usr/bin/env python3
+"""
+{{ project_name }} - Main Application Entry Point
+
+{{ project_description }}
+
+Author: {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}
+{% if organization %}Organization: {{ organization }}{% endif %}
+Created: {{ current_date }}
+Version: {{ project_version }}
+
+This file serves as the main entry point for the {{ project_name }} application.
+It handles application initialization, configuration loading, and starts the main GUI.
+"""
+
+import sys
+import logging
+{% if has_logging %}
+import os
+from pathlib import Path
+{% endif %}
+{% if has_config_file %}
+import json
+{% if config_format == 'yaml' %}
+import yaml
+{% elif config_format == 'ini' %}
+import configparser
+{% elif config_format == 'toml' %}
+import tomllib
+{% endif %}
+{% endif %}
+from typing import Optional
+
+{% if gui_framework == 'customtkinter' %}
+import customtkinter as ctk
+{% elif gui_framework == 'pyqt6' %}
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import Qt
+{% elif gui_framework == 'tkinter' %}
+import tkinter as tk
+from tkinter import ttk
+{% elif gui_framework == 'kivy' %}
+from kivy.app import App
+from kivy.config import Config
+{% endif %}
+
+# Import application modules
+from src.main_window import MainWindow
+{% if has_config_file %}
+from src.config import AppConfig
+{% endif %}
+
+
+class {{ project_name_pascal }}App:
+    """
+    Main application class for {{ project_name }}.
+    
+    Handles application lifecycle, configuration management, and GUI initialization.
+    """
+    
+    def __init__(self):
+        """Initialize the application."""
+        self.app_name = "{{ project_name }}"
+        self.version = "{{ project_version }}"
+        self.author = "{{ author_name }}"
+        
+        # Initialize components
+        {% if has_logging %}
+        self.logger: Optional[logging.Logger] = None
+        {% endif %}
+        {% if has_config_file %}
+        self.config: Optional[AppConfig] = None
+        {% endif %}
+        self.main_window: Optional[MainWindow] = None
+        
+        # Setup application
+        self._setup_logging()
+        {% if has_config_file %}
+        self._load_configuration()
+        {% endif %}
+        self._setup_gui_framework()
+    
+    {% if has_logging %}
+    def _setup_logging(self) -> None:
+        """
+        Configure application logging.
+        """
+        try:
+            # Create logs directory if it doesn't exist
+            log_dir = Path("logs")
+            log_dir.mkdir(exist_ok=True)
+            
+            # Configure logging
+            log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            log_file = log_dir / f"{{ project_name_snake }}.log"
+            
+            logging.basicConfig(
+                level=logging.{{ log_level }},
+                format=log_format,
+                handlers=[
+                    logging.FileHandler(log_file),
+                    logging.StreamHandler(sys.stdout)
+                ]
+            )
+            
+            self.logger = logging.getLogger(self.app_name)
+            self.logger.info(f"{{ project_name }} v{self.version} starting up")
+            self.logger.info(f"Logging initialized - Level: {{ log_level }}")
+            
+        except Exception as e:
+            print(f"Failed to setup logging: {e}")
+            # Create a basic logger as fallback
+            logging.basicConfig(level=logging.INFO)
+            self.logger = logging.getLogger(self.app_name)
+    {% else %}
+    def _setup_logging(self) -> None:
+        """
+        Basic logging setup (logging disabled in configuration).
+        """
+        logging.basicConfig(level=logging.WARNING)
+        self.logger = logging.getLogger(self.app_name)
+    {% endif %}
+    
+    {% if has_config_file %}
+    def _load_configuration(self) -> None:
+        """
+        Load application configuration.
+        """
+        try:
+            self.config = AppConfig()
+            self.config.load_config()
+            
+            if self.logger:
+                self.logger.info("Configuration loaded successfully")
+                
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Failed to load configuration: {e}")
+            else:
+                print(f"Failed to load configuration: {e}")
+            
+            # Create default configuration
+            self.config = AppConfig()
+    {% endif %}
+    
+    def _setup_gui_framework(self) -> None:
+        """
+        Configure the GUI framework settings.
+        """
+        try:
+            {% if gui_framework == 'customtkinter' %}
+            # Configure CustomTkinter
+            ctk.set_appearance_mode("{{ app_theme }}")
+            ctk.set_default_color_theme("{{ color_scheme }}")
+            
+            if self.logger:
+                self.logger.info(f"CustomTkinter configured - Theme: {{ app_theme }}, Color: {{ color_scheme }}")
+            
+            {% elif gui_framework == 'pyqt6' %}
+            # Configure PyQt6
+            QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+            QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
+            
+            if self.logger:
+                self.logger.info("PyQt6 high DPI scaling enabled")
+            
+            {% elif gui_framework == 'tkinter' %}
+            # Configure Tkinter
+            # Basic Tkinter doesn't require special configuration
+            if self.logger:
+                self.logger.info("Tkinter framework initialized")
+            
+            {% elif gui_framework == 'kivy' %}
+            # Configure Kivy
+            Config.set('graphics', 'resizable', '{{ "1" if window_resizable else "0" }}')
+            Config.set('graphics', 'width', '{{ minimum_resolution.split("x")[0] }}')
+            Config.set('graphics', 'height', '{{ minimum_resolution.split("x")[1] }}')
+            
+            if self.logger:
+                self.logger.info("Kivy configuration applied")
+            {% endif %}
+            
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Failed to setup GUI framework: {e}")
+            else:
+                print(f"Failed to setup GUI framework: {e}")
+    
+    def create_main_window(self) -> bool:
+        """
+        Create and configure the main application window.
+        
+        Returns:
+            bool: True if window created successfully, False otherwise
+        """
+        try:
+            {% if gui_framework == 'customtkinter' %}
+            self.main_window = MainWindow()
+            
+            # Configure window properties
+            self.main_window.title(f"{{ project_name }} v{self.version}")
+            self.main_window.geometry("{{ minimum_resolution.split('x')[0] }}x{{ minimum_resolution.split('x')[1] }}")
+            self.main_window.resizable({{ "True" if window_resizable else "False" }}, {{ "True" if window_resizable else "False" }})
+            
+            # Set minimum size
+            min_width, min_height = "{{ minimum_resolution }}".split('x')
+            self.main_window.minsize(int(min_width), int(min_height))
+            
+            {% elif gui_framework == 'pyqt6' %}
+            app = QApplication(sys.argv)
+            app.setApplicationName("{{ project_name }}")
+            app.setApplicationVersion("{{ project_version }}")
+            app.setOrganizationName("{{ organization or author_name }}")
+            
+            self.main_window = MainWindow()
+            self.main_window.setWindowTitle(f"{{ project_name }} v{self.version}")
+            self.main_window.resize({{ minimum_resolution.split('x')[0] }}, {{ minimum_resolution.split('x')[1] }})
+            
+            {% elif gui_framework == 'tkinter' %}
+            root = tk.Tk()
+            root.title(f"{{ project_name }} v{self.version}")
+            root.geometry("{{ minimum_resolution }}")
+            root.resizable({{ "True" if window_resizable else "False" }}, {{ "True" if window_resizable else "False" }})
+            
+            # Set minimum size
+            min_width, min_height = "{{ minimum_resolution }}".split('x')
+            root.minsize(int(min_width), int(min_height))
+            
+            self.main_window = MainWindow(root)
+            
+            {% elif gui_framework == 'kivy' %}
+            # Kivy uses a different pattern - the main window is created in the App class
+            pass
+            {% endif %}
+            
+            if self.logger:
+                self.logger.info("Main window created successfully")
+            
+            return True
+            
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Failed to create main window: {e}")
+            else:
+                print(f"Failed to create main window: {e}")
+            return False
+    
+    def run(self) -> int:
+        """
+        Start the application main loop.
+        
+        Returns:
+            int: Application exit code
+        """
+        try:
+            if self.logger:
+                self.logger.info("Starting application main loop")
+            
+            # Create main window
+            if not self.create_main_window():
+                if self.logger:
+                    self.logger.error("Failed to create main window - exiting")
+                return 1
+            
+            {% if gui_framework == 'customtkinter' %}
+            # Start CustomTkinter main loop
+            self.main_window.mainloop()
+            
+            {% elif gui_framework == 'pyqt6' %}
+            # Start PyQt6 main loop
+            self.main_window.show()
+            return app.exec()
+            
+            {% elif gui_framework == 'tkinter' %}
+            # Start Tkinter main loop
+            self.main_window.mainloop()
+            
+            {% elif gui_framework == 'kivy' %}
+            # Kivy uses App.run()
+            from src.kivy_app import {{ project_name_pascal }}KivyApp
+            app = {{ project_name_pascal }}KivyApp()
+            app.run()
+            {% endif %}
+            
+            if self.logger:
+                self.logger.info("Application shutting down normally")
+            
+            return 0
+            
+        except KeyboardInterrupt:
+            if self.logger:
+                self.logger.info("Application interrupted by user")
+            return 0
+            
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Application error: {e}")
+            else:
+                print(f"Application error: {e}")
+            return 1
+    
+    def shutdown(self) -> None:
+        """
+        Perform cleanup operations before application exit.
+        """
+        try:
+            if self.logger:
+                self.logger.info("Performing application shutdown cleanup")
+            
+            {% if has_config_file %}
+            # Save configuration if needed
+            if self.config:
+                self.config.save_config()
+            {% endif %}
+            
+            # Close main window if it exists
+            if self.main_window:
+                {% if gui_framework in ['customtkinter', 'tkinter'] %}
+                self.main_window.quit()
+                {% elif gui_framework == 'pyqt6' %}
+                self.main_window.close()
+                {% endif %}
+            
+            if self.logger:
+                self.logger.info("Application shutdown complete")
+                
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error during shutdown: {e}")
+            else:
+                print(f"Error during shutdown: {e}")
+
+
+def main() -> int:
+    """
+    Main entry point for the {{ project_name }} application.
+    
+    Returns:
+        int: Application exit code
+    """
+    app = None
+    
+    try:
+        # Create and run application
+        app = {{ project_name_pascal }}App()
+        return app.run()
+        
+    except Exception as e:
+        print(f"Fatal error starting {{ project_name }}: {e}")
+        return 1
+        
+    finally:
+        # Ensure cleanup happens
+        if app:
+            app.shutdown()
+
+
+if __name__ == "__main__":
+    # Run the application
+    exit_code = main()
+    sys.exit(exit_code)

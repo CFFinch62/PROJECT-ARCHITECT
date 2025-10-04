@@ -1,0 +1,40 @@
+# Project Architect - Python Dependencies
+# Core GUI Framework
+customtkinter==5.2.2
+
+# Template Engine
+Jinja2==3.1.2
+
+# Configuration Management
+PyYAML==6.0.1
+
+# File Operations and Path Handling
+pathlib2==2.3.7
+
+# Git Integration
+GitPython==3.1.40
+
+# Data Validation
+jsonschema==4.19.2
+
+# Date and Time Utilities
+python-dateutil==2.8.2
+
+# Enhanced JSON Handling
+ujson==5.8.0
+
+# Progress Bars and UI Enhancements
+tqdm==4.66.1
+
+# Logging Enhancements
+colorlog==6.7.0
+
+# Development and Testing (optional)
+pytest==7.4.3
+pytest-cov==4.1.0
+black==23.9.1
+flake8==6.1.0
+pylint==3.0.2
+
+# Documentation Generation
+markdown==3.5.1

@@ -1,0 +1,223 @@
+# Desktop GUI Application Template Configuration
+# Project Architect Template System
+
+template:
+  name: "Desktop GUI Application"
+  type: "desktop_gui"
+  description: "Professional desktop application with modern GUI framework"
+  version: "1.0.0"
+  author: "Project Architect"
+  
+  # Supported GUI frameworks
+  frameworks:
+    - customtkinter
+    - pyqt6
+    - tkinter
+    - kivy
+
+# Project structure definition
+structure:
+  # Root directories
+  - path: "src"
+    type: "directory"
+  - path: "tests"
+    type: "directory"
+  - path: "docs"
+    type: "directory"
+  - path: "dev_sessions"
+    type: "directory"
+  - path: "assets"
+    type: "directory"
+  - path: "assets/icons"
+    type: "directory"
+  - path: "assets/images"
+    type: "directory"
+  
+  # Main application files
+  - path: "main.py"
+    type: "file"
+    template: "main.py.j2"
+  - path: "requirements.txt"
+    type: "file"
+    template: "requirements.txt.j2"
+  - path: "setup.py"
+    type: "file"
+    template: "setup.py.j2"
+  
+  # Source code structure
+  - path: "src/__init__.py"
+    type: "file"
+    template: "src/__init__.py.j2"
+  - path: "src/main_window.py"
+    type: "file"
+    template: "src/main_window.py.j2"
+  - path: "src/config.py"
+    type: "file"
+    template: "src/config.py.j2"
+  - path: "src/utils.py"
+    type: "file"
+    template: "src/utils.py.j2"
+  
+  # Documentation files
+  - path: "README.md"
+    type: "file"
+    template: "README.md.j2"
+  - path: "CHANGELOG.md"
+    type: "file"
+    template: "CHANGELOG.md.j2"
+  - path: "IMPLEMENTATION_PLAN.md"
+    type: "file"
+    template: "IMPLEMENTATION_PLAN.md.j2"
+  - path: "TECHNICAL_SPECIFICATION.md"
+    type: "file"
+    template: "TECHNICAL_SPECIFICATION.md.j2"
+  - path: "AI_CONTEXT.md"
+    type: "file"
+    template: "AI_CONTEXT.md.j2"
+  - path: "CODING_STANDARDS.md"
+    type: "file"
+    template: "CODING_STANDARDS.md.j2"
+  
+  # Development files
+  - path: "DEV_RULES.md"
+    type: "file"
+    template: "DEV_RULES.md.j2"
+  - path: "DEV_PROCESS.md"
+    type: "file"
+    template: "DEV_PROCESS.md.j2"
+  
+  # Testing files
+  - path: "tests/__init__.py"
+    type: "file"
+    content: ""
+  - path: "tests/test_main_window.py"
+    type: "file"
+    template: "tests/test_main_window.py.j2"
+  - path: "tests/conftest.py"
+    type: "file"
+    template: "tests/conftest.py.j2"
+  
+  # Configuration files
+  - path: ".gitignore"
+    type: "file"
+    template: ".gitignore.j2"
+  - path: "pytest.ini"
+    type: "file"
+    template: "pytest.ini.j2"
+  - path: "pyproject.toml"
+    type: "file"
+    template: "pyproject.toml.j2"
+  
+  # Development session tracking
+  - path: "dev_sessions/README.md"
+    type: "file"
+    template: "dev_sessions/README.md.j2"
+
+# Default requirements based on framework selection
+requirements:
+  base:
+    - "python>=3.12"
+    - "pathlib"
+    - "logging"
+    - "json"
+    - "datetime"
+  
+  customtkinter:
+    - "customtkinter>=5.2.2"
+    - "pillow>=10.0.0"
+    - "matplotlib>=3.8.0"
+  
+  pyqt6:
+    - "PyQt6>=6.5.0"
+    - "PyQt6-tools>=6.5.0"
+  
+  tkinter:
+    - "pillow>=10.0.0"
+  
+  kivy:
+    - "kivy>=2.2.0"
+    - "kivymd>=1.1.0"
+  
+  testing:
+    - "pytest>=7.4.0"
+    - "pytest-cov>=4.1.0"
+    - "pytest-mock>=3.11.0"
+  
+  quality:
+    - "black>=23.0.0"
+    - "flake8>=6.0.0"
+    - "pylint>=2.17.0"
+    - "mypy>=1.5.0"
+
+# Development tools configuration
+dev_tools:
+  linting:
+    - flake8
+    - pylint
+  formatting:
+    - black
+  type_checking:
+    - mypy
+  testing:
+    - pytest
+  
+# Git configuration
+git:
+  ignore_patterns:
+    - "__pycache__/"
+    - "*.pyc"
+    - "*.pyo"
+    - "*.pyd"
+    - ".Python"
+    - "build/"
+    - "develop-eggs/"
+    - "dist/"
+    - "downloads/"
+    - "eggs/"
+    - ".eggs/"
+    - "lib/"
+    - "lib64/"
+    - "parts/"
+    - "sdist/"
+    - "var/"
+    - "wheels/"
+    - "*.egg-info/"
+    - ".installed.cfg"
+    - "*.egg"
+    - "MANIFEST"
+    - ".env"
+    - ".venv"
+    - "env/"
+    - "venv/"
+    - "ENV/"
+    - "env.bak/"
+    - "venv.bak/"
+    - ".coverage"
+    - "htmlcov/"
+    - ".pytest_cache/"
+    - ".mypy_cache/"
+    - ".DS_Store"
+    - "Thumbs.db"
+    - "*.log"
+    - "logs/"
+
+# IDE configuration suggestions
+ide_config:
+  vscode:
+    extensions:
+      - "ms-python.python"
+      - "ms-python.black-formatter"
+      - "ms-python.flake8"
+      - "ms-python.pylint"
+      - "ms-python.mypy-type-checker"
+    settings:
+      "python.defaultInterpreterPath": "./venv/bin/python"
+      "python.formatting.provider": "black"
+      "python.linting.enabled": true
+      "python.linting.flake8Enabled": true
+      "python.testing.pytestEnabled": true
+  
+  pycharm:
+    interpreter: "Project venv"
+    code_style: "PEP 8"
+    inspections: "All enabled"
