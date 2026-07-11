@@ -1,0 +1,121 @@
+# {{ project_name }} - Development Rules
+
+## Code Standards
+
+### Python Style
+- Follow PEP 8
+- Line length: 88 characters
+- Use type hints
+- Google-style docstrings
+
+### Naming Conventions
+```python
+# Variables and functions
+data_frame = pd.DataFrame()
+def process_data(): pass
+
+# Classes
+class DataProcessor: pass
+
+# Constants
+MAX_ITERATIONS = 100
+```
+
+## Data Management
+
+### Never Commit Data
+```gitignore
+data/raw/*
+data/processed/*
+models/*
+```
+
+### Use Data Loader
+```python
+# Good
+from src.data_loader import load_csv
+df = load_csv('data.csv')
+
+# Bad
+df = pd.read_csv('data/raw/data.csv')
+```
+
+### Document Data Sources
+- Record data origin
+- Document preprocessing steps
+- Version processed datasets
+
+## Notebook Guidelines
+
+### Structure
+1. Title and objectives
+2. Imports
+3. Data loading
+4. Analysis/Processing
+5. Results/Conclusions
+
+### Best Practices
+- Clear markdown explanations
+- Restart and run all before commit
+- Keep cells focused
+- Export reusable code to `src/`
+
+## Model Development
+
+### Reproducibility
+```python
+# Always set random seeds
+import numpy as np
+np.random.seed(42)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test = train_test_split(X, random_state=42)
+```
+
+### Experiment Tracking
+{% if experiment_tracking != 'none' %}
+- Log all experiments to {{ experiment_tracking }}
+{% endif %}
+- Record hyperparameters
+- Save model artifacts
+- Document results
+
+### Model Saving
+```python
+from src.model import save_model
+save_model(model, 'model_v1.pkl')
+```
+
+## Testing
+
+{% if include_tests %}
+### Run Tests
+```bash
+pytest tests/ -v
+```
+
+### Test Coverage
+- Test preprocessing functions
+- Test feature engineering
+- Test model utilities
+{% endif %}
+
+## Git Workflow
+
+### Commit Messages
+```
+feat: Add feature engineering module
+fix: Handle missing values in preprocessing
+docs: Update README with usage examples
+```
+
+### Branch Naming
+- `feature/add-model-tuning`
+- `fix/preprocessing-bug`
+- `experiment/new-algorithm`
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}
+

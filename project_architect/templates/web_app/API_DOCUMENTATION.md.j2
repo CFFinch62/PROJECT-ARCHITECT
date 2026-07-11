@@ -1,0 +1,79 @@
+# {{ project_name }} - API Documentation
+
+{{ project_description }}
+
+**Base URL:** `http://localhost:{% if web_framework == 'fastapi' %}8000{% elif web_framework == 'django' %}8000{% else %}5000{% endif %}`
+
+{% if has_api_docs and web_framework == 'fastapi' %}
+Interactive API docs (Swagger UI) are available at `/docs`, and ReDoc at `/redoc`, whenever the server is running.
+{% endif %}
+
+## Endpoints
+
+### `GET /`
+Returns a welcome message and the current version.
+
+### `GET /health`
+Health check endpoint. Returns `{"status": "healthy"}`.
+
+### `GET /items`
+List items.
+
+### `POST /items`
+Create a new item.
+
+**Request body:**
+```json
+{
+  "name": "string",
+  "description": "string"
+}
+```
+
+{% if has_authentication %}
+## Authentication
+
+This API uses {% if auth_type == 'jwt' %}JWT bearer tokens{% elif auth_type == 'session' %}session-based authentication{% elif auth_type == 'oauth2' %}OAuth2{% endif %}.
+
+### `POST /auth/token`
+Exchange credentials for an access token.
+
+**Request body:**
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Response:**
+```json
+{
+  "access_token": "string",
+  "token_type": "bearer"
+}
+```
+
+Include the token on subsequent requests:
+```
+Authorization: Bearer <access_token>
+```
+
+### `GET /auth/me`
+Return the currently authenticated user. Requires a valid bearer token.
+{% endif %}
+
+## Error Responses
+
+Errors are returned as JSON with an appropriate HTTP status code:
+
+```json
+{
+  "detail": "Description of the error"
+}
+```
+
+---
+
+**Generated:** {{ current_date }}
+**Author:** {{ author_name }}

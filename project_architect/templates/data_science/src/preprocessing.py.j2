@@ -1,0 +1,152 @@
+"""
+Data preprocessing utilities for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+from typing import List, Optional, Tuple, Union
+
+import pandas as pd
+import numpy as np
+{% if ml_framework == 'scikit-learn' or ml_framework == 'none' %}
+from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
+from sklearn.impute import SimpleImputer
+{% endif %}
+
+
+def handle_missing_values(
+    df: pd.DataFrame,
+    strategy: str = "mean",
+    columns: Optional[List[str]] = None
+) -> pd.DataFrame:
+    """
+    Handle missing values in DataFrame.
+    
+    Args:
+        df: Input DataFrame
+        strategy: 'mean', 'median', 'most_frequent', or 'drop'
+        columns: Specific columns to process (None = all)
+    
+    Returns:
+        DataFrame with handled missing values
+    """
+    df = df.copy()
+    
+    if columns is None:
+        columns = df.columns.tolist()
+    
+    if strategy == "drop":
+        return df.dropna(subset=columns)
+    
+    numeric_cols = df[columns].select_dtypes(include=[np.number]).columns
+    categorical_cols = df[columns].select_dtypes(exclude=[np.number]).columns
+    
+    if len(numeric_cols) > 0:
+        imputer = SimpleImputer(strategy=strategy)
+        df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+    
+    if len(categorical_cols) > 0:
+        imputer = SimpleImputer(strategy="most_frequent")
+        df[categorical_cols] = imputer.fit_transform(df[categorical_cols])
+    
+    return df
+
+
+def scale_features(
+    df: pd.DataFrame,
+    columns: Optional[List[str]] = None,
+    scaler: Optional[StandardScaler] = None
+) -> Tuple[pd.DataFrame, StandardScaler]:
+    """
+    Scale numeric features.
+    
+    Args:
+        df: Input DataFrame
+        columns: Columns to scale (None = all numeric)
+        scaler: Existing scaler (None = create new)
+    
+    Returns:
+        Scaled DataFrame and fitted scaler
+    """
+    df = df.copy()
+    
+    if columns is None:
+        columns = df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    if scaler is None:
+        scaler = StandardScaler()
+        df[columns] = scaler.fit_transform(df[columns])
+    else:
+        df[columns] = scaler.transform(df[columns])
+    
+    return df, scaler
+
+
+def encode_categorical(
+    df: pd.DataFrame,
+    columns: Optional[List[str]] = None,
+    method: str = "onehot"
+) -> pd.DataFrame:
+    """
+    Encode categorical variables.
+    
+    Args:
+        df: Input DataFrame
+        columns: Columns to encode (None = all categorical)
+        method: 'onehot' or 'label'
+    
+    Returns:
+        DataFrame with encoded columns
+    """
+    df = df.copy()
+    
+    if columns is None:
+        columns = df.select_dtypes(include=["object", "category"]).columns.tolist()
+    
+    if method == "onehot":
+        df = pd.get_dummies(df, columns=columns, drop_first=True)
+    elif method == "label":
+        for col in columns:
+            le = LabelEncoder()
+            df[col] = le.fit_transform(df[col].astype(str))
+    
+    return df
+
+
+def remove_outliers(
+    df: pd.DataFrame,
+    columns: Optional[List[str]] = None,
+    method: str = "iqr",
+    threshold: float = 1.5
+) -> pd.DataFrame:
+    """
+    Remove outliers from DataFrame.
+    
+    Args:
+        df: Input DataFrame
+        columns: Columns to check (None = all numeric)
+        method: 'iqr' or 'zscore'
+        threshold: IQR multiplier or z-score threshold
+    
+    Returns:
+        DataFrame with outliers removed
+    """
+    df = df.copy()
+    
+    if columns is None:
+        columns = df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    mask = pd.Series(True, index=df.index)
+    
+    for col in columns:
+        if method == "iqr":
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            mask &= (df[col] >= Q1 - threshold * IQR) & (df[col] <= Q3 + threshold * IQR)
+        elif method == "zscore":
+            z_scores = np.abs((df[col] - df[col].mean()) / df[col].std())
+            mask &= z_scores < threshold
+    
+    return df[mask]
+

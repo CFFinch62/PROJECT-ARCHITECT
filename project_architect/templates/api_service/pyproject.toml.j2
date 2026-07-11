@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ project_name | snake_case }}"
+version = "{{ project_version }}"
+description = "{{ project_description }}"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "{{ author_name }}"{% if author_email %}, email = "{{ author_email }}"{% endif %}}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: {% if api_framework == 'fastapi' %}FastAPI{% else %}Flask{% endif %}",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+dev = [
+{% if include_tests %}    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.25.0",
+{% endif %}
+{% if include_linting %}    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+{% endif %}
+]
+
+[project.urls]
+Homepage = "https://github.com/{{ author_name | lower | replace(' ', '') }}/{{ project_name | snake_case }}"
+
+{% if include_tests %}
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+{% endif %}
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+

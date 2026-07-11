@@ -1,0 +1,107 @@
+"""
+Tests for {{ project_name }} CLI.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if cli_framework == 'click' %}
+from click.testing import CliRunner
+{% elif cli_framework == 'typer' %}
+from typer.testing import CliRunner
+{% endif %}
+
+# Import your CLI app
+# from {{ project_name | snake_case }} import cli  # Uncomment when CLI is implemented
+
+
+class TestCLIBasics:
+    """Test basic CLI functionality."""
+    
+    def test_cli_runs(self, runner):
+        """Test that CLI runs without errors."""
+        # result = runner.invoke(cli, ['--help'])
+        # assert result.exit_code == 0
+        pass  # Replace with actual test
+    
+    def test_version_option(self, runner):
+        """Test --version option shows version."""
+        # result = runner.invoke(cli, ['--version'])
+        # assert result.exit_code == 0
+        # assert '{{ project_version }}' in result.output
+        pass  # Replace with actual test
+    
+    def test_help_option(self, runner):
+        """Test --help shows help text."""
+        # result = runner.invoke(cli, ['--help'])
+        # assert result.exit_code == 0
+        # assert '{{ project_name }}' in result.output or '{{ project_description }}' in result.output
+        pass  # Replace with actual test
+
+
+class TestCommands:
+    """Test CLI commands."""
+    
+    def test_command_placeholder(self, runner):
+        """Placeholder test for commands."""
+        # Example test structure:
+        # result = runner.invoke(cli, ['command-name', '--option', 'value'])
+        # assert result.exit_code == 0
+        # assert 'expected output' in result.output
+        pass  # Replace with actual tests
+
+
+class TestErrorHandling:
+    """Test error handling."""
+    
+    def test_invalid_command(self, runner):
+        """Test that invalid command shows error."""
+        # result = runner.invoke(cli, ['nonexistent-command'])
+        # assert result.exit_code != 0
+        pass  # Replace with actual test
+    
+    def test_missing_required_argument(self, runner):
+        """Test that missing required argument shows error."""
+        # result = runner.invoke(cli, ['command-requiring-arg'])
+        # assert result.exit_code != 0
+        # assert 'Missing' in result.output or 'required' in result.output.lower()
+        pass  # Replace with actual test
+
+
+{% if has_config_file %}
+class TestConfiguration:
+    """Test configuration handling."""
+    
+    def test_config_file_loading(self, runner, sample_config):
+        """Test that config file is loaded correctly."""
+        # result = runner.invoke(cli, ['--config', str(sample_config), 'some-command'])
+        # assert result.exit_code == 0
+        pass  # Replace with actual test
+    
+    def test_missing_config_handled(self, runner, tmp_path):
+        """Test that missing config file is handled gracefully."""
+        # nonexistent = tmp_path / "nonexistent.{{ config_format }}"
+        # result = runner.invoke(cli, ['--config', str(nonexistent), 'some-command'])
+        # Check for appropriate error handling
+        pass  # Replace with actual test
+{% endif %}
+
+
+{% if has_logging %}
+class TestLogging:
+    """Test logging functionality."""
+    
+    def test_verbose_mode(self, runner):
+        """Test verbose mode increases output."""
+        # result_normal = runner.invoke(cli, ['command'])
+        # result_verbose = runner.invoke(cli, ['--verbose', 'command'])
+        # Verbose output should have more content
+        pass  # Replace with actual test
+    
+    def test_quiet_mode(self, runner):
+        """Test quiet mode reduces output."""
+        # result_quiet = runner.invoke(cli, ['--quiet', 'command'])
+        # Quiet output should have minimal content
+        pass  # Replace with actual test
+{% endif %}
+

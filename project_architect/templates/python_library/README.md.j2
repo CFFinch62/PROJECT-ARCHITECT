@@ -1,0 +1,107 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+{% if publish_to_pypi %}
+[![PyPI version](https://badge.fury.io/py/{{ project_name | snake_case }}.svg)](https://badge.fury.io/py/{{ project_name | snake_case }})
+{% endif %}
+[![Python {{ min_python_version }}+](https://img.shields.io/badge/python-{{ min_python_version }}+-blue.svg)](https://www.python.org/downloads/)
+[![License: {{ license_type }}](https://img.shields.io/badge/License-{{ license_type }}-yellow.svg)](LICENSE)
+
+## Features
+
+- 🚀 Modern Python {{ min_python_version }}+ support
+{% if has_type_hints %}- 📝 Full type hints{% endif +%}
+{% if has_async %}- ⚡ Async/await support{% endif +%}
+{% if has_cli %}- 💻 Command-line interface{% endif +%}
+{% if include_tests %}- ✅ Comprehensive test suite{% endif +%}
+{% if include_docs %}- 📚 Documentation{% endif %}
+
+## Installation
+
+```bash
+pip install {{ project_name | snake_case }}
+```
+
+## Quick Start
+
+```python
+from {{ project_name | snake_case | replace('-', '_') }} import example_function, ExampleClass
+
+# Using the function
+result = example_function("hello")
+print(result)  # {'input': 'hello', 'processed': True}
+
+# Using the class
+obj = ExampleClass("my-instance")
+data = obj.process({"key": "value"})
+print(data)
+```
+
+{% if has_cli %}
+## CLI Usage
+
+```bash
+{{ project_name | snake_case }} --help
+```
+{% endif %}
+
+## Development
+
+```bash
+# Clone the repository
+git clone https://github.com/{{ author_name | lower | replace(' ', '') }}/{{ project_name | snake_case }}.git
+cd {{ project_name | snake_case }}
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Install in editable mode
+pip install -e .
+```
+
+{% if include_tests %}
+### Running Tests
+
+```bash
+pytest
+pytest --cov=src  # With coverage
+```
+{% endif %}
+
+{% if include_linting %}
+### Code Quality
+
+```bash
+black src tests
+flake8 src tests
+mypy src
+```
+{% endif %}
+
+{% if include_docs %}
+### Documentation
+
+```bash
+mkdocs serve  # Local preview
+mkdocs build  # Build docs
+```
+{% endif %}
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+{{ license_type }} License - see [LICENSE](LICENSE) for details.
+
+---
+
+**Author:** {{ author_name }}  
+**Version:** {{ project_version }}
+

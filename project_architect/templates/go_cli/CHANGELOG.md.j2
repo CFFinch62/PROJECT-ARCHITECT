@@ -1,0 +1,41 @@
+# Changelog
+
+All notable changes to {{ project_name }} will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned Features
+- Additional features to be determined
+
+## [{{ project_version }}] - {{ current_date }}
+
+### Added
+- Initial project setup
+- CLI built with {% if cli_framework == 'cobra' %}Cobra{% elif cli_framework == 'urfave-cli' %}urfave/cli{% else %}the Go standard library (flag package){% endif %}
+
+{% if has_config_file %}- {{ config_format | upper }} configuration file support
+{% endif %}
+{% if has_logging %}- Structured logging via log/slog
+{% endif %}
+{% if include_tests %}- Unit testing{% if use_testify %} with testify assertions{% endif %}
+
+{% endif %}
+{% if include_linting %}- golangci-lint configuration
+{% endif %}
+{% if include_github_actions %}- GitHub Actions CI workflow
+{% endif %}
+{% if init_git %}- Git repository initialization
+{% endif %}
+- Project documentation (README, this CHANGELOG)
+
+---
+
+## Notes
+
+- This project was generated using Project Architect
+- Generated on {{ current_date }}
+- Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "- Organization: " + organization if organization else "" }}

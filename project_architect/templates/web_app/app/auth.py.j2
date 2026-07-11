@@ -1,0 +1,136 @@
+"""
+Authentication for {{ project_name }}.
+
+{% if auth_type == 'jwt' %}JWT bearer-token authentication.{% elif auth_type == 'session' %}Session-based authentication.{% elif auth_type == 'oauth2' %}OAuth2 authentication.{% endif %}
+
+Author: {{ author_name }}
+"""
+
+{% if web_framework == 'fastapi' %}
+from datetime import datetime, timedelta
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+{% if auth_type in ['jwt', 'oauth2'] %}
+from fastapi.security import OAuth2PasswordBearer
+import jwt
+{% endif %}
+from pydantic import BaseModel
+
+router = APIRouter()
+
+SECRET_KEY = "change-this-secret-key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+{% if auth_type in ['jwt', 'oauth2'] %}
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+{% endif %}
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a signed access token."""
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode = {"sub": subject, "exp": expire}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
+    """Resolve the current user from the bearer token."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        return username
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+
+@router.post("/token", response_model=Token)
+async def login(credentials: LoginRequest) -> Token:
+    """Exchange credentials for an access token. Replace with real user verification."""
+    if not credentials.username or not credentials.password:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    token = create_access_token(subject=credentials.username)
+    return Token(access_token=token)
+
+
+@router.get("/me")
+async def read_current_user(current_user: str = Depends(get_current_user)):
+    """Return the currently authenticated user."""
+    return {"username": current_user}
+
+{% elif web_framework == 'flask' %}
+from datetime import datetime, timedelta
+from functools import wraps
+
+from flask import Blueprint, jsonify, request
+{% if auth_type in ['jwt', 'oauth2'] %}
+import jwt
+{% endif %}
+
+bp = Blueprint('auth', __name__)
+
+SECRET_KEY = "change-this-secret-key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+
+def create_access_token(subject: str) -> str:
+    """Create a signed access token."""
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    return jwt.encode({"sub": subject, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def login_required(view_func):
+    """Decorator that requires a valid bearer token."""
+
+    @wraps(view_func)
+    def wrapped(*args, **kwargs):
+        auth_header = request.headers.get('Authorization', '')
+        if not auth_header.startswith('Bearer '):
+            return jsonify({"error": "Missing or invalid Authorization header"}), 401
+        token = auth_header.split(' ', 1)[1]
+        try:
+            jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        except jwt.PyJWTError:
+            return jsonify({"error": "Invalid token"}), 401
+        return view_func(*args, **kwargs)
+
+    return wrapped
+
+
+@bp.route('/token', methods=['POST'])
+def login():
+    """Exchange credentials for an access token. Replace with real user verification."""
+    data = request.get_json() or {}
+    username = data.get('username')
+    password = data.get('password')
+    if not username or not password:
+        return jsonify({"error": "Invalid credentials"}), 401
+    token = create_access_token(subject=username)
+    return jsonify({"access_token": token, "token_type": "bearer"})
+
+
+@bp.route('/me', methods=['GET'])
+@login_required
+def me():
+    """Return the currently authenticated user."""
+    return jsonify({"username": "authenticated-user"})
+
+{% elif web_framework == 'django' %}
+# Django authentication is provided by django.contrib.auth.
+# Add 'django.contrib.auth' and 'rest_framework.authtoken' to INSTALLED_APPS
+# and wire up token endpoints in urls.py.
+{% endif %}

@@ -19,6 +19,9 @@ from ..core.questionnaire import QuestionnaireEngine, QuestionnaireMode
 from ..core.template_engine import TemplateEngine
 from ..core.project_updater import ProjectUpdater, UpdateType
 from ..config.settings import Settings
+from .questionnaire_dialog import QuestionnaireDialog
+from .settings_dialog import SettingsDialog
+from .project_browser import ProjectBrowser
 
 
 class MainWindow(ctk.CTk):
@@ -363,17 +366,18 @@ class MainWindow(ctk.CTk):
         """Start new project creation with specified type."""
         try:
             self.current_mode = QuestionnaireMode.NEW_PROJECT
-            
+            self.current_project_type = project_type  # Store the project type
+
             # Load questionnaire for project type
             success = self.questionnaire_engine.load_questionnaire(project_type, self.current_mode)
-            
+
             if not success:
                 messagebox.showerror("Error", f"Failed to load questionnaire for {project_type}")
                 return
-            
+
             # Show questionnaire tab
             self._show_questionnaire_tab()
-            
+
             self._update_status(f"Starting new {project_type} project")
             
         except Exception as e:
@@ -388,33 +392,43 @@ class MainWindow(ctk.CTk):
                 title="Select Project Directory",
                 mustexist=True
             )
-            
+
             if not project_path:
                 return
-            
+
             project_path = Path(project_path)
-            
+
             # Initialize project updater
             self.project_updater = ProjectUpdater(project_path)
             self.current_project_path = project_path
-            
+
+            # Check if this is a valid Project Architect project
+            if not self.project_updater.is_valid_project():
+                messagebox.showwarning(
+                    "Not a Project Architect Project",
+                    f"The selected folder does not contain Project Architect metadata.\n\n"
+                    f"This may be a folder that wasn't created by Project Architect.\n"
+                    f"Some features may not work correctly.\n\n"
+                    f"For best results, select a project created with Project Architect."
+                )
+
             # Enable update buttons
             self.update_project_btn.configure(state="normal")
             self.update_tech_spec_btn.configure(state="normal")
-            
+
             # Update project info display
             project_info = self.project_updater.get_project_info()
             info_text = f"Project: {project_info['name']}\n"
             info_text += f"Type: {project_info['type']}\n"
             info_text += f"Version: {project_info['version']}"
-            
+
             self.project_info_label.configure(text=info_text)
-            
+
             # Show project info tab
             self._show_project_info_tab()
-            
+
             self._update_status(f"Opened project: {project_info['name']}")
-            
+
         except Exception as e:
             self.logger.error(f"Error opening project: {e}")
             messagebox.showerror("Error", f"Failed to open project: {e}")
@@ -455,13 +469,38 @@ class MainWindow(ctk.CTk):
     
     def _browse_templates(self):
         """Browse available templates."""
-        # TODO: Implement template browser
-        messagebox.showinfo("Templates", "Template browser coming soon!")
-    
+        try:
+            browser = ProjectBrowser(
+                self,
+                self.template_engine,
+                on_select=self._on_template_selected
+            )
+            browser.focus()
+        except Exception as e:
+            self.logger.error(f"Error opening template browser: {e}")
+            messagebox.showerror("Error", f"Failed to open template browser: {e}")
+
+    def _on_template_selected(self, template_type: str):
+        """Handle template selection from browser."""
+        self._start_new_project_with_type(template_type)
+
     def _open_settings(self):
         """Open settings dialog."""
-        # TODO: Implement settings dialog
-        messagebox.showinfo("Settings", "Settings dialog coming soon!")
+        try:
+            dialog = SettingsDialog(
+                self,
+                self.settings,
+                on_save=self._on_settings_saved
+            )
+            dialog.focus()
+        except Exception as e:
+            self.logger.error(f"Error opening settings dialog: {e}")
+            messagebox.showerror("Error", f"Failed to open settings: {e}")
+
+    def _on_settings_saved(self):
+        """Handle settings saved callback."""
+        self.logger.info("Settings saved, applying changes...")
+        self._load_settings()
     
     def _show_project_type_dialog(self):
         """Show project type selection dialog."""
@@ -471,40 +510,319 @@ class MainWindow(ctk.CTk):
     
     def _show_update_type_dialog(self):
         """Show update type selection dialog."""
-        # TODO: Implement update type selection dialog
-        messagebox.showinfo("Update", "Update type selection coming soon!")
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Select Update Type")
+        dialog.geometry("500x400")
+        dialog.transient(self)
+        dialog.after(100, lambda: dialog.grab_set())
+
+        # Header
+        ctk.CTkLabel(
+            dialog,
+            text="Select Update Type",
+            font=ctk.CTkFont(size=20, weight="bold")
+        ).pack(pady=20)
+
+        ctk.CTkLabel(
+            dialog,
+            text="Choose the type of update you want to perform:",
+            font=ctk.CTkFont(size=14)
+        ).pack(pady=(0, 20))
+
+        # Update type buttons
+        update_types = [
+            (UpdateType.FEATURE_ADDITION, "➕ Add New Feature", "Add new features or functionality to your project"),
+            (UpdateType.ARCHITECTURE_CHANGE, "🏗️ Architecture Change", "Modify project structure or architecture"),
+            (UpdateType.DEPENDENCY_UPDATE, "📦 Update Dependencies", "Update or add project dependencies"),
+            (UpdateType.DOCUMENTATION_UPDATE, "📝 Update Documentation", "Update project documentation"),
+            (UpdateType.CONFIGURATION_CHANGE, "⚙️ Configuration Change", "Modify project configuration"),
+        ]
+
+        def select_update_type(update_type: UpdateType):
+            dialog.destroy()
+            self._perform_update(update_type)
+
+        for update_type, label, description in update_types:
+            btn_frame = ctk.CTkFrame(dialog)
+            btn_frame.pack(fill="x", padx=40, pady=5)
+
+            btn = ctk.CTkButton(
+                btn_frame,
+                text=label,
+                command=lambda ut=update_type: select_update_type(ut),
+                width=200,
+                height=35
+            )
+            btn.pack(side="left", padx=5)
+
+            ctk.CTkLabel(
+                btn_frame,
+                text=description,
+                font=ctk.CTkFont(size=11)
+            ).pack(side="left", padx=10)
+
+        # Cancel button
+        ctk.CTkButton(
+            dialog,
+            text="Cancel",
+            command=dialog.destroy,
+            width=100
+        ).pack(pady=20)
+
+    def _perform_update(self, update_type: UpdateType):
+        """Perform the selected update type."""
+        try:
+            if not self.project_updater:
+                messagebox.showerror("Error", "No project loaded")
+                return
+
+            # Start update interview
+            success = self.project_updater.start_update_interview(update_type)
+
+            if not success:
+                messagebox.showerror("Error", f"Failed to start {update_type.value} update")
+                return
+
+            # Set mode based on update type
+            self.current_mode = QuestionnaireMode.UPDATE_PROJECT
+
+            # Show questionnaire
+            self._show_questionnaire_tab()
+
+            self._update_status(f"Starting {update_type.value} update")
+
+        except Exception as e:
+            self.logger.error(f"Error performing update: {e}")
+            messagebox.showerror("Error", f"Failed to perform update: {e}")
     
     def _show_questionnaire_tab(self):
-        """Show and populate the questionnaire tab."""
-        if self.questionnaire_tab is None:
-            self.questionnaire_tab = self.tabview.add("Questionnaire")
-        
-        # Switch to questionnaire tab
-        self.tabview.set("Questionnaire")
-        
-        # TODO: Populate questionnaire content
-        placeholder_label = ctk.CTkLabel(
-            self.questionnaire_tab,
-            text="Questionnaire interface coming soon!",
-            font=ctk.CTkFont(size=16)
+        """Show the questionnaire dialog."""
+        # Use the project_updater's questionnaire engine if we're doing an update
+        # otherwise use the main questionnaire engine for new projects
+        if hasattr(self, 'project_updater') and self.project_updater is not None:
+            if self.current_mode in [QuestionnaireMode.TECH_SPEC_UPDATE,
+                                     QuestionnaireMode.UPDATE_PROJECT,
+                                     QuestionnaireMode.FEATURE_ADDITION]:
+                engine = self.project_updater.questionnaire_engine
+            else:
+                engine = self.questionnaire_engine
+        else:
+            engine = self.questionnaire_engine
+
+        # Open the questionnaire dialog
+        dialog = QuestionnaireDialog(
+            self,
+            engine,
+            on_complete=self._on_questionnaire_complete
         )
-        placeholder_label.pack(expand=True)
+        dialog.focus()
+
+    def _on_questionnaire_complete(self):
+        """Handle questionnaire completion - generate the project."""
+        try:
+            from ..core.questionnaire import QuestionnaireResponse
+            from datetime import datetime
+
+            # Get project type from stored value
+            project_type = getattr(self, 'current_project_type', 'desktop_gui')
+            project_name = self.questionnaire_engine.responses.get('project_name', 'Untitled')
+
+            # Ask user for output directory
+            output_dir = filedialog.askdirectory(
+                title="Select Output Directory for Generated Project",
+                mustexist=True
+            )
+
+            if not output_dir:
+                messagebox.showwarning("Cancelled", "Project generation cancelled.")
+                return
+
+            # Create project folder with project name inside the selected directory
+            # Convert project name to valid folder name (replace spaces with underscores, etc.)
+            safe_project_name = project_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
+            output_path = Path(output_dir) / safe_project_name
+
+            # Create the project directory
+            output_path.mkdir(parents=True, exist_ok=True)
+
+            # Create QuestionnaireResponse object
+            response = QuestionnaireResponse(
+                project_name=project_name,
+                project_type=project_type,
+                mode=self.current_mode,
+                responses=self.questionnaire_engine.responses,
+                timestamp=datetime.now().isoformat()
+            )
+
+            # Generate the project using template engine
+            self._update_status("Generating project...")
+
+            success = self.template_engine.generate_project_structure(
+                project_type=project_type,
+                output_dir=output_path,
+                responses=response
+            )
+
+            if success:
+                messagebox.showinfo(
+                    "Success",
+                    f"Project generated successfully!\n\nLocation: {output_path}"
+                )
+                self._update_status(f"Project generated at {output_path}")
+            else:
+                messagebox.showerror("Error", "Failed to generate project. Check logs for details.")
+                self._update_status("Project generation failed")
+
+        except Exception as e:
+            self.logger.error(f"Error generating project: {e}", exc_info=True)
+            messagebox.showerror("Error", f"Failed to generate project: {e}")
     
     def _show_project_info_tab(self):
         """Show project information tab."""
         if self.project_info_tab is None:
             self.project_info_tab = self.tabview.add("Project Info")
-        
+        else:
+            # Clear existing content
+            for widget in self.project_info_tab.winfo_children():
+                widget.destroy()
+
         # Switch to project info tab
         self.tabview.set("Project Info")
-        
-        # TODO: Populate project info content
-        placeholder_label = ctk.CTkLabel(
-            self.project_info_tab,
-            text="Project information interface coming soon!",
-            font=ctk.CTkFont(size=16)
-        )
-        placeholder_label.pack(expand=True)
+
+        # Create scrollable content frame
+        content_frame = ctk.CTkScrollableFrame(self.project_info_tab)
+        content_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        if not self.project_updater:
+            ctk.CTkLabel(
+                content_frame,
+                text="No project loaded",
+                font=ctk.CTkFont(size=16)
+            ).pack(expand=True)
+            return
+
+        # Get project info
+        project_info = self.project_updater.get_project_info()
+
+        # Project header
+        header_frame = ctk.CTkFrame(content_frame)
+        header_frame.pack(fill="x", pady=(0, 20))
+
+        ctk.CTkLabel(
+            header_frame,
+            text=f"📁 {project_info['name']}",
+            font=ctk.CTkFont(size=24, weight="bold")
+        ).pack(pady=10, padx=20, anchor="w")
+
+        # Project details section
+        details_frame = ctk.CTkFrame(content_frame)
+        details_frame.pack(fill="x", pady=10)
+
+        ctk.CTkLabel(
+            details_frame,
+            text="Project Details",
+            font=ctk.CTkFont(size=18, weight="bold")
+        ).pack(pady=10, padx=20, anchor="w")
+
+        details = [
+            ("Project Type:", project_info.get('type', 'Unknown')),
+            ("Version:", project_info.get('version', '1.0.0')),
+            ("Created:", project_info.get('created_at', 'Unknown')),
+            ("Last Updated:", project_info.get('last_updated', 'Never')),
+            ("Update Count:", str(project_info.get('update_count', 0))),
+            ("Location:", str(self.project_updater.project_path)),
+        ]
+
+        for label, value in details:
+            row_frame = ctk.CTkFrame(details_frame, fg_color="transparent")
+            row_frame.pack(fill="x", padx=20, pady=2)
+            ctk.CTkLabel(row_frame, text=label, font=ctk.CTkFont(weight="bold"), width=120, anchor="w").pack(side="left")
+            ctk.CTkLabel(row_frame, text=value, anchor="w").pack(side="left", fill="x", expand=True)
+
+        # Update history section
+        history_frame = ctk.CTkFrame(content_frame)
+        history_frame.pack(fill="x", pady=10)
+
+        ctk.CTkLabel(
+            history_frame,
+            text="Update History",
+            font=ctk.CTkFont(size=18, weight="bold")
+        ).pack(pady=10, padx=20, anchor="w")
+
+        update_history = self.project_updater.get_update_history()
+
+        if not update_history:
+            ctk.CTkLabel(
+                history_frame,
+                text="No updates yet",
+                font=ctk.CTkFont(size=12)
+            ).pack(pady=10, padx=20, anchor="w")
+        else:
+            for update in update_history[-5:]:  # Show last 5 updates
+                update_row = ctk.CTkFrame(history_frame)
+                update_row.pack(fill="x", padx=20, pady=2)
+
+                update_type = update.update_type.value if hasattr(update.update_type, 'value') else str(update.update_type)
+                ctk.CTkLabel(
+                    update_row,
+                    text=f"• {update_type}: {update.description} (v{update.new_version})",
+                    anchor="w"
+                ).pack(side="left", fill="x", expand=True)
+
+                ctk.CTkLabel(
+                    update_row,
+                    text=update.timestamp[:10] if len(update.timestamp) > 10 else update.timestamp,
+                    font=ctk.CTkFont(size=11)
+                ).pack(side="right")
+
+        # Actions section
+        actions_frame = ctk.CTkFrame(content_frame)
+        actions_frame.pack(fill="x", pady=10)
+
+        ctk.CTkLabel(
+            actions_frame,
+            text="Quick Actions",
+            font=ctk.CTkFont(size=18, weight="bold")
+        ).pack(pady=10, padx=20, anchor="w")
+
+        btn_frame = ctk.CTkFrame(actions_frame, fg_color="transparent")
+        btn_frame.pack(fill="x", padx=20, pady=10)
+
+        ctk.CTkButton(
+            btn_frame,
+            text="🔄 Update Project",
+            command=self._start_project_update,
+            width=150
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            btn_frame,
+            text="📋 Update Tech Spec",
+            command=self._start_tech_spec_update,
+            width=150
+        ).pack(side="left", padx=5)
+
+        ctk.CTkButton(
+            btn_frame,
+            text="📂 Open in File Manager",
+            command=lambda: self._open_in_file_manager(self.project_updater.project_path),
+            width=180
+        ).pack(side="left", padx=5)
+
+    def _open_in_file_manager(self, path: Path):
+        """Open path in system file manager."""
+        import subprocess
+        import sys
+        try:
+            if sys.platform == 'darwin':
+                subprocess.run(['open', str(path)])
+            elif sys.platform == 'win32':
+                subprocess.run(['explorer', str(path)])
+            else:
+                subprocess.run(['xdg-open', str(path)])
+        except Exception as e:
+            self.logger.error(f"Error opening file manager: {e}")
+            messagebox.showerror("Error", f"Could not open file manager: {e}")
     
     def _update_status(self, message: str):
         """Update status bar message."""

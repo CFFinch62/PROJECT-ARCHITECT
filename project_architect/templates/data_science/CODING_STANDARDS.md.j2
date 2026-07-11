@@ -1,0 +1,136 @@
+# {{ project_name }} - Coding Standards
+
+## Python Style
+
+### PEP 8 Compliance
+- Indentation: 4 spaces
+- Line length: 88 characters
+- UTF-8 encoding
+
+### Imports
+```python
+# Standard library
+import os
+from pathlib import Path
+
+# Third-party
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+# Local
+from src.data_loader import load_csv
+```
+
+## Naming Conventions
+
+### Variables
+```python
+# Good
+data_frame = pd.DataFrame()
+feature_matrix = np.array([])
+train_size = 0.8
+
+# Bad
+df = pd.DataFrame()  # Too short
+DataFrame = pd.DataFrame()  # Class-like
+```
+
+### Functions
+```python
+# Good
+def load_and_preprocess_data(): pass
+def calculate_feature_importance(): pass
+
+# Bad
+def LoadData(): pass  # PascalCase
+def data(): pass  # Too vague
+```
+
+## Documentation
+
+### Function Docstrings
+```python
+def process_data(
+    df: pd.DataFrame,
+    target: str,
+    test_size: float = 0.2
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Process and split data for modeling.
+    
+    Args:
+        df: Input DataFrame
+        target: Target column name
+        test_size: Proportion for test set
+    
+    Returns:
+        Tuple of (train_df, test_df)
+    
+    Raises:
+        ValueError: If target not in df
+    
+    Example:
+        >>> train, test = process_data(df, 'label')
+    """
+```
+
+## Data Science Specifics
+
+### Reproducibility
+```python
+# Always set seeds
+RANDOM_STATE = 42
+
+np.random.seed(RANDOM_STATE)
+train_test_split(X, y, random_state=RANDOM_STATE)
+```
+
+### Pandas Best Practices
+```python
+# Use .copy() to avoid warnings
+df_clean = df.copy()
+
+# Chain operations
+result = (df
+    .dropna()
+    .reset_index(drop=True)
+    .assign(new_col=lambda x: x['a'] + x['b'])
+)
+```
+
+### NumPy Best Practices
+```python
+# Vectorized operations
+result = np.where(arr > 0, arr, 0)
+
+# Avoid loops when possible
+# Bad
+for i in range(len(arr)):
+    arr[i] = arr[i] * 2
+
+# Good
+arr = arr * 2
+```
+
+## Error Handling
+
+```python
+def load_data(filepath: str) -> pd.DataFrame:
+    """Load data with proper error handling."""
+    path = Path(filepath)
+    
+    if not path.exists():
+        raise FileNotFoundError(f"Data file not found: {path}")
+    
+    try:
+        return pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        raise ValueError(f"Empty data file: {path}")
+```
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}
+

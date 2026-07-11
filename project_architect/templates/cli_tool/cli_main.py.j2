@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""
+{{ project_name }} - {{ project_description }}
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+{% if cli_framework == 'click' %}
+import click
+{% if has_logging %}
+import logging
+{% endif %}
+
+
+@click.group()
+@click.version_option(version="{{ project_version }}")
+{% if has_logging %}
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose logging')
+def cli(verbose):
+    """{{ project_name }} - {{ project_description }}"""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.{{ log_level }})
+{% else %}
+def cli():
+    """{{ project_name }} - {{ project_description }}"""
+    pass
+{% endif %}
+
+
+@cli.command()
+@click.argument('name')
+def hello(name):
+    """Say hello to NAME."""
+    click.echo(f"Hello, {name}!")
+
+
+@cli.command()
+def version():
+    """Show version information."""
+    click.echo(f"{{ project_name }} version {{ project_version }}")
+
+
+if __name__ == '__main__':
+    cli()
+
+{% elif cli_framework == 'typer' %}
+import typer
+from typing import Optional
+{% if has_logging %}
+import logging
+{% endif %}
+
+app = typer.Typer(help="{{ project_description }}")
+
+
+@app.command()
+def hello(name: str):
+    """Say hello to NAME."""
+    typer.echo(f"Hello, {name}!")
+
+
+@app.command()
+def version():
+    """Show version information."""
+    typer.echo(f"{{ project_name }} version {{ project_version }}")
+
+
+{% if has_logging %}
+@app.callback()
+def main(verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging")):
+    """{{ project_name }} - {{ project_description }}"""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.{{ log_level }})
+{% endif %}
+
+
+if __name__ == "__main__":
+    app()
+
+{% elif cli_framework == 'argparse' %}
+import argparse
+import sys
+{% if has_logging %}
+import logging
+{% endif %}
+
+
+def hello(args):
+    """Say hello command."""
+    print(f"Hello, {args.name}!")
+
+
+def version(args):
+    """Show version command."""
+    print(f"{{ project_name }} version {{ project_version }}")
+
+
+def main():
+    """Main CLI entrypoint."""
+    parser = argparse.ArgumentParser(
+        prog="{{ project_name | snake_case }}",
+        description="{{ project_description }}"
+    )
+    
+    parser.add_argument('--version', action='version', version='{{ project_version }}')
+    {% if has_logging %}
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
+    {% endif %}
+    
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    
+    # Hello command
+    hello_parser = subparsers.add_parser('hello', help='Say hello')
+    hello_parser.add_argument('name', help='Name to greet')
+    hello_parser.set_defaults(func=hello)
+    
+    # Version command
+    version_parser = subparsers.add_parser('version', help='Show version')
+    version_parser.set_defaults(func=version)
+    
+    args = parser.parse_args()
+    
+    {% if has_logging %}
+    # Setup logging
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.{{ log_level }})
+    {% endif %}
+    
+    # Execute command
+    if hasattr(args, 'func'):
+        args.func(args)
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
+{% endif %}

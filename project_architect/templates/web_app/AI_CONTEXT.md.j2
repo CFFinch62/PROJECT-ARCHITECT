@@ -1,0 +1,155 @@
+# {{ project_name }} - AI Context
+
+## Quick Project Overview
+
+**Project Name:** {{ project_name }}  
+**Type:** {% if api_type == 'rest_api' %}REST API{% elif api_type == 'full_stack' %}Full Stack Web App{% elif api_type == 'microservice' %}Microservice{% endif +%}
+**Technology:** Python 3.12 + {% if web_framework == 'flask' %}Flask{% elif web_framework == 'fastapi' %}FastAPI{% elif web_framework == 'django' %}Django{% endif +%}
+**Purpose:** {{ project_description }}  
+**Author:** {{ author_name }}
+
+## Architecture at a Glance
+
+```
+{{ project_name | snake_case }}/
+├── main.py              # Entry point
+├── app/
+│   ├── __init__.py     # App factory
+│   ├── config.py       # Configuration
+│   ├── routes.py       # API endpoints
+{% if has_database %}│   ├── models.py       # Database models
+{% endif %}{% if has_authentication %}│   └── auth.py         # Authentication
+{% endif %}├── tests/              # pytest tests
+{% if include_docker %}├── Dockerfile          # Container config
+{% endif %}└── .env.example        # Environment template
+```
+
+## Key Technologies
+
+- **Framework:** {% if web_framework == 'flask' %}Flask 3.0+ with Flask-RESTX{% elif web_framework == 'fastapi' %}FastAPI 0.104+ with Uvicorn{% elif web_framework == 'django' %}Django 4.2+ with DRF{% endif +%}
+{% if has_database %}- **Database:** {{ database_type | title }}{% if use_orm %} + SQLAlchemy ORM{% endif %}{% endif +%}
+{% if has_authentication %}- **Auth:** {{ auth_type | upper }}{% if auth_type == 'jwt' %} tokens{% elif auth_type == 'oauth2' %} OAuth2{% endif %}{% endif +%}
+{% if has_caching %}- **Caching:** Redis{% endif +%}
+{% if has_celery %}- **Tasks:** Celery background jobs{% endif +%}
+{% if include_tests %}- **Testing:** pytest with httpx{% endif +%}
+{% if has_api_docs %}- **Docs:** {% if web_framework == 'fastapi' %}Swagger UI (auto){% elif web_framework == 'flask' %}Flask-RESTX Swagger{% endif %}{% endif %}
+
+## Development Patterns
+
+### File Structure
+- Each module stays under 300 lines (soft limit)
+- Routes separate from business logic
+- Models in dedicated files
+- Config via environment variables
+
+### Common Operations
+
+**Run Development Server:**
+```bash
+{% if web_framework == 'fastapi' %}uvicorn main:app --reload{% elif web_framework == 'flask' %}flask run --debug{% elif web_framework == 'django' %}python manage.py runserver{% endif +%}
+```
+
+**API Documentation:**
+{% if web_framework == 'fastapi' %}Visit http://localhost:8000/docs (Swagger) or /redoc{% elif web_framework == 'flask' %}Visit http://localhost:5000/api/docs{% endif %}
+
+{% if include_tests %}**Run Tests:**
+```bash
+pytest                    # All tests
+pytest --cov=app         # With coverage
+pytest tests/test_api.py # Specific file
+```
+{% endif %}
+
+## Code Conventions
+
+### Naming
+- **Files/Modules:** snake_case (e.g., `user_routes.py`)
+- **Classes:** PascalCase (e.g., `UserModel`)
+- **Functions:** snake_case (e.g., `get_users`)
+- **API Endpoints:** kebab-case (e.g., `/api/user-profiles`)
+
+### API Design
+- RESTful resource naming
+- Consistent response format
+- Proper HTTP status codes
+- Pagination for lists
+
+### Error Handling
+- Return JSON error responses
+- Include error codes and messages
+- Log errors with context
+- Never expose stack traces in production
+
+## Current State
+
+**Phase:** Initial Development  
+**Version:** {{ project_version }}  
+**Status:** Foundation complete, adding endpoints
+
+### Implemented
+- ✅ {{ web_framework | title }} framework
+{% if has_database %}- ✅ Database connection{% endif +%}
+{% if has_authentication %}- ✅ Authentication setup{% endif +%}
+{% if has_api_docs %}- ✅ API documentation{% endif +%}
+- ✅ Project structure
+
+### In Progress
+- API endpoints
+{% if has_database %}- Database models{% endif +%}
+- Business logic
+{% if include_tests %}- Test coverage{% endif %}
+
+### Planned
+- Additional endpoints
+{% if has_caching %}- Caching layer{% endif +%}
+{% if has_celery %}- Background tasks{% endif +%}
+- Documentation completion
+
+## AI Assistant Guidelines
+
+### When Helping with This Project
+
+1. **Respect Structure:** Keep modules focused and under 300 lines
+2. **Follow REST:** Use proper HTTP methods and status codes
+3. **Add Tests:** {% if include_tests %}Include pytest tests for endpoints{% else %}Suggest testing approaches{% endif +%}
+4. **Document:** Add OpenAPI docstrings
+5. **Be Consistent:** Match existing patterns
+
+### Common Tasks
+
+**Adding a New Endpoint:**
+1. Add route in `app/routes.py` or new route file
+2. Add business logic (separate from route)
+{% if has_database %}3. Add/update models if needed{% endif +%}
+4. {% if include_tests %}Write tests{% endif +%}
+5. Update documentation
+
+**Debugging Issues:**
+- Check logs (stderr in development)
+{% if web_framework == 'fastapi' %}- Use FastAPI's automatic validation errors{% endif +%}
+{% if include_tests %}- Run relevant tests: `pytest tests/test_X.py -v`{% endif %}
+
+## Quick Reference
+
+### Important Files
+- `main.py` - Application entry point
+- `app/routes.py` - API endpoints
+{% if has_database %}- `app/models.py` - Database models{% endif +%}
+- `.env.example` - Environment template
+- `requirements.txt` - Dependencies
+
+### Environment Setup
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+{% if web_framework == 'fastapi' %}uvicorn main:app --reload{% elif web_framework == 'flask' %}flask run{% endif +%}
+```
+
+---
+
+This document provides context for AI assistants working on {{ project_name }}.  
+**Generated:** {{ current_date }}  
+**Generator:** Project Architect
+

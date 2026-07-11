@@ -1,0 +1,167 @@
+# {{ project_name }} - Coding Standards
+
+## Python Style Guide
+
+### PEP 8 Compliance
+- Indentation: 4 spaces
+- Line length: 88 characters
+- Encoding: UTF-8
+- Imports: Grouped (standard, third-party, local)
+
+## Naming Conventions
+
+### Variables and Functions
+```python
+# Good
+user_id = 123
+def get_user_by_id(): pass
+
+# Bad
+userId = 123  # camelCase
+```
+
+### Classes
+```python
+# Good
+class UserService: pass
+
+# Bad
+class user_service: pass  # snake_case
+```
+
+### API Endpoints
+```python
+# Good - kebab-case
+/api/v1/user-profiles
+
+# Bad
+/api/v1/userProfiles  # camelCase
+```
+
+## API Standards
+
+### Route Structure
+{% if api_framework == 'fastapi' %}
+```python
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/api/v1", tags=["items"])
+
+class ItemCreate(BaseModel):
+    name: str
+    description: str | None = None
+
+@router.post("/items", status_code=201)
+async def create_item(item: ItemCreate):
+    """Create a new item."""
+    return {"success": True, "data": item.model_dump()}
+```
+{% else %}
+```python
+from flask_restx import Namespace, Resource, fields
+
+api_ns = Namespace("items")
+
+@api_ns.route("/")
+class ItemList(Resource):
+    def post(self):
+        """Create a new item."""
+        return {"success": True}, 201
+```
+{% endif %}
+
+## Documentation Standards
+
+### Endpoint Docstrings
+```python
+{% if api_framework == 'fastapi' %}
+@router.get("/items/{item_id}")
+async def get_item(item_id: int):
+    """
+    Get item by ID.
+    
+    - **item_id**: Unique identifier
+    
+    Returns:
+        Item details or 404
+    """
+{% endif %}
+```
+
+### Function Docstrings (Google Style)
+```python
+def process_data(data: dict, options: dict = None) -> dict:
+    """Process input data.
+    
+    Args:
+        data: Input data dictionary
+        options: Optional processing options
+    
+    Returns:
+        Processed data dictionary
+        
+    Raises:
+        ValueError: If data is invalid
+    """
+```
+
+## Type Hints
+
+```python
+from typing import List, Optional
+
+async def get_users(
+    skip: int = 0,
+    limit: int = 100,
+    active: bool = True
+) -> List[dict]:
+    """Get list of users."""
+    pass
+```
+
+{% if api_framework == 'fastapi' %}
+### Pydantic Models
+```python
+from pydantic import BaseModel, Field
+
+class UserCreate(BaseModel):
+    email: str = Field(..., description="User email")
+    name: str = Field(..., min_length=1, max_length=100)
+    
+    class Config:
+        json_schema_extra = {"example": {"email": "user@example.com", "name": "John"}}
+```
+{% endif %}
+
+## Error Handling
+
+```python
+{% if api_framework == 'fastapi' %}
+from fastapi import HTTPException
+
+raise HTTPException(
+    status_code=404,
+    detail={"code": "NOT_FOUND", "message": "Item not found"}
+)
+{% else %}
+from flask import jsonify
+
+return jsonify({"success": False, "error": "NOT_FOUND"}), 404
+{% endif %}
+```
+
+## Best Practices
+
+1. **Separation of Concerns:** Routes, logic, data access
+2. **Fail Fast:** Validate input early
+3. **Consistent Responses:** Same format everywhere
+4. **Proper Status Codes:** Use appropriate HTTP codes
+5. **Security:** Never log sensitive data
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

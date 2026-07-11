@@ -1,0 +1,58 @@
+"""
+Database models for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+{% if database_type == 'mongodb' %}
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, Field
+
+
+class ItemModel(BaseModel):
+    """Example MongoDB document model."""
+
+    name: str
+    description: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+{% else %}
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, DateTime
+{% if web_framework == 'fastapi' %}
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+{% elif web_framework == 'flask' %}
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+Base = db.Model
+{% else %}
+from django.db import models
+{% endif %}
+
+
+{% if web_framework == 'django' %}
+class Item(models.Model):
+    """Example model."""
+
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = "app"
+{% else %}
+class Item(Base):
+    """Example database model."""
+
+    __tablename__ = "items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    description = Column(String(1000), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+{% endif %}
+{% endif %}

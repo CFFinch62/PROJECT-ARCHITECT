@@ -1,0 +1,88 @@
+{% if include_tests %}"""
+Tests for the Game class.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+
+from src.config import GameConfig
+
+
+class TestGameConfig:
+    """Tests for GameConfig defaults."""
+
+    def test_defaults(self, config):
+        assert config.title == "{{ project_name }}"
+        assert config.screen_width == {{ screen_width }}
+        assert config.screen_height == {{ screen_height }}
+        assert config.fullscreen is {{ "True" if fullscreen else "False" }}
+        {% if has_score_tracking %}
+        assert config.starting_score == 0
+        {% endif %}
+
+
+{% if game_framework == 'pygame' %}
+class TestGame:
+    """Tests for the Pygame Game class (headless, no display required)."""
+
+    @pytest.fixture
+    def game(self, config):
+        import pygame
+
+        pygame.init()
+        surface = pygame.Surface((config.screen_width, config.screen_height))
+        from src.game import Game
+
+        return Game(surface, config)
+
+    def test_initial_state(self, game, config):
+        assert game.running is True
+        {% if has_score_tracking %}
+        assert game.score == config.starting_score
+        {% endif %}
+
+    def test_draw_does_not_raise(self, game):
+        game.draw()
+
+    def test_escape_key_stops_game(self, game):
+        import pygame
+
+        game.on_key_down(pygame.K_ESCAPE)
+        assert game.running is False
+
+
+{% elif game_framework == 'pgzero' %}
+class TestGame:
+    """Tests for the Pygame Zero Game class (no window required)."""
+
+    @pytest.fixture
+    def game(self, config):
+        from src.game import Game
+
+        return Game(config)
+
+    def test_initial_state(self, game, config):
+        {% if has_score_tracking %}
+        assert game.score == config.starting_score
+        {% endif %}
+        game.update(1 / 60)
+
+
+{% else %}
+@pytest.mark.integration
+class TestGame:
+    """
+    Tests for the {{ 'Arcade' if game_framework == 'arcade' else 'Pyglet' }} Game class.
+
+    Creating a {{ 'Window' }} subclass requires a display/OpenGL context, so
+    these are marked integration tests. Run with a virtual display (e.g. xvfb)
+    in CI, or exclude with `pytest -m "not integration"` for headless runs.
+    """
+
+    def test_game_module_imports(self):
+        # Smoke test: confirm the module and its dependencies import cleanly.
+        import src.game  # noqa: F401
+{% endif %}
+{% else %}# Testing not configured for this project
+{% endif %}

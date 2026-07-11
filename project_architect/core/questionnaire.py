@@ -217,28 +217,47 @@ class QuestionnaireEngine:
     def should_show_question(self, question: Question) -> bool:
         """
         Determine if a question should be shown based on dependencies.
-        
+
         Args:
             question: Question to check
-            
+
         Returns:
             bool: True if question should be shown
         """
         if not question.depends_on:
             return True
-        
-        # Check if dependency is satisfied
-        if question.depends_on not in self.responses:
-            return False
-        
-        dependency_value = self.responses[question.depends_on]
-        
+
+        # Get the dependency value - check responses first, then fall back to default
+        if question.depends_on in self.responses:
+            dependency_value = self.responses[question.depends_on]
+        else:
+            # Check if the parent question has a default value
+            parent_question = self.get_question_by_id(question.depends_on)
+            if parent_question is None:
+                return False
+            dependency_value = parent_question.default
+
         if question.depends_value is None:
             # Just check if dependency has any value
             return bool(dependency_value)
-        
+
         # Check if dependency matches expected value
         return dependency_value == question.depends_value
+
+    def get_question_by_id(self, question_id: str) -> Optional[Question]:
+        """
+        Get a question by its ID.
+
+        Args:
+            question_id: ID of the question to find
+
+        Returns:
+            Question object or None if not found
+        """
+        for question in self.questions:
+            if question.id == question_id:
+                return question
+        return None
     
     def validate_response(self, question: Question, value: Any) -> tuple[bool, str]:
         """

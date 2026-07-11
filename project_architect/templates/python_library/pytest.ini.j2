@@ -1,0 +1,9 @@
+[pytest]
+testpaths = tests
+python_files = test_*.py
+python_functions = test_*
+{% if has_async %}asyncio_mode = auto{% endif +%}
+addopts = -v --tb=short
+filterwarnings =
+    ignore::DeprecationWarning
+

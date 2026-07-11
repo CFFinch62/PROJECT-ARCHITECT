@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+{% if include_tests %}
+      - name: Test
+        run: go test ./...{% if test_coverage %} -cover{% endif %}
+{% endif %}
+{% if include_linting %}
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+{% endif %}

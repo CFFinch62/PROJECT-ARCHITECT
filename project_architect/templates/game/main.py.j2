@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""
+{{ project_name }} - Main Entry Point
+
+{{ project_description }}
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "Organization: " + organization + "\n" if organization else "" }}Created: {{ current_date }}
+Version: {{ project_version }}
+"""
+
+import sys
+{% if has_logging %}
+import logging
+from pathlib import Path
+{% endif %}
+
+{% if game_framework == 'pygame' %}
+import pygame
+
+from src.game import Game
+from src.config import GameConfig
+{% elif game_framework == 'arcade' %}
+import arcade
+
+from src.game import Game
+from src.config import GameConfig
+{% elif game_framework == 'pyglet' %}
+import pyglet
+
+from src.game import Game
+from src.config import GameConfig
+{% elif game_framework == 'pgzero' %}
+import pgzrun
+
+from src.game import Game
+from src.config import GameConfig
+{% endif %}
+
+{% if has_logging %}
+
+def setup_logging() -> logging.Logger:
+    """Configure application logging."""
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+
+    logging.basicConfig(
+        level=logging.{{ log_level }},
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler(log_dir / "{{ project_name | snake_case }}.log"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
+    return logging.getLogger("{{ project_name | snake_case }}")
+
+{% endif %}
+{% if game_framework == 'pygame' %}
+
+def main() -> int:
+    """Run {{ project_name }} using Pygame."""
+    {% if has_logging %}
+    logger = setup_logging()
+    logger.info("Starting {{ project_name }} v{{ project_version }}")
+    {% endif %}
+
+    pygame.init()
+    config = GameConfig()
+
+    flags = pygame.FULLSCREEN if config.fullscreen else 0
+    screen = pygame.display.set_mode((config.screen_width, config.screen_height), flags)
+    pygame.display.set_caption(config.title)
+
+    game = Game(screen, config{% if has_logging %}, logger{% endif %})
+
+    try:
+        game.run()
+        return 0
+    except Exception as e:
+        {% if has_logging %}
+        logger.error(f"Fatal error: {e}")
+        {% else %}
+        print(f"Fatal error: {e}")
+        {% endif %}
+        return 1
+    finally:
+        pygame.quit()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+{% elif game_framework == 'arcade' %}
+
+def main() -> int:
+    """Run {{ project_name }} using Arcade."""
+    {% if has_logging %}
+    logger = setup_logging()
+    logger.info("Starting {{ project_name }} v{{ project_version }}")
+    {% endif %}
+
+    config = GameConfig()
+
+    try:
+        game = Game(config{% if has_logging %}, logger{% endif %})
+        game.setup()
+        if config.fullscreen:
+            game.set_fullscreen(True)
+        arcade.run()
+        return 0
+    except Exception as e:
+        {% if has_logging %}
+        logger.error(f"Fatal error: {e}")
+        {% else %}
+        print(f"Fatal error: {e}")
+        {% endif %}
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+{% elif game_framework == 'pyglet' %}
+
+def main() -> int:
+    """Run {{ project_name }} using Pyglet."""
+    {% if has_logging %}
+    logger = setup_logging()
+    logger.info("Starting {{ project_name }} v{{ project_version }}")
+    {% endif %}
+
+    config = GameConfig()
+
+    try:
+        game = Game(config{% if has_logging %}, logger{% endif %})
+        pyglet.app.run()
+        return 0
+    except Exception as e:
+        {% if has_logging %}
+        logger.error(f"Fatal error: {e}")
+        {% else %}
+        print(f"Fatal error: {e}")
+        {% endif %}
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+{% elif game_framework == 'pgzero' %}
+# Pygame Zero reads WIDTH, HEIGHT, TITLE and the draw()/update() functions
+# below directly from this module's global namespace - do not rename them.
+{% if has_logging %}
+_logger = setup_logging()
+_logger.info("Starting {{ project_name }} v{{ project_version }}")
+{% endif %}
+
+_config = GameConfig()
+WIDTH = _config.screen_width
+HEIGHT = _config.screen_height
+TITLE = _config.title
+
+_game = Game(_config{% if has_logging %}, _logger{% endif %})
+
+
+def draw() -> None:
+    """Pygame Zero draw hook - delegates to the Game instance."""
+    _game.draw(screen)
+
+
+def update(dt: float) -> None:
+    """Pygame Zero update hook - delegates to the Game instance."""
+    _game.update(dt)
+
+
+def on_key_down(key) -> None:
+    """Pygame Zero key-down hook - delegates to the Game instance."""
+    _game.on_key_down(key)
+
+
+if __name__ == "__main__":
+    pgzrun.go()
+{% endif %}

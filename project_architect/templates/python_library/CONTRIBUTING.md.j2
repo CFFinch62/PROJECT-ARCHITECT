@@ -1,0 +1,51 @@
+# Contributing to {{ project_name }}
+
+Thank you for your interest in contributing!
+
+## Development Setup
+
+```bash
+# Fork and clone the repository
+git clone https://github.com/YOUR_USERNAME/{{ project_name | snake_case }}.git
+cd {{ project_name | snake_case }}
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install development dependencies
+pip install -r requirements-dev.txt
+pip install -e .
+```
+
+## Making Changes
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make your changes
+{% if include_tests %}3. Add tests for new functionality{% endif +%}
+{% if include_linting %}4. Run linting: `black src tests && flake8 src tests`{% endif +%}
+{% if include_tests %}5. Run tests: `pytest`{% endif +%}
+6. Commit with clear message: `git commit -m "feat: add new feature"`
+7. Push and create a Pull Request
+
+## Code Style
+
+- Follow PEP 8
+- Use type hints
+- Write docstrings (Google style)
+- Keep functions focused and small
+
+## Commit Messages
+
+Format: `<type>: <description>`
+
+Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
+
+## Questions?
+
+Open an issue for discussion.
+
+---
+
+**Maintainer:** {{ author_name }}
+

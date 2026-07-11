@@ -1,0 +1,55 @@
+"""
+pytest configuration and fixtures for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if cli_framework == 'click' %}
+from click.testing import CliRunner
+{% elif cli_framework == 'typer' %}
+from typer.testing import CliRunner
+{% endif %}
+
+
+@pytest.fixture
+def runner():
+    """Provide a CLI test runner."""
+    return CliRunner()
+
+
+{% if has_config_file %}
+@pytest.fixture
+def sample_config(tmp_path):
+    """Create a sample configuration file for testing."""
+    config_file = tmp_path / "config.{{ config_format }}"
+{% if config_format == 'json' %}
+    config_file.write_text('''{
+    "setting1": "value1",
+    "setting2": true
+}''')
+{% elif config_format == 'yaml' %}
+    config_file.write_text('''setting1: value1
+setting2: true
+''')
+{% elif config_format == 'toml' %}
+    config_file.write_text('''setting1 = "value1"
+setting2 = true
+''')
+{% elif config_format == 'ini' %}
+    config_file.write_text('''[settings]
+setting1 = value1
+setting2 = true
+''')
+{% endif %}
+    return config_file
+{% endif %}
+
+
+@pytest.fixture
+def temp_file(tmp_path):
+    """Create a temporary file for testing."""
+    test_file = tmp_path / "test_input.txt"
+    test_file.write_text("Test content\nLine 2\nLine 3\n")
+    return test_file
+

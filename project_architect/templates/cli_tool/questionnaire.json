@@ -1,0 +1,162 @@
+{
+  "questionnaire": {
+    "name": "CLI Tool Questionnaire",
+    "version": "1.0.0",
+    "description": "Interactive questionnaire for command-line tool projects"
+  },
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "What is the name of your CLI tool?",
+      "required": true,
+      "section": "project_basics",
+      "order": 1
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Briefly describe your CLI tool",
+      "required": true,
+      "section": "project_basics",
+      "order": 2
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "Author name",
+      "required": true,
+      "section": "project_basics",
+      "order": 3
+    },
+    {
+      "id": "author_email",
+      "type": "email",
+      "prompt": "Author email",
+      "required": false,
+      "section": "project_basics",
+      "order": 4
+    },
+    {
+      "id": "project_version",
+      "type": "version",
+      "prompt": "Initial version number",
+      "default": "0.1.0",
+      "required": true,
+      "section": "project_basics",
+      "order": 5
+    },
+    {
+      "id": "cli_framework",
+      "type": "choice",
+      "prompt": "Which CLI framework?",
+      "options": [
+        "click",
+        "typer",
+        "argparse"
+      ],
+      "default": "click",
+      "description": "Click: Composable commands. Typer: Modern with type hints. Argparse: Built-in, no dependencies.",
+      "required": true,
+      "section": "technical_stack",
+      "order": 10
+    },
+    {
+      "id": "has_config_file",
+      "type": "boolean",
+      "prompt": "Support configuration file?",
+      "default": true,
+      "section": "features",
+      "order": 20
+    },
+    {
+      "id": "config_format",
+      "type": "choice",
+      "prompt": "Configuration file format",
+      "options": [
+        "yaml",
+        "json",
+        "toml",
+        "ini"
+      ],
+      "default": "yaml",
+      "section": "features",
+      "order": 21,
+      "depends_on": "has_config_file",
+      "depends_value": true
+    },
+    {
+      "id": "has_logging",
+      "type": "boolean",
+      "prompt": "Include logging support?",
+      "default": true,
+      "section": "features",
+      "order": 22
+    },
+    {
+      "id": "log_level",
+      "type": "choice",
+      "prompt": "Default log level",
+      "options": [
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR"
+      ],
+      "default": "INFO",
+      "section": "features",
+      "order": 23,
+      "depends_on": "has_logging",
+      "depends_value": true
+    },
+    {
+      "id": "has_plugins",
+      "type": "boolean",
+      "prompt": "Support plugin system?",
+      "default": false,
+      "section": "features",
+      "order": 24
+    },
+    {
+      "id": "has_autocomplete",
+      "type": "boolean",
+      "prompt": "Include shell autocomplete?",
+      "default": true,
+      "description": "Bash/Zsh completion support",
+      "section": "features",
+      "order": 25
+    },
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include unit testing?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 30
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include linting tools?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 31
+    },
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create Python virtual environment?",
+      "default": true,
+      "section": "development_setup",
+      "order": 40
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git repository?",
+      "default": true,
+      "section": "development_setup",
+      "order": 41
+    }
+  ]
+}

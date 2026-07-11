@@ -1,0 +1,368 @@
+# {{ project_name }} - Development Process
+
+## Daily Development Workflow
+
+### 1. Start of Day
+```bash
+# Update from repository (if team project)
+git pull origin main
+
+# Activate virtual environment
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Verify environment
+python3 --version
+pip list
+```
+
+### 2. Working on a Feature
+
+#### Create Feature Branch
+```bash
+git checkout -b feature/feature-name
+```
+
+#### Development Cycle
+1. **Write/modify code**
+2. **{% if include_tests %}Run tests**: `pytest tests/test_relevant.py`{% else %}Test manually{% endif +%}
+3. **Check quality**:
+   {% if include_formatting %}- Format: `black src/ tests/`{% endif +%}
+   {% if include_linting %}- Lint: `flake8 src/ tests/`{% endif +%}
+4. **Commit changes**:
+   ```bash
+   git add <files>
+   git commit -m "feat: Add feature description"
+   ```
+5. **Repeat** until feature complete
+
+#### Complete Feature
+```bash
+{% if include_tests %}# Run full test suite
+pytest --cov=src
+
+{% endif %}# Push to remote (if applicable)
+git push origin feature/feature-name
+
+# Merge to main
+git checkout main
+git merge feature/feature-name
+git push origin main
+```
+
+### 3. End of Day
+- Commit or stash work in progress
+- Update CHANGELOG.md if features completed
+- Document any blockers or questions
+
+## Feature Development Process
+
+### Phase 1: Planning (Before Coding)
+1. **Understand requirements**
+   - What problem does this solve?
+   - What are acceptance criteria?
+   
+2. **Design approach**
+   - Which modules need changes?
+   - What new functions/classes needed?
+   - Does this belong in `Game.update()`, `Game.draw()`, or a new module?
+
+3. **{% if include_tests %}Write tests first (TDD)**
+   - Create test file: `tests/test_<feature>.py`
+   - Write failing tests for expected behavior
+{% else %}Plan testing approach**
+   - What scenarios to test?
+   - What edge cases exist?
+{% endif %}
+
+### Phase 2: Implementation
+1. **Write minimal code to pass tests**{% if not include_tests %}**Write code incrementally**{% endif +%}
+   - Focus on functionality first
+   - Keep it simple
+
+2. **Refactor for quality**
+   - Improve names and structure
+   - Extract reusable code
+   - Add documentation
+
+3. **Handle errors**
+   - Add try/catch blocks
+   - {% if has_logging %}Log errors appropriately{% else %}Print clear error messages{% endif +%}
+   - Show user-friendly messages
+
+### Phase 3: Quality Assurance
+{% if include_tests %}
+1. **Run tests**
+   ```bash
+   pytest tests/test_<feature>.py -v
+   pytest --cov=src/module.py
+   ```
+{% endif %}
+
+2. **Code quality checks**
+   {% if include_formatting %}```bash
+   black src/ tests/
+   ```{% endif +%}
+   {% if include_linting %}```bash
+   flake8 src/ tests/
+   pylint src/module.py
+   ```{% endif %}
+
+3. **Manual testing**
+   - Test happy path
+   - Test error cases
+   - Test edge cases
+
+### Phase 4: Documentation
+1. **Code documentation**
+   - Add/update docstrings
+   - Comment complex logic
+   
+2. **User documentation**
+   - Update README.md if needed
+   - Add usage examples
+   
+3. **Change documentation**
+   - Update CHANGELOG.md
+   - Note breaking changes
+
+### Phase 5: Integration
+1. **Commit changes**
+   ```bash
+   git add .
+   git commit -m "feat(scope): Description"
+   ```
+
+2. **{% if init_git %}Create PR** (if team){% else %}Merge to main**{% endif +%}
+   - Write clear description
+   - Link related issues
+   - Request review
+
+3. **Deploy/release** (when ready)
+
+## Bug Fix Process
+
+### 1. Reproduce Bug
+- Get exact steps to reproduce
+- Note expected vs. actual behavior
+- Check logs{% if has_logging %} in `logs/{{ project_name | snake_case }}.log`{% endif %}
+
+### 2. Identify Root Cause
+- Add debug logging{% if not has_logging %}/print statements{% endif +%}
+- Use debugger if needed
+- Test hypotheses systematically
+
+### 3. {% if include_tests %}Write Test that Fails
+```python
+def test_bug_fix():
+    """Test that reproduces the bug."""
+    # This should fail initially
+    result = function_with_bug(input)
+    assert result == expected_result
+```
+
+### 4. Fix and Verify
+{% else %}Fix the Issue
+{% endif %}- Make minimal changes to fix
+- Avoid scope creep
+- {% if include_tests %}Run new test (should pass){% else %}Verify fix manually{% endif +%}
+- {% if include_tests %}Run all tests{% else %}Test for regressions{% endif %}
+
+### 5. Commit
+```bash
+git commit -m "fix: Brief description of bug fix
+
+Detailed explanation of what was wrong and how it's fixed.
+
+Fixes #issue-number"
+```
+
+## Testing Workflow
+
+{% if include_tests %}
+### Running Tests
+
+**All tests:**
+```bash
+pytest
+```
+
+**Specific file:**
+```bash
+pytest tests/test_game.py
+```
+
+**With coverage:**
+```bash
+pytest --cov=src --cov-report=html
+```
+
+**Verbose output:**
+```bash
+pytest -v
+```
+
+**Stop on first failure:**
+```bash
+pytest -x
+```
+
+### Writing Tests
+
+**Test file structure:**
+```python
+"""Tests for <module> module."""
+
+import pytest
+from src.module import function_to_test
+
+
+class TestFunctionName:
+    """Tests for function_name."""
+    
+    def setup_method(self):
+        """Setup before each test."""
+        self.test_data = "example"
+    
+    def test_normal_case(self):
+        """Test normal operation."""
+        result = function_to_test(self.test_data)
+        assert result == expected
+    
+    def test_edge_case(self):
+        """Test edge case."""
+        result = function_to_test("")
+        assert result is None
+    
+    def test_error_case(self):
+        """Test error handling."""
+        with pytest.raises(ValueError):
+            function_to_test(None)
+```
+{% else %}
+### Manual Testing Checklist
+
+For each feature:
+- [ ] Normal operation works
+- [ ] Edge cases handled (empty input, null, etc.)
+- [ ] Errors display properly
+- [ ] No console errors{% if has_logging %} or unexpected log entries{% endif +%}
+- [ ] Performance acceptable
+- [ ] UI updates correctly (if applicable)
+{% endif %}
+
+## Release Process
+
+### Pre-Release Checklist
+- [ ] {% if include_tests %}All tests passing{% else %}All features manually tested{% endif +%}
+- [ ] {% if include_linting %}No lint errors{% endif +%}
+- [ ] Version number updated
+- [ ] CHANGELOG.md updated
+- [ ] Documentation current
+- [ ] {% if init_git %}All changes committed{% endif +%}
+- [ ] Tag created: `git tag v{{ project_version }}`
+
+### Version Numbering (Semantic Versioning)
+- **MAJOR:** Breaking changes (2.0.0)
+- **MINOR:** New features, backward compatible (1.1.0)
+- **PATCH:** Bug fixes (1.0.1)
+
+### Release Steps
+1. **Update version** in:
+   - `setup.py`
+   - `src/__init__.py`
+   - Documentation
+
+2. **Update CHANGELOG.md**
+   - Move Unreleased items to new version section
+   - Add release date
+
+3. **Commit and tag**
+   ```bash
+   git commit -am "chore: Release version {{ project_version }}"
+   git tag v{{ project_version }}
+   git push origin main --tags
+   ```
+
+4. **Build distribution** (if applicable)
+   ```bash
+   python setup.py sdist bdist_wheel
+   ```
+
+## Debugging Guide
+
+### Common Issues
+
+{% if game_framework == 'pygame' %}**Pygame window not showing / closes immediately:**
+- Check that `Game.run()` is actually called (not just constructed)
+- Verify `pygame.init()` ran before `pygame.display.set_mode()`
+- Make sure the loop isn't exiting immediately (check `self.running`)
+{% elif game_framework == 'arcade' %}**Arcade window not showing:**
+- Check that `arcade.run()` is called after constructing the `Game` window
+- Verify `Game.setup()` ran without raising
+- Confirm `on_draw()` calls `self.clear()` before drawing
+{% elif game_framework == 'pyglet' %}**Pyglet window not showing:**
+- Check that `pyglet.app.run()` is called
+- Verify the `Game` window was constructed before `pyglet.app.run()`
+- Confirm `on_draw()` calls `self.clear()` before drawing
+{% elif game_framework == 'pgzero' %}**Pygame Zero window not showing:**
+- Check that `WIDTH`, `HEIGHT`, and `TITLE` are set at module level in `main.py`
+- Verify `draw()` and `update()` are top-level functions in `main.py`, not methods
+- Run with `python3 main.py` or `pgzrun main.py`
+{% endif %}
+
+{% if has_sprites or has_sound %}**Assets not loading:**
+- Verify the file exists under {% if has_sprites %}`assets/images/`{% endif %}{% if has_sprites and has_sound %} or {% endif %}{% if has_sound %}`assets/sounds/`{% endif +%}
+- Check the filename passed to the loader matches exactly (case-sensitive on Linux/macOS)
+- Check error in logs{% if has_logging %} (`logs/{{ project_name | snake_case }}.log`){% endif +%}
+{% endif %}
+
+### Debug Tools
+
+**Python debugger:**
+```python
+import pdb; pdb.set_trace()  # Add breakpoint
+```
+
+**Logging verbosity:**{% if has_logging %}{% else %} (if logging enabled){% endif +%}
+```python
+logging.basicConfig(level=logging.DEBUG)
+```
+
+**Print debugging:**
+```python
+print(f"DEBUG: variable = {variable}")
+```
+
+## Collaboration Workflow (Team)
+
+### Working with Others
+1. **Pull before starting work**: `git pull origin main`
+2. **Communicate about conflicts**: Discuss overlapping work
+3. **Review others' code**: Provide constructive feedback
+4. **Keep PRs small**: Easier to review and merge
+
+### Code Review Guidelines
+- Be respectful and constructive
+- Focus on code, not the person
+- Explain reasoning for suggestions
+- Approve when quality standards met
+
+## Maintenance Tasks
+
+### Weekly
+- [ ] {% if include_tests %}Run full test suite{% else %}Test major features{% endif +%}
+- [ ] {% if include_tests %}Check test coverage{% endif +%}
+- [ ] Review and close completed issues
+- [ ] Update documentation if needed
+
+### Monthly
+- [ ] Check for dependency updates
+- [ ] Review and refactor technical debt
+- [ ] Update dependencies: `pip install --upgrade -r requirements.txt`
+- [ ] Back up save data / high scores, if any are persisted to disk
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}

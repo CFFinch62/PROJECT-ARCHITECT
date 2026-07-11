@@ -1,0 +1,167 @@
+"""
+Feature engineering utilities for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+from typing import List, Optional
+
+import pandas as pd
+import numpy as np
+
+
+def create_date_features(
+    df: pd.DataFrame,
+    date_column: str,
+    drop_original: bool = False
+) -> pd.DataFrame:
+    """
+    Extract features from date column.
+    
+    Args:
+        df: Input DataFrame
+        date_column: Name of date column
+        drop_original: Whether to drop original column
+    
+    Returns:
+        DataFrame with date features
+    """
+    df = df.copy()
+    df[date_column] = pd.to_datetime(df[date_column])
+    
+    prefix = date_column
+    df[f"{prefix}_year"] = df[date_column].dt.year
+    df[f"{prefix}_month"] = df[date_column].dt.month
+    df[f"{prefix}_day"] = df[date_column].dt.day
+    df[f"{prefix}_dayofweek"] = df[date_column].dt.dayofweek
+    df[f"{prefix}_quarter"] = df[date_column].dt.quarter
+    df[f"{prefix}_is_weekend"] = df[date_column].dt.dayofweek >= 5
+    
+    if drop_original:
+        df = df.drop(columns=[date_column])
+    
+    return df
+
+
+def create_interaction_features(
+    df: pd.DataFrame,
+    columns: List[str],
+    operation: str = "multiply"
+) -> pd.DataFrame:
+    """
+    Create interaction features between columns.
+    
+    Args:
+        df: Input DataFrame
+        columns: List of columns to interact
+        operation: 'multiply', 'add', 'subtract', 'divide'
+    
+    Returns:
+        DataFrame with interaction features
+    """
+    df = df.copy()
+    
+    for i, col1 in enumerate(columns):
+        for col2 in columns[i+1:]:
+            name = f"{col1}_{operation}_{col2}"
+            
+            if operation == "multiply":
+                df[name] = df[col1] * df[col2]
+            elif operation == "add":
+                df[name] = df[col1] + df[col2]
+            elif operation == "subtract":
+                df[name] = df[col1] - df[col2]
+            elif operation == "divide":
+                df[name] = df[col1] / df[col2].replace(0, np.nan)
+    
+    return df
+
+
+def create_aggregation_features(
+    df: pd.DataFrame,
+    group_column: str,
+    agg_column: str,
+    agg_funcs: List[str] = ["mean", "std", "min", "max"]
+) -> pd.DataFrame:
+    """
+    Create aggregation features.
+    
+    Args:
+        df: Input DataFrame
+        group_column: Column to group by
+        agg_column: Column to aggregate
+        agg_funcs: Aggregation functions
+    
+    Returns:
+        DataFrame with aggregation features
+    """
+    df = df.copy()
+    
+    for func in agg_funcs:
+        name = f"{agg_column}_{func}_by_{group_column}"
+        df[name] = df.groupby(group_column)[agg_column].transform(func)
+    
+    return df
+
+
+def create_binned_features(
+    df: pd.DataFrame,
+    column: str,
+    bins: int = 5,
+    labels: Optional[List[str]] = None
+) -> pd.DataFrame:
+    """
+    Create binned features from numeric column.
+    
+    Args:
+        df: Input DataFrame
+        column: Column to bin
+        bins: Number of bins
+        labels: Optional bin labels
+    
+    Returns:
+        DataFrame with binned feature
+    """
+    df = df.copy()
+    
+    df[f"{column}_binned"] = pd.cut(
+        df[column],
+        bins=bins,
+        labels=labels
+    )
+    
+    return df
+
+
+def select_features(
+    df: pd.DataFrame,
+    target: str,
+    method: str = "correlation",
+    threshold: float = 0.1
+) -> List[str]:
+    """
+    Select important features.
+    
+    Args:
+        df: Input DataFrame
+        target: Target column name
+        method: 'correlation' or 'variance'
+        threshold: Selection threshold
+    
+    Returns:
+        List of selected feature names
+    """
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    
+    if target in numeric_cols:
+        numeric_cols.remove(target)
+    
+    if method == "correlation":
+        correlations = df[numeric_cols].corrwith(df[target]).abs()
+        return correlations[correlations > threshold].index.tolist()
+    elif method == "variance":
+        variances = df[numeric_cols].var()
+        return variances[variances > threshold].index.tolist()
+    
+    return numeric_cols
+

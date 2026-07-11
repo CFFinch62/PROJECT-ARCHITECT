@@ -1,0 +1,243 @@
+# {{ project_name }} - Coding Standards
+
+## Python Style Guide
+
+### PEP 8 Compliance
+
+This project follows [PEP 8](https://pep.python.org/pep-0008/).
+
+**Key Points:**
+- Indentation: 4 spaces
+- Line length: 88 characters
+- Encoding: UTF-8
+- Imports: Grouped (standard, third-party, local)
+
+## Naming Conventions
+
+### Variables and Functions
+```python
+# Good
+user_id = 123
+def get_user_by_id():
+    pass
+
+# Bad
+userId = 123  # camelCase
+def GetUserById():  # PascalCase
+    pass
+```
+
+### Classes
+```python
+# Good
+class UserService:
+    pass
+
+# Bad
+class user_service:  # snake_case
+    pass
+```
+
+### API Endpoints
+```python
+# Good - kebab-case for URLs
+/api/v1/user-profiles
+/api/v1/order-items
+
+# Bad
+/api/v1/userProfiles  # camelCase
+/api/v1/order_items   # snake_case
+```
+
+## API-Specific Standards
+
+### Route Structure ({{ web_framework }})
+{% if web_framework == 'fastapi' %}
+```python
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
+from typing import List
+
+router = APIRouter(prefix="/api/v1", tags=["items"])
+
+class ItemCreate(BaseModel):
+    name: str
+    description: str | None = None
+
+class ItemResponse(BaseModel):
+    id: int
+    name: str
+    description: str | None
+
+@router.get("/items", response_model=List[ItemResponse])
+async def list_items(skip: int = 0, limit: int = 100):
+    """List all items with pagination."""
+    pass
+
+@router.post("/items", response_model=ItemResponse, status_code=201)
+async def create_item(item: ItemCreate):
+    """Create a new item."""
+    pass
+```
+{% elif web_framework == 'flask' %}
+```python
+from flask import Blueprint, request, jsonify
+from flask_restx import Api, Resource, fields
+
+api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
+api = Api(api_bp, doc='/docs')
+
+item_model = api.model('Item', {
+    'id': fields.Integer,
+    'name': fields.String(required=True),
+    'description': fields.String
+})
+
+@api.route('/items')
+class ItemList(Resource):
+    @api.marshal_list_with(item_model)
+    def get(self):
+        """List all items."""
+        pass
+    
+    @api.expect(item_model)
+    @api.marshal_with(item_model, code=201)
+    def post(self):
+        """Create a new item."""
+        pass
+```
+{% elif web_framework == 'django' %}
+```python
+from rest_framework import serializers, viewsets
+from rest_framework.response import Response
+
+class ItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=100)
+    description = serializers.CharField(required=False)
+
+class ItemViewSet(viewsets.ViewSet):
+    def list(self, request):
+        """List all items."""
+        pass
+    
+    def create(self, request):
+        """Create a new item."""
+        pass
+```
+{% endif %}
+
+## Documentation Standards
+
+### Endpoint Docstrings
+```python
+{% if web_framework == 'fastapi' %}
+@router.get("/users/{user_id}")
+async def get_user(user_id: int):
+    """
+    Get user by ID.
+    
+    - **user_id**: Unique user identifier
+    
+    Returns user details or 404 if not found.
+    
+    Raises:
+        HTTPException: 404 if user not found
+    """
+{% else %}
+def get_user(user_id: int):
+    """
+    Get user by ID.
+    
+    Args:
+        user_id: Unique user identifier
+    
+    Returns:
+        User details dictionary
+        
+    Raises:
+        NotFound: If user doesn't exist
+    """
+{% endif %}
+```
+
+## Type Hints
+
+### Function Signatures
+```python
+from typing import List, Optional
+{% if web_framework == 'fastapi' %}from pydantic import BaseModel{% endif %}
+
+async def get_users(
+    skip: int = 0,
+    limit: int = 100,
+    active_only: bool = True
+) -> List[dict]:
+    """Get list of users."""
+    pass
+```
+
+{% if web_framework == 'fastapi' %}
+### Pydantic Models
+```python
+from pydantic import BaseModel, Field, EmailStr
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    name: str = Field(..., min_length=1, max_length=100)
+    age: int = Field(None, ge=0, le=150)
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "email": "user@example.com",
+                "name": "John Doe",
+                "age": 30
+            }
+        }
+```
+{% endif %}
+
+## Error Handling
+
+### API Errors
+```python
+{% if web_framework == 'fastapi' %}
+from fastapi import HTTPException
+
+# Raise with detail
+raise HTTPException(
+    status_code=404,
+    detail={"code": "NOT_FOUND", "message": "Resource not found"}
+)
+{% elif web_framework == 'flask' %}
+from flask import jsonify
+
+# Return error response
+return jsonify({
+    "success": False,
+    "error": {"code": "NOT_FOUND", "message": "Resource not found"}
+}), 404
+{% endif %}
+```
+
+## Best Practices
+
+### General Principles
+1. **Separation of Concerns:** Routes, business logic, data access
+2. **Fail Fast:** Validate input early
+3. **Consistent Responses:** Same format for all endpoints
+4. **Proper Status Codes:** Use appropriate HTTP codes
+
+### Security
+- Never log sensitive data
+- Validate all input
+- Use parameterized queries
+- Implement rate limiting
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

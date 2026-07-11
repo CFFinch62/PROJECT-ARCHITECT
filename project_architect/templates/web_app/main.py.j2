@@ -1,0 +1,86 @@
+"""
+{{ project_name }} - Web Application
+
+{{ project_description }}
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+{% if web_framework == 'fastapi' %}
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+{% if has_cors %}
+from fastapi.middleware.cors import CORSMiddleware
+{% endif %}
+{% elif web_framework == 'flask' %}
+from flask import Flask, jsonify
+{% if has_cors %}
+from flask_cors import CORS
+{% endif %}
+{% elif web_framework == 'django' %}
+import django
+from django.core.wsgi import get_wsgi_application
+{% endif %}
+
+from app import create_app
+from app.config import get_settings
+
+{% if web_framework == 'fastapi' %}
+# Create FastAPI application
+app = create_app()
+
+settings = get_settings()
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
+    return {"message": "Welcome to {{ project_name }}", "version": "{{ project_version }}"}
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.debug
+    )
+
+{% elif web_framework == 'flask' %}
+# Create Flask application
+app = create_app()
+
+@app.route("/")
+def root():
+    """Root endpoint."""
+    return jsonify({"message": "Welcome to {{ project_name }}", "version": "{{ project_version }}"})
+
+@app.route("/health")
+def health_check():
+    """Health check endpoint."""
+    return jsonify({"status": "healthy"})
+
+if __name__ == "__main__":
+    settings = get_settings()
+    app.run(
+        host=settings.host,
+        port=settings.port,
+        debug=settings.debug
+    )
+
+{% elif web_framework == 'django' %}
+# Django WSGI application
+application = get_wsgi_application()
+
+if __name__ == "__main__":
+    import os
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
+    django.setup()
+    
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(['manage.py', 'runserver'])
+{% endif %}

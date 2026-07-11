@@ -1,0 +1,91 @@
+# API Reference
+
+## Functions
+
+### example_function
+
+```python
+def example_function(data, options=None) -> dict
+```
+
+Process input data.
+
+**Parameters:**
+
+- `data` - Input data (string or dictionary)
+- `options` - Optional configuration dictionary
+
+**Returns:** Processed result dictionary
+
+**Raises:** `ValidationError` if data is None
+
+**Example:**
+
+```python
+result = example_function("hello")
+# {'input': 'hello', 'processed': True}
+```
+
+## Classes
+
+### ExampleClass
+
+```python
+class ExampleClass(name, config=None)
+```
+
+Example class for processing data.
+
+**Parameters:**
+
+- `name` - Instance name
+- `config` - Optional configuration dictionary
+
+#### Methods
+
+##### process
+
+```python
+def process(data) -> dict
+```
+
+Process input data.
+
+**Parameters:**
+
+- `data` - Data to process
+
+**Returns:** Processed result
+
+{% if has_async %}
+##### process_async
+
+```python
+async def process_async(data) -> dict
+```
+
+Process input data asynchronously.
+{% endif %}
+
+## Exceptions
+
+### {{ project_name | pascal_case }}Error
+
+Base exception for all library errors.
+
+### ValidationError
+
+Raised when input validation fails.
+
+### ConfigurationError
+
+Raised when configuration is invalid.
+
+### NotFoundError
+
+Raised when a resource is not found.
+
+---
+
+**Version:** {{ project_version }}
+

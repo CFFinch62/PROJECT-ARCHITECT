@@ -1,0 +1,124 @@
+/**
+ * {{ project_name }} - Utility Functions
+ * Author: {{ author_name }}
+ */
+
+{% if js_type == 'es6_modules' %}
+/**
+ * Query selector shorthand
+ * @param {string} selector - CSS selector
+ * @param {Element} context - Parent element (default: document)
+ * @returns {Element|null}
+ */
+export function $(selector, context = document) {
+    return context.querySelector(selector);
+}
+
+/**
+ * Query selector all shorthand
+ * @param {string} selector - CSS selector
+ * @param {Element} context - Parent element (default: document)
+ * @returns {NodeList}
+ */
+export function $$(selector, context = document) {
+    return context.querySelectorAll(selector);
+}
+
+/**
+ * Create element with attributes
+ * @param {string} tag - HTML tag name
+ * @param {Object} attrs - Attributes object
+ * @param {string} content - Inner HTML content
+ * @returns {Element}
+ */
+export function createElement(tag, attrs = {}, content = '') {
+    const el = document.createElement(tag);
+    Object.entries(attrs).forEach(([key, value]) => {
+        el.setAttribute(key, value);
+    });
+    if (content) el.innerHTML = content;
+    return el;
+}
+
+/**
+ * Debounce function
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in ms
+ * @returns {Function}
+ */
+export function debounce(func, wait = 300) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+/**
+ * Format date string
+ * @param {Date|string} date - Date to format
+ * @param {string} locale - Locale string
+ * @returns {string}
+ */
+export function formatDate(date, locale = 'en-US') {
+    return new Date(date).toLocaleDateString(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+/**
+ * Generate unique ID
+ * @returns {string}
+ */
+export function generateId() {
+    return Math.random().toString(36).substring(2, 11);
+}
+{% else %}
+/**
+ * Utility Functions (Global)
+ */
+const utils = {
+    /**
+     * Query selector shorthand
+     */
+    $(selector, context = document) {
+        return context.querySelector(selector);
+    },
+    
+    /**
+     * Query selector all shorthand
+     */
+    $$(selector, context = document) {
+        return context.querySelectorAll(selector);
+    },
+    
+    /**
+     * Debounce function
+     */
+    debounce(func, wait = 300) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    },
+    
+    /**
+     * Format date string
+     */
+    formatDate(date, locale = 'en-US') {
+        return new Date(date).toLocaleDateString(locale, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+};
+{% endif %}
+

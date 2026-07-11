@@ -1,0 +1,103 @@
+# Development Sessions
+
+## Purpose
+
+This directory tracks development sessions for {{ project_name }}. Each session should document:
+
+- Date and duration
+- Goals for the session
+- Work completed
+- Issues encountered
+- Next steps
+
+## Session Format
+
+Create a new file for each session: `sessionN.md` where N is the session number.
+
+### Template
+
+```markdown
+# Session N - [Date]
+
+## Duration
+[Start time] - [End time] (Total: X hours)
+
+## Goals
+- [Goal 1]
+- [Goal 2]
+
+## Work Completed
+- [Task 1]
+- [Task 2]
+
+## Issues & Solutions
+- **Issue**: [Description]
+  - **Solution**: [How it was resolved]
+
+## Next Steps
+- [Next task 1]
+- [Next task 2]
+
+## Notes
+[Any additional notes or observations]
+```
+
+## Why Track Sessions?
+
+1. **Progress tracking**: see what's been accomplished over time
+2. **Problem documentation**: record issues and solutions for future reference
+3. **AI context**: helps AI assistants understand project history
+4. **Learning**: reflect on the development process and improve
+
+## Example
+
+Create `session0.md`:
+
+```markdown
+# Session 0 - {{ current_date }}
+
+## Duration
+9:00 AM - 5:00 PM (Total: 8 hours)
+
+## Goals
+- Set up module structure
+- Wire up the CLI framework
+- Configure testing
+
+## Work Completed
+- Created cmd/ and internal/ layout
+- Implemented the example `hello` command with {% if cli_framework == 'cobra' %}Cobra{% elif cli_framework == 'urfave-cli' %}urfave/cli{% else %}the flag package{% endif %}
+
+{% if include_tests %}- Set up go test with a first passing test
+{% endif %}
+{% if init_git %}- Initialized Git repository
+{% endif %}
+
+## Issues & Solutions
+{% if cli_framework == 'urfave-cli' %}- **Issue**: `-v` flag conflict with urfave/cli's built-in `--version` shorthand
+  - **Solution**: dropped the short alias from `--verbose`
+{% endif %}
+
+## Next Steps
+- Replace the example command with real functionality
+- Expand test coverage
+- Write user documentation
+
+## Notes
+- Remember to run `make fmt` before committing
+- `go mod tidy` after adding any new import
+```
+
+## Session Guidelines
+
+- Create a new session file at the start of major development work
+- Update throughout the day or at the end
+- Be honest about issues and blockers
+- Document solutions for future reference
+- Keep entries concise but informative
+
+---
+
+**Project:** {{ project_name }}
+**Author:** {{ author_name }}
+**Generated:** {{ current_date }}

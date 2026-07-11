@@ -1,0 +1,106 @@
+"""
+Utility functions for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+{% if has_type_hints %}
+from typing import Any, Dict, List, Optional, TypeVar, Callable
+{% endif %}
+
+
+{% if has_type_hints %}
+T = TypeVar('T')
+
+
+def ensure_list(value: Any) -> List[Any]:
+{% else %}
+def ensure_list(value):
+{% endif %}
+    """
+    Ensure value is a list.
+    
+    Args:
+        value: Any value
+    
+    Returns:
+        Value wrapped in list if not already a list
+    """
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+{% if has_type_hints %}
+def merge_dicts(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+{% else %}
+def merge_dicts(base, override):
+{% endif %}
+    """
+    Deep merge two dictionaries.
+    
+    Args:
+        base: Base dictionary
+        override: Dictionary with override values
+    
+    Returns:
+        Merged dictionary
+    """
+    result = base.copy()
+    
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = merge_dicts(result[key], value)
+        else:
+            result[key] = value
+    
+    return result
+
+
+{% if has_type_hints %}
+def safe_get(data: Dict[str, Any], key: str, default: T = None) -> T:
+{% else %}
+def safe_get(data, key, default=None):
+{% endif %}
+    """
+    Safely get a value from a dictionary.
+    
+    Args:
+        data: Dictionary to get value from
+        key: Key to look up (supports dot notation)
+        default: Default value if key not found
+    
+    Returns:
+        Value or default
+    """
+    keys = key.split('.')
+    result = data
+    
+    for k in keys:
+        if isinstance(result, dict) and k in result:
+            result = result[k]
+        else:
+            return default
+    
+    return result
+
+
+{% if has_type_hints %}
+def validate_required(data: Dict[str, Any], required_keys: List[str]) -> List[str]:
+{% else %}
+def validate_required(data, required_keys):
+{% endif %}
+    """
+    Validate that required keys are present.
+    
+    Args:
+        data: Dictionary to validate
+        required_keys: List of required keys
+    
+    Returns:
+        List of missing keys
+    """
+    return [key for key in required_keys if key not in data or data[key] is None]
+

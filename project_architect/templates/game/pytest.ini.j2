@@ -1,0 +1,9 @@
+{% if include_tests %}[pytest]
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+addopts = -v --strict-markers{% if test_coverage %} --cov=src --cov-report=term-missing{% endif +%}
+markers =
+    integration: marks tests as integration tests
+{% endif %}

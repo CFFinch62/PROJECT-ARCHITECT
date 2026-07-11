@@ -69,8 +69,8 @@
       "prompt": "Which GUI framework would you like to use?",
       "description": "Select the GUI framework for your desktop application",
       "required": true,
-      "options": ["customtkinter", "pyqt6", "tkinter", "kivy"],
-      "default": "customtkinter",
+      "options": ["pyqt6", "pyside6", "customtkinter", "tkinter", "kivy"],
+      "default": "pyqt6",
       "section": "technical_stack",
       "order": 10
     },

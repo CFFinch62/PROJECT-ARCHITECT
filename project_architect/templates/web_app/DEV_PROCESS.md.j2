@@ -1,0 +1,217 @@
+# {{ project_name }} - Development Process
+
+## Daily Development Workflow
+
+### 1. Start of Day
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Start development server
+{% if web_framework == 'fastapi' %}uvicorn main:app --reload{% elif web_framework == 'flask' %}flask run --debug{% elif web_framework == 'django' %}python manage.py runserver{% endif +%}
+```
+
+### 2. Working on a Feature
+
+#### Create Feature Branch
+```bash
+git checkout -b feature/new-endpoint
+```
+
+#### Development Cycle
+1. **Design endpoint** (method, path, request/response)
+2. **Implement route**
+3. **{% if include_tests %}Write tests{% else %}Test manually{% endif %}**
+4. **Test with API client** (curl, Postman, httpie)
+5. **Commit changes**
+
+#### Complete Feature
+```bash
+{% if include_tests %}pytest --cov=app{% endif +%}
+git add .
+git commit -m "feat(api): Add new endpoint"
+git checkout main
+git merge feature/new-endpoint
+```
+
+## Endpoint Development Process
+
+### Phase 1: Design
+1. **Define endpoint purpose**
+   - What resource does it manage?
+   - What operations are needed?
+   
+2. **Design interface**
+   ```
+   GET    /api/v1/resources      # List
+   POST   /api/v1/resources      # Create
+   GET    /api/v1/resources/{id} # Get one
+   PUT    /api/v1/resources/{id} # Update
+   DELETE /api/v1/resources/{id} # Delete
+   ```
+
+### Phase 2: Implementation
+
+#### Add New Endpoint ({{ web_framework }})
+{% if web_framework == 'fastapi' %}
+```python
+# app/routes.py
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/api/v1")
+
+class ItemCreate(BaseModel):
+    name: str
+    description: str = None
+
+@router.post("/items", status_code=201)
+async def create_item(item: ItemCreate):
+    """Create a new item."""
+    # Implementation
+    return {"success": True, "data": {"id": 1, **item.dict()}}
+```
+{% elif web_framework == 'flask' %}
+```python
+# app/routes.py
+from flask import Blueprint, request, jsonify
+
+api = Blueprint('api', __name__, url_prefix='/api/v1')
+
+@api.route('/items', methods=['POST'])
+def create_item():
+    """Create a new item."""
+    data = request.get_json()
+    # Implementation
+    return jsonify({"success": True, "data": {"id": 1, **data}}), 201
+```
+{% elif web_framework == 'django' %}
+```python
+# app/views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class ItemView(APIView):
+    def post(self, request):
+        """Create a new item."""
+        # Implementation
+        return Response({"success": True, "data": request.data}, status=status.HTTP_201_CREATED)
+```
+{% endif %}
+
+### Phase 3: Testing
+
+{% if include_tests %}
+#### Write Tests
+```python
+# tests/test_api.py
+import pytest
+from httpx import AsyncClient
+
+@pytest.mark.asyncio
+async def test_create_item(client: AsyncClient):
+    response = await client.post(
+        "/api/v1/items",
+        json={"name": "Test Item"}
+    )
+    assert response.status_code == 201
+    assert response.json()["success"] is True
+```
+
+#### Run Tests
+```bash
+pytest tests/test_api.py -v
+pytest --cov=app
+```
+{% else %}
+#### Manual Testing
+```bash
+# Create item
+curl -X POST http://localhost:{% if web_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/items \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test Item"}'
+
+# Get items
+curl http://localhost:{% if web_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/items
+```
+{% endif %}
+
+### Phase 4: Documentation
+1. Add docstrings to endpoints
+2. Update README with new endpoints
+3. Update CHANGELOG.md
+
+## Bug Fix Process
+
+### 1. Reproduce Bug
+```bash
+curl -X GET http://localhost:{% if web_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/failing-endpoint
+```
+
+### 2. Identify Root Cause
+- Check server logs
+- Enable debug mode
+- Add logging statements
+
+### 3. {% if include_tests %}Write Failing Test{% else %}Document the bug{% endif %}
+
+### 4. Fix and Verify
+
+## Debugging Guide
+
+### Common Issues
+
+**500 Internal Server Error:**
+- Check server logs
+- Verify database connection
+- Check for unhandled exceptions
+
+**422 Validation Error:**
+- Check request body format
+- Verify required fields
+- Check data types
+
+{% if has_database %}
+**Database Errors:**
+- Verify connection string
+- Check migrations are applied
+- Verify model definitions
+{% endif %}
+
+### Debug Tools
+
+**Server Logs:**
+```bash
+{% if web_framework == 'fastapi' %}uvicorn main:app --reload --log-level debug{% elif web_framework == 'flask' %}FLASK_DEBUG=1 flask run{% endif +%}
+```
+
+**API Testing:**
+```bash
+# httpie
+http GET localhost:{% if web_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/items
+
+# curl with verbose
+curl -v http://localhost:{% if web_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/items
+```
+
+## Release Process
+
+### Pre-Release Checklist
+- [ ] {% if include_tests %}All tests passing{% else %}All endpoints tested{% endif +%}
+- [ ] Version number updated
+- [ ] CHANGELOG.md updated
+- [ ] API documentation current
+- [ ] Environment variables documented
+
+### Version Numbering
+- **MAJOR:** Breaking API changes
+- **MINOR:** New endpoints/features
+- **PATCH:** Bug fixes
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

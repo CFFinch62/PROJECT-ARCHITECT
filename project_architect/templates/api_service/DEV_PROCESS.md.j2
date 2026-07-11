@@ -1,0 +1,133 @@
+# {{ project_name }} - Development Process
+
+## Daily Workflow
+
+### Start of Day
+```bash
+source venv/bin/activate
+{% if api_framework == 'fastapi' %}uvicorn main:app --reload{% else %}flask run --debug{% endif +%}
+```
+
+### Development Cycle
+1. Create feature branch
+2. Implement endpoint
+3. {% if include_tests %}Write tests{% else %}Test manually{% endif +%}
+4. Test with API client
+5. Commit changes
+
+## Endpoint Development
+
+### Phase 1: Design
+1. Define endpoint purpose
+2. Design request/response format
+3. Plan validation rules
+
+### Phase 2: Implementation
+
+{% if api_framework == 'fastapi' %}
+```python
+# app/api/v1/endpoints.py
+from fastapi import APIRouter, HTTPException
+from app.schemas.common import ItemCreate, SuccessResponse
+
+router = APIRouter()
+
+@router.post("/items", response_model=SuccessResponse, status_code=201)
+async def create_item(item: ItemCreate):
+    """Create a new item."""
+    # Implementation
+    return SuccessResponse(success=True, data={"id": 1, **item.model_dump()})
+```
+{% else %}
+```python
+# app/api/v1/endpoints.py
+from flask_restx import Resource
+
+@api_ns.route("/items")
+class ItemList(Resource):
+    def post(self):
+        """Create a new item."""
+        # Implementation
+        return {"success": True, "data": {...}}, 201
+```
+{% endif %}
+
+### Phase 3: Testing
+
+{% if include_tests %}
+```python
+# tests/test_api.py
+@pytest.mark.asyncio
+async def test_create_item(client):
+    response = await client.post("/api/v1/items", json={"name": "Test"})
+    assert response.status_code == 201
+```
+
+```bash
+pytest tests/test_api.py -v
+pytest --cov=app
+```
+{% else %}
+```bash
+# Manual testing with curl
+curl -X POST http://localhost:{% if api_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/items \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test Item"}'
+```
+{% endif %}
+
+### Phase 4: Documentation
+1. Add docstrings
+2. Update README
+3. Update CHANGELOG
+
+## Bug Fix Process
+
+1. Reproduce bug
+2. Identify root cause
+3. {% if include_tests %}Write failing test{% else %}Document bug{% endif +%}
+4. Fix and verify
+
+## Debugging
+
+### Common Issues
+
+**500 Error:**
+- Check server logs
+- Verify database connection
+- Check for unhandled exceptions
+
+**422 Validation Error:**
+- Check request body format
+- Verify required fields
+- Check data types
+
+### Debug Tools
+
+```bash
+# Verbose server logs
+{% if api_framework == 'fastapi' %}uvicorn main:app --reload --log-level debug{% else %}FLASK_DEBUG=1 flask run{% endif %}
+
+# API testing
+curl -v http://localhost:{% if api_framework == 'fastapi' %}8000{% else %}5000{% endif %}/api/v1/items
+```
+
+## Release Process
+
+### Pre-Release Checklist
+- [ ] {% if include_tests %}All tests passing{% else %}All endpoints tested{% endif +%}
+- [ ] Version updated
+- [ ] CHANGELOG updated
+- [ ] API docs current
+
+### Version Numbering
+- **MAJOR:** Breaking API changes
+- **MINOR:** New endpoints
+- **PATCH:** Bug fixes
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

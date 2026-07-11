@@ -1,0 +1,70 @@
+"""
+pytest configuration and fixtures for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if api_framework == 'fastapi' %}
+from httpx import AsyncClient, ASGITransport
+from main import app
+
+
+@pytest.fixture
+async def client():
+    """Provide an async HTTP client for testing."""
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test"
+    ) as ac:
+        yield ac
+{% elif api_framework == 'flask' %}
+from main import create_app
+
+
+@pytest.fixture
+def app():
+    """Create application for testing."""
+    app = create_app()
+    app.config.update({"TESTING": True})
+    yield app
+
+
+@pytest.fixture
+def client(app):
+    """Provide a test client."""
+    return app.test_client()
+{% endif %}
+
+
+@pytest.fixture
+def sample_item():
+    """Provide sample item data."""
+    return {
+        "name": "Test Item",
+        "description": "A test item for testing"
+    }
+
+
+{% if has_authentication %}
+@pytest.fixture
+def auth_headers():
+    """Provide authentication headers."""
+    return {"Authorization": "Bearer test-token"}
+
+
+@pytest.fixture
+def test_user():
+    """Provide test user credentials."""
+    return {
+        "email": "test@example.com",
+        "password": "testpassword123"
+    }
+{% endif %}
+
+
+@pytest.fixture
+def api_base_url():
+    """Provide the API base URL."""
+    return "/api/v1"
+

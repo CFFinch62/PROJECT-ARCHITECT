@@ -1,0 +1,93 @@
+# {{ project_name }} - Python Project Configuration
+
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ project_name | snake_case }}"
+version = "{{ project_version }}"
+description = "{{ project_description }}"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "Proprietary"}
+authors = [
+    {name = "{{ author_name }}"{% if author_email %}, email = "{{ author_email }}"{% endif %}}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Games/Entertainment",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    {% if game_framework == 'pygame' %}"pygame>=2.5.0",{% elif game_framework == 'arcade' %}"arcade>=2.6.17",{% elif game_framework == 'pyglet' %}"pyglet>=2.0.0",{% elif game_framework == 'pgzero' %}"pgzero>=1.2.1",{% endif +%}
+    "python-dateutil>=2.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    {% if include_tests %}"pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.0",
+    {% endif %}
+    {% if include_linting %}"flake8>=6.0.0",
+    "pylint>=2.17.0",
+    {% endif %}
+    {% if include_formatting %}"black>=23.0.0",{% endif +%}
+    {% if include_type_checking %}"mypy>=1.5.0",{% endif +%}
+]
+
+[project.scripts]
+{{ project_name | snake_case }} = "main:main"
+
+{% if include_formatting %}
+[tool.black]
+line-length = 88
+target-version = ['py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | build
+  | dist
+)/
+'''
+{% endif %}
+
+{% if include_linting %}
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203, W503"
+exclude = ".git,__pycache__,venv,env,build,dist"
+{% endif %}
+
+{% if include_type_checking %}
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+{% endif %}
+
+{% if include_tests %}
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --strict-markers"
+{% if test_coverage %}
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/venv/*"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+{% endif %}
+{% endif %}

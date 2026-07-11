@@ -5,16 +5,125 @@ All notable changes to the Project Architect project will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-26
+
+### Added - Complete Template System & Core Features (Phases 1-6)
+
+#### Phase 1: Desktop GUI Template (21 files, ~3000 LOC)
+- Complete desktop GUI template for CustomTkinter, PyQt6, Tkinter, and Kivy
+- **Template files created**: requirements.txt.j2, setup.py.j2, main.py.j2, src/__init__.py.j2, src/main_window.py.j2, src/config.py.j2, src/utils.py.j2
+- **Documentation templates**: README.md.j2, CHANGELOG.md.j2, TECHNICAL_SPECIFICATION.md.j2, IMPLEMENTATION_PLAN.md.j2, AI_CONTEXT.md.j2, CODING_STANDARDS.md.j2, DEV_RULES.md.j2, DEV_PROCESS.md.j2
+- **Configuration files**: .gitignore.j2, pytest.ini.j2, pyproject.toml.j2
+- **Test templates**: tests/test_main_window.py.j2, tests/conftest.py.j2, dev_sessions/README.md.j2
+- Support for 4 GUI frameworks, 4 databases (PostgreSQL, MySQL, SQLite, MongoDB), 4 config formats (JSON, YAML, INI, TOML)
+
+#### Phase 2: Web App & CLI Tool Templates (15 files, ~530 LOC)
+- **Web Application Template**: Full support for Flask, FastAPI, and Django
+  - Complete REST API structure with authentication (JWT/OAuth2)
+  - Database integration with SQLAlchemy/PyMongo
+  - Docker and Docker Compose configuration
+  - API documentation (Swagger/ReDoc for FastAPI)
+  - CORS support and middleware configuration
+  - Created: questionnaire.json, template.yaml, main.py.j2, requirements.txt.j2, README.md.j2, app/__init__.py.j2, app/config.py.j2, app/routes.py.j2, .gitignore.j2
+- **CLI Tool Template**: Support for Click, Typer, and argparse
+  - Plugin system support
+  - Configuration file handling (YAML/JSON/TOML/INI)
+  - Logging and shell autocomplete
+  - Created: questionnaire.json, template.yaml, cli_main.py.j2, requirements.txt.j2, README.md.j2, .gitignore.j2
+
+#### Phase 3: GUI Components (2 files, ~800 LOC)
+- **questionnaire_dialog.py**: Complete interactive wizard
+  - Multi-step section-based navigation with progress tracking
+  - Support for all question types (text, email, version, choice, multiple choice, boolean, file/directory paths)
+  - Real-time validation with user feedback
+  - Conditional question display based on previous answers
+  - Back/Next/Finish navigation with validation
+- **project_browser.py**: Professional template browser
+  - Template list with rich preview pane
+  - Shows description, frameworks, project structure preview
+  - Template selection with callback system
+  - Modal dialog integration
+
+#### Phase 4: Utility Modules (4 files, ~1600 LOC)
+- **file_operations.py**: Safe file and directory operations
+  - Automatic timestamp-based backups before overwrites
+  - Path validation and security (directory traversal protection)
+  - Create, read, write, copy, delete operations  
+  - Comprehensive error handling and logging
+- **git_integration.py**: Complete Git integration
+  - Repository initialization and configuration
+  - File staging, commits, branch management
+  - .gitignore creation and user configuration
+  - Git availability detection
+- **user_profiles.py**: User profile management
+  - Profile storage in ~/.project_architect/profile.json
+  - User preferences (default template, auto git init, theme)
+  - Recent projects tracking (max 10 with deduplication)
+  - Profile import/export functionality
+- **template_config.py**: Template configuration parsing
+  - YAML configuration loading and validation
+  - Template metadata and structure access
+  - Dot-notation config value retrieval
+  - Template file existence validation
+
+#### Phase 5: Testing Infrastructure (3 files, ~1200 LOC)
+- **test_questionnaire.py**: 10+ tests for QuestionnaireEngine
+  - Initialization, loading, sections, questions, responses
+  - Validation (required fields, email, version formats)
+  - Completion checking and conditional logic
+- **test_template_engine.py**: 8+ tests for TemplateEngine
+  - Template listing, config loading, rendering
+  - Custom Jinja2 filters (snake_case, PascalCase)
+  - File generation and structure creation
+  - Template file existence validation
+- **test_utils.py**: 27+ tests for utility modules
+  - FileOperations: create, read, write, copy, delete, validate
+  - GitIntegration: availability, init, gitignore, repo detection (with skipif)
+  - UserProfile: preferences, recent projects, import/export
+  - TemplateConfig: loading, validation, metadata, structure
+- **Total test coverage**: 40+ unit tests across all core modules
+
+#### Phase 6: Documentation Updates
+- Updated README.md with implementation status and completed features
+- Updated CHANGELOG.md with comprehensive release notes
+- All features marked with status indicators (✅ complete, 🚧 planned)
+
+### Summary Statistics
+- **Total files created**: 45+ files across 3 templates
+- **Lines of code**: ~7,100+ LOC (Jinja2 templates, Python modules, tests)
+- **Templates**: 3 complete (Desktop GUI, Web App, CLI Tool)
+- **GUI components**: 2 dialogs (questionnaire wizard, template browser)
+- **Utility modules**: 4 modules (file ops, git, profiles, config)
+- **Test coverage**: 40+ unit tests
+- **Framework support**: 11 frameworks/libraries (CustomTkinter, PyQt6, Tkinter, Kivy, Flask, FastAPI, Django, Click, Typer, argparse + testing tools)
+
+### Technical Achievements
+- ✅ Fully functional desktop, web, and CLI project generation
+- ✅ Interactive GUI with wizard-based questionnaires
+- ✅ Comprehensive template system with conditional logic
+- ✅ Safe file operations with automatic backups
+- ✅ Git integration with repository initialization
+- ✅ User profile management and preferences
+- ✅ Complete test suite with 40+ unit tests
+- ✅ Professional documentation generation (8+ documents per project)
+- ✅ Cross-platform support (Windows, Mac, Linux)
+
+### Improvements
+- Enhanced template engine with custom Jinja2 filters
+- Improved error handling and logging throughout
+- Added path validation and security measures
+- Implemented automatic backup system
+- Added comprehensive validation for all input types
+
 ## [Unreleased]
 
 ### Planned Features
-- Complete questionnaire UI implementation
-- Additional project type templates (Web App, CLI Tool, Game, etc.)
-- Git integration and repository initialization
-- Virtual environment setup automation
-- Template customization capabilities
-- Recent projects tracking
-- Settings dialog interface
+- Integration tests for end-to-end project generation
+- GUI tests for MainWindow interactions
+- Additional templates (Game, Marine Electronics, Educational, Data Analysis)
+- Settings dialog with theme and preference management
+- GitHub integration for repository creation
+- Plugin system for template extensions
 
 ## [1.0.2] - 2025-10-04
 

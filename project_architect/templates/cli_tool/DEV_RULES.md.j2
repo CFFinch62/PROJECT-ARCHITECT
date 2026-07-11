@@ -1,0 +1,192 @@
+# {{ project_name }} - Development Rules
+
+## Core Principles
+
+### 1. Code Quality Over Speed
+- Write clean, maintainable code first
+- Optimize only when necessary
+- Test thoroughly before committing
+
+### 2. Consistency is Key
+- Follow established patterns in the codebase
+- Match existing code style
+- Use project conventions for naming and structure
+
+### 3. User Experience
+- Provide helpful error messages
+- Use consistent exit codes
+- Include --help for all commands
+
+## Development Standards
+
+### Module Size Rule
+- **Target:** < 300 lines per file
+- **Maximum:** 500 lines per file
+- **Action:** If approaching limit, refactor into multiple modules
+
+### Code Quality Checklist
+
+Before committing code, ensure:
+- [ ] Code follows PEP 8 / project style guide
+{% if include_linting %}- [ ] No lint errors (`flake8 src/ tests/`){% endif +%}
+{% if include_tests %}- [ ] Tests written for new commands
+- [ ] All tests pass (`pytest`){% endif +%}
+- [ ] All commands have --help text
+- [ ] Documentation updated
+- [ ] CHANGELOG.md updated
+- [ ] No debug print statements
+- [ ] No hardcoded values (use constants/config)
+
+## CLI Design Rules
+
+### Command Naming
+- Use verbs for actions: `create`, `delete`, `list`, `show`
+- Use nouns for resource types: `config`, `user`, `project`
+- Keep names short but descriptive
+
+### Options and Arguments
+```python
+# Good - Clear and consistent
+@click.option('--output', '-o', help='Output file path')
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
+@click.argument('input_file')
+
+# Bad - Inconsistent, unclear
+@click.option('--out')  # No short form, no help
+@click.option('-V')     # Capital letters, no long form
+```
+
+### Exit Codes
+- `0`: Success
+- `1`: General error
+- `2`: Invalid usage/arguments
+- Always exit with appropriate codes
+
+### Error Messages
+```python
+# Good
+click.echo("Error: Could not read file 'data.txt': File not found", err=True)
+sys.exit(1)
+
+# Bad
+print("Error!")
+exit()
+```
+
+## Testing Requirements
+
+{% if include_tests %}
+### Unit Tests
+- **Requirement:** All commands must have tests
+- **Coverage:** Target >80% for command modules
+- **Location:** Mirror source structure in `tests/`
+
+### CLI Testing with Click
+```python
+from click.testing import CliRunner
+from {{ project_name | snake_case }} import cli
+
+def test_command():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['command', '--option', 'value'])
+    assert result.exit_code == 0
+    assert 'Expected output' in result.output
+```
+{% else %}
+### Manual Testing
+- Test all commands manually before committing
+- Document test scenarios
+- Verify exit codes
+{% endif %}
+
+## Git Workflow
+
+### Commit Guidelines
+
+**Format:**
+```
+<type>(<scope>): <subject>
+
+<body>
+```
+
+**Types:**
+- `feat`: New command or feature
+- `fix`: Bug fix
+- `docs`: Documentation only
+- `refactor`: Code restructure
+- `test`: Adding/updating tests
+
+**Example:**
+```
+feat(cli): Add export command
+
+Added new export command with JSON and CSV output formats.
+Supports filtering by date range.
+
+Closes #123
+```
+
+## Error Handling Rules
+
+### User-Friendly Errors
+```python
+try:
+    result = process_file(path)
+except FileNotFoundError:
+    {% if has_logging %}logger.error(f"File not found: {path}"){% endif +%}
+    click.echo(f"Error: File '{path}' not found", err=True)
+    sys.exit(1)
+except PermissionError:
+    {% if has_logging %}logger.error(f"Permission denied: {path}"){% endif +%}
+    click.echo(f"Error: Permission denied for '{path}'", err=True)
+    sys.exit(1)
+```
+
+{% if has_logging %}
+### Logging Rules
+- **DEBUG:** Command execution details
+- **INFO:** Major operations
+- **WARNING:** Recoverable issues
+- **ERROR:** Failures
+{% endif %}
+
+## Security Rules
+
+### Never Commit
+- Passwords or API keys
+- Personal data
+- Debug configurations
+
+### Validate All Input
+- Validate file paths
+- Check argument types
+- Sanitize user input
+
+## Documentation Rules
+
+### Command Help Text
+```python
+@click.command()
+@click.option('--format', '-f', type=click.Choice(['json', 'csv']),
+              default='json', help='Output format (default: json)')
+def export(format):
+    """Export data to file.
+    
+    Exports all data from the database to the specified format.
+    Output is written to stdout by default.
+    
+    Examples:
+    
+        {{ project_name | snake_case }} export --format json > data.json
+        
+        {{ project_name | snake_case }} export -f csv > data.csv
+    """
+```
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Last Updated:** {{ current_date }}
+

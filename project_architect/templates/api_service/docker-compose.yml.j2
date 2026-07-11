@@ -1,0 +1,73 @@
+# {{ project_name }} - Docker Compose
+
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: {{ project_name | snake_case }}_api
+    ports:
+      - "{% if api_framework == 'fastapi' %}8000:8000{% else %}5000:5000{% endif %}"
+    environment:
+      - DEBUG=false
+{% if has_database %}
+{% if database_type == 'postgresql' %}
+      - DATABASE_URL=postgresql{% if use_async_db %}+asyncpg{% endif %}://postgres:postgres@db:5432/{{ project_name | snake_case }}
+{% endif %}
+{% endif %}
+{% if has_authentication %}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+{% endif %}
+{% if has_caching %}
+      - REDIS_URL=redis://redis:6379/0
+{% endif %}
+    depends_on:
+{% if has_database and database_type == 'postgresql' %}
+      - db
+{% endif %}
+{% if has_caching %}
+      - redis
+{% endif %}
+    restart: unless-stopped
+{% if has_health_check %}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:{% if api_framework == 'fastapi' %}8000{% else %}5000{% endif %}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+{% endif %}
+
+{% if has_database and database_type == 'postgresql' %}
+  db:
+    image: postgres:15-alpine
+    container_name: {{ project_name | snake_case }}_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB={{ project_name | snake_case }}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+{% endif %}
+
+{% if has_caching %}
+  redis:
+    image: redis:7-alpine
+    container_name: {{ project_name | snake_case }}_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+{% endif %}
+
+volumes:
+{% if has_database and database_type == 'postgresql' %}
+  postgres_data:
+{% endif %}
+{% if has_caching %}
+  redis_data:
+{% endif %}
+

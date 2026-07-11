@@ -1,0 +1,126 @@
+/**
+ * {{ project_name }} - Main JavaScript
+ * Author: {{ author_name }}
+ * Version: {{ project_version }}
+ */
+
+{% if js_type == 'es6_modules' %}
+import { $ } from './utils.js';
+{% if has_api_integration %}
+import { api } from './api.js';
+{% endif %}
+{% endif %}
+
+{% if js_type == 'vanilla' %}
+// DOM Ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('{{ project_name }} initialized');
+    init();
+});
+
+/**
+ * Initialize the application
+ */
+function init() {
+{% if has_dark_mode %}
+    initTheme();
+{% endif %}
+    initNavigation();
+}
+{% else %}
+// ES6 Module Entry Point
+console.log('{{ project_name }} initialized');
+
+{% if has_dark_mode %}
+initTheme();
+{% endif %}
+initNavigation();
+{% endif %}
+
+{% if has_navigation %}
+/**
+ * Initialize navigation functionality
+ */
+function initNavigation() {
+    // Highlight active nav link
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath || 
+            (currentPath === '/' && link.getAttribute('href') === 'index.html')) {
+            link.classList.add('active');
+        }
+    });
+}
+{% else %}
+function initNavigation() {
+    // Navigation disabled
+}
+{% endif %}
+
+{% if has_dark_mode %}
+/**
+ * Initialize theme (dark/light mode)
+ */
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+/**
+ * Toggle between dark and light theme
+ */
+function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+{% if js_type == 'es6_modules' %}
+export { toggleTheme };
+{% endif %}
+{% endif %}
+
+{% if has_local_storage %}
+/**
+ * Local Storage Utilities
+ */
+const storage = {
+    get(key) {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : null;
+        } catch (e) {
+            console.error('Error reading from localStorage:', e);
+            return null;
+        }
+    },
+    
+    set(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } catch (e) {
+            console.error('Error writing to localStorage:', e);
+            return false;
+        }
+    },
+    
+    remove(key) {
+        localStorage.removeItem(key);
+    },
+    
+    clear() {
+        localStorage.clear();
+    }
+};
+
+{% if js_type == 'es6_modules' %}
+export { storage };
+{% endif %}
+{% endif %}
+

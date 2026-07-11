@@ -1,0 +1,137 @@
+{% if cli_framework == 'cobra' %}
+package cli
+
+import (
+	"bytes"
+	"testing"
+	{% if use_testify %}
+
+	"github.com/stretchr/testify/assert"
+	{% endif %}
+)
+
+func TestHelloCommand(t *testing.T) {
+	cmd := NewRootCmd()
+	buf := new(bytes.Buffer)
+	cmd.SetOut(buf)
+	cmd.SetArgs([]string{"hello", "World"})
+
+	err := cmd.Execute()
+	{% if use_testify %}
+	assert.NoError(t, err)
+	assert.Equal(t, "Hello, World!\n", buf.String())
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got, want := buf.String(), "Hello, World!\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	{% endif %}
+}
+
+func TestHelloCommand_RequiresArgument(t *testing.T) {
+	cmd := NewRootCmd()
+	cmd.SetOut(new(bytes.Buffer))
+	cmd.SetArgs([]string{"hello"})
+
+	if err := cmd.Execute(); err == nil {
+		t.Error("expected an error when no name is given, got nil")
+	}
+}
+{% elif cli_framework == 'urfave-cli' %}
+package cli
+
+import (
+	"bytes"
+	"testing"
+	{% if use_testify %}
+
+	"github.com/stretchr/testify/assert"
+	{% endif %}
+)
+
+func TestHelloCommand(t *testing.T) {
+	app := NewApp()
+	buf := new(bytes.Buffer)
+	app.Writer = buf
+
+	err := app.Run([]string{"{{ project_name | snake_case | replace('_', '-') }}", "hello", "World"})
+	{% if use_testify %}
+	assert.NoError(t, err)
+	assert.Equal(t, "Hello, World!\n", buf.String())
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got, want := buf.String(), "Hello, World!\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	{% endif %}
+}
+
+func TestHelloCommand_RequiresArgument(t *testing.T) {
+	app := NewApp()
+	app.Writer = new(bytes.Buffer)
+
+	err := app.Run([]string{"{{ project_name | snake_case | replace('_', '-') }}", "hello"})
+	if err == nil {
+		t.Error("expected an error when no name is given, got nil")
+	}
+}
+{% else %}
+package cli
+
+import (
+	"bytes"
+	"testing"
+	{% if use_testify %}
+
+	"github.com/stretchr/testify/assert"
+	{% endif %}
+)
+
+func TestRun_Hello(t *testing.T) {
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+
+	err := Run([]string{"hello", "World"}, stdout, stderr)
+	{% if use_testify %}
+	assert.NoError(t, err)
+	assert.Equal(t, "Hello, World!\n", stdout.String())
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got, want := stdout.String(), "Hello, World!\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	{% endif %}
+}
+
+func TestRun_HelloRequiresArgument(t *testing.T) {
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+
+	if err := Run([]string{"hello"}, stdout, stderr); err == nil {
+		t.Error("expected an error when no name is given, got nil")
+	}
+}
+
+func TestRun_Version(t *testing.T) {
+	stdout := new(bytes.Buffer)
+	stderr := new(bytes.Buffer)
+
+	err := Run([]string{"--version"}, stdout, stderr)
+	{% if use_testify %}
+	assert.NoError(t, err)
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	{% endif %}
+	if stdout.String() == "" {
+		t.Error("expected version output, got none")
+	}
+}
+{% endif %}

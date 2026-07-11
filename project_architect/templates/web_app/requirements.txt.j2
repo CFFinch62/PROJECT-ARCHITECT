@@ -1,0 +1,84 @@
+# {{ project_name }} - Python Dependencies
+
+# Web Framework
+{% if web_framework == 'fastapi' %}
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+pydantic>=2.4.0
+pydantic-settings>=2.0.0
+{% elif web_framework == 'flask' %}
+flask>=3.0.0
+flask-cors>=4.0.0
+{% if has_api_docs %}flask-restx>=1.3.0{% endif +%}
+{% elif web_framework == 'django' %}
+django>=4.2.0
+djangorestframework>=3.14.0
+{% endif %}
+
+{% if has_database %}
+# Database
+{% if database_type == 'postgresql' %}
+psycopg2-binary>=2.9.0
+{% if use_orm %}sqlalchemy>=2.0.0{% endif +%}
+{% elif database_type == 'mysql' %}
+mysql-connector-python>=8.0.0
+{% if use_orm %}sqlalchemy>=2.0.0{% endif +%}
+{% elif database_type == 'sqlite' %}
+{% if use_orm %}sqlalchemy>=2.0.0{% endif +%}
+{% elif database_type == 'mongodb' %}
+pymongo>=4.5.0
+motor>=3.3.0  # Async MongoDB driver
+{% endif %}
+{% endif %}
+
+{% if has_authentication %}
+# Authentication
+{% if auth_type == 'jwt' %}
+pyjwt>=2.8.0
+passlib[bcrypt]>=1.7.4
+{% elif auth_type == 'oauth2' %}
+authlib>=1.2.0
+{% endif %}
+python-jose[cryptography]>=3.3.0
+{% endif %}
+
+{% if has_caching %}
+# Caching
+redis>=5.0.0
+{% endif %}
+
+{% if has_celery %}
+# Background Tasks
+celery>=5.3.0
+{% endif %}
+
+# Utilities
+python-dotenv>=1.0.0
+python-dateutil>=2.8.0
+
+{% if include_tests %}
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+httpx>=0.25.0  # For API testing
+faker>=20.0.0  # Test data generation
+{% endif %}
+
+{% if include_linting %}
+# Code Quality
+flake8>=6.0.0
+pylint>=2.17.0
+{% endif %}
+
+{% if include_formatting %}
+# Formatting
+black>=23.0.0
+isort>=5.12.0
+{% endif %}
+
+{% if include_type_checking %}
+# Type Checking
+mypy>=1.5.0
+{% endif %}

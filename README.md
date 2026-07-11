@@ -6,7 +6,7 @@ A comprehensive project template system that generates well-structured, document
 
 ## Overview
 
-Project Architect helps developers create new projects with consistent structure, comprehensive documentation, and built-in quality assurance tools. Based on the successful patterns from the Service Center project, it ensures every new project starts with professional organization and AI-friendly documentation.
+Project Architect helps developers create new projects with consistent structure, comprehensive documentation, and built-in quality assurance tools. Based on the successful patterns from many of the authors dev projects, it ensures every new project starts with professional organization and AI-friendly documentation.
 
 ## Features
 
@@ -30,14 +30,19 @@ Project Architect helps developers create new projects with consistent structure
 ✅ **Phase 5 Complete**: Testing Infrastructure (40+ unit tests)  
 ✅ **Phase 6 Complete**: Documentation Updates
 
-### Project Types Supported (3 Templates Complete)
-1. **Desktop GUI Application** ✅ - Full support for CustomTkinter, PyQt6, Tkinter, and Kivy
+### Project Types Supported (9 Templates Complete)
+1. **Desktop GUI Application** ✅ - Full support for PyQt6, PySide6, CustomTkinter, Tkinter, and Kivy
 2. **Web Application** ✅ - Flask, FastAPI, and Django with REST API, authentication, Docker
-3. **CLI Tool/Utility** ✅ - Click, Typer, and argparse with rich features
-4. **Game Development** 🚧 - Planned for future release
-5. **Marine Electronics Tool** 🚧 - Planned for future release
-6. **Educational Software** 🚧 - Planned for future release
-7. **Data Analysis/Visualization** 🚧 - Planned for future release
+3. **CLI Tool/Utility (Python)** ✅ - Click, Typer, and argparse with rich features
+4. **API Service** ✅ - REST API service scaffolding with Docker support
+5. **Data Science** ✅ - Notebook-driven data analysis project structure
+6. **Python Library** ✅ - Installable package scaffolding with packaging metadata
+7. **Static Web Site** ✅ - Plain HTML/CSS/JS static site scaffolding
+8. **Game Development** ✅ - Pygame, Arcade, Pyglet, and Pygame Zero support
+9. **Go CLI Tool** ✅ - Cobra, urfave/cli, or stdlib `flag`, with `cmd/`/`internal/` layout
+10. **C/C++ Tool** 🚧 - Planned for future release
+11. **Marine Electronics Tool** 🚧 - Planned for future release
+12. **Educational Software** 🚧 - Planned for future release
 
 ### Generated Documentation
 - **README.md** - Project overview and setup instructions

@@ -1,0 +1,156 @@
+# {{ project_name }} - Coding Standards
+
+## Python Style Guide
+
+### PEP 8 Compliance
+- Indentation: 4 spaces
+- Line length: 88 characters
+- Encoding: UTF-8
+- Imports: Grouped (standard, third-party, local)
+
+## Naming Conventions
+
+### Variables and Functions
+```python
+# Good
+user_data = {}
+def process_data(): pass
+
+# Bad
+userData = {}  # camelCase
+```
+
+### Classes
+```python
+# Good
+class DataProcessor: pass
+
+# Bad
+class data_processor: pass  # snake_case
+```
+
+### Constants
+```python
+# Good
+MAX_RETRIES = 3
+DEFAULT_TIMEOUT = 30
+
+# Bad
+maxRetries = 3  # camelCase
+```
+
+## Type Hints
+
+{% if has_type_hints %}
+### Function Signatures
+```python
+from typing import Any, Dict, List, Optional, Union
+
+def process(
+    data: Union[str, Dict[str, Any]],
+    options: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    ...
+```
+
+### Class Attributes
+```python
+class MyClass:
+    name: str
+    config: Dict[str, Any]
+    
+    def __init__(self, name: str) -> None:
+        self.name = name
+```
+{% endif %}
+
+## Documentation Standards
+
+### Module Docstrings
+```python
+"""
+Module description.
+
+Author: {{ author_name }}
+"""
+```
+
+### Function Docstrings (Google Style)
+```python
+def function(arg: str, option: int = 0) -> dict:
+    """Short description.
+    
+    Longer description if needed.
+    
+    Args:
+        arg: Argument description
+        option: Optional parameter
+    
+    Returns:
+        Description of return value
+    
+    Raises:
+        ValidationError: If arg is invalid
+    
+    Example:
+        >>> function("test")
+        {'result': 'test'}
+    """
+```
+
+### Class Docstrings
+```python
+class MyClass:
+    """Short description.
+    
+    Longer description.
+    
+    Attributes:
+        name: Instance name
+        config: Configuration dict
+    
+    Example:
+        >>> obj = MyClass("test")
+        >>> obj.process()
+    """
+```
+
+## Error Handling
+
+### Use Custom Exceptions
+```python
+from .exceptions import ValidationError
+
+if not data:
+    raise ValidationError("Data required", field="data")
+```
+
+### Don't Catch Generic Exceptions
+```python
+# Good
+try:
+    process()
+except ValidationError as e:
+    handle_validation_error(e)
+
+# Bad
+try:
+    process()
+except Exception:
+    pass
+```
+
+## Best Practices
+
+1. **Single Responsibility:** One function, one purpose
+2. **DRY:** Don't repeat yourself
+3. **KISS:** Keep it simple
+4. **Explicit > Implicit:** Be clear
+5. **Fail Fast:** Validate early
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

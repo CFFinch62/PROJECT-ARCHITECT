@@ -1,0 +1,200 @@
+# {{ project_name }} - AI Context
+
+## Quick Project Overview
+
+**Project Name:** {{ project_name }}  
+**Type:** Desktop GUI Application  
+**Technology:** Python 3.12 + {% if gui_framework == 'customtkinter' %}CustomTkinter{% elif gui_framework == 'pyqt6' %}PyQt6{% elif gui_framework == 'pyside6' %}PySide6{% elif gui_framework == 'tkinter' %}Tkinter{% elif gui_framework == 'kivy' %}Kivy{% endif +%}
+**Purpose:** {{ project_description }}  
+**Author:** {{ author_name }}
+
+## Architecture at a Glance
+
+```
+{{ project_name | snake_case }}/
+├── main.py              # Entry point - starts the application
+├── src/
+│   ├── main_window.py   # GUI implementation ({% if gui_framework == 'customtkinter' %}CTk{% elif gui_framework == 'pyqt6' %}QMainWindow{% elif gui_framework == 'pyside6' %}QMainWindow{% elif gui_framework == 'tkinter' %}Tk{% elif gui_framework == 'kivy' %}BoxLayout{% endif %})
+│   ├── config.py        # Config management{% if has_config_file %} ({{ config_format | upper }}){% endif +%}
+│   └── utils.py         # Helper functions
+├── tests/               # pytest unit tests
+{% if has_database %}├── data/                # Database{% if database_type == 'sqlite' %} (SQLite){% endif %}{% endif +%}
+└── logs/                # Application logs
+```
+
+## Key Technologies
+
+- **GUI:** {% if gui_framework == 'customtkinter' %}CustomTkinter 5.2.2+ (modern Tkinter){% elif gui_framework == 'pyqt6' %}PyQt6 6.5.0+ (Qt for Python){% elif gui_framework == 'pyside6' %}PySide6 6.5.0+ (Qt for Python, official bindings){% elif gui_framework == 'tkinter' %}Tkinter (Python built-in){% elif gui_framework == 'kivy' %}Kivy 2.2.0+ (cross-platform){% endif +%}
+{% if has_database %}- **Database:** {{ database_type | title }}{% if database_type != 'mongodb' %} + SQLAlchemy{% endif %}{% endif +%}
+{% if has_config_file %}- **Config:** {{ config_format | upper }} format{% endif +%}
+{% if include_tests %}- **Testing:** pytest with coverage{% endif +%}
+{% if include_linting %}- **Quality:** Flake8, Pylint{% endif +%}
+{% if include_formatting %}- **Formatting:** Black (88 chars){% endif %}
+
+## Development Patterns
+
+### File Structure
+- Each module stays under 300 lines (soft limit)
+- Clear separation: GUI (main_window.py), logic (utils.py), config (config.py)
+- Tests mirror source structure in `tests/`
+
+### Common Operations
+
+**Run Application:**
+```bash
+python3 main.py
+```
+
+{% if include_tests %}**Run Tests:**
+```bash
+pytest                    # All tests
+pytest --cov=src         # With coverage
+pytest tests/test_X.py   # Specific file
+```
+{% endif %}
+
+{% if include_formatting %}**Format Code:**
+```bash
+black src/ tests/
+```
+{% endif %}
+
+{% if include_linting %}**Check Quality:**
+```bash
+flake8 src/ tests/
+pylint src/
+```
+{% endif %}
+
+## Code Conventions
+
+### Naming
+- **Files/Modules:** snake_case (e.g., `main_window.py`)
+- **Classes:** PascalCase (e.g., `MainWindow`)
+- **Functions/Variables:** snake_case (e.g., `load_config`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `MAX_SIZE`)
+
+### Documentation
+- Docstrings for all public functions/classes (Google style)
+- Type hints for function parameters and returns
+- Inline comments for complex logic only
+
+### Error Handling
+{% if has_logging %}- Use logging for errors: `logger.error(f"Failed: {e}")`{% else %}- Print errors clearly with context{% endif +%}
+- Catch specific exceptions, not bare `except:`
+- Provide user-friendly error messages in GUI
+
+## Current State
+
+**Phase:** Initial Development  
+**Version:** {{ project_version }}  
+**Status:** Foundation complete, adding features
+
+### Implemented
+- ✅{% if gui_framework %} {{ gui_framework | title }}{% endif %} GUI framework
+{% if has_config_file %}- ✅ Configuration system{% endif +%}
+{% if has_logging %}- ✅ Logging infrastructure{% endif +%}
+- ✅ Project structure
+
+### In Progress
+- Main window GUI components
+{% if has_database %}- Database integration{% endif +%}
+- Core application logic
+{% if include_tests %}- Unit test coverage{% endif %}
+
+### Planned
+- Advanced UI features
+- Complete user workflows
+{% if has_database %}- Data import/export{% endif +%}
+- Documentation completion
+
+## AI Assistant Guidelines
+
+### When Helping with This Project
+
+1. **Respect Structure:** Keep modules focused and under 300 lines
+2. **Follow Style:** Use Black formatting (88 chars), PEP 8 conventions
+3. **Add Tests:** {% if include_tests %}Include pytest tests for new features{% else %}Suggest testing approaches{% endif +%}
+4. **Document:** Add docstrings and type hints
+5. **Be Consistent:** Match existing code patterns
+
+### Common Tasks
+
+**Adding a New Feature:**
+1. Update main_window.py for GUI
+2. Add logic to utils.py or new module
+3. {% if include_tests %}Write tests in tests/{% endif +%}
+4. {% if has_config_file %}Update config if needed{% endif +%}
+5. Update CHANGELOG.md
+
+**Debugging Issues:**
+{% if has_logging %}- Check `logs/{{ project_name | snake_case }}.log` first{% endif +%}
+- Run with verbose logging: {% if has_logging %}set level to DEBUG{% else %}add print statements{% endif +%}
+{% if include_tests %}- Run relevant tests: `pytest tests/test_X.py -v`{% endif %}
+
+**Refactoring:**
+- Maintain backward compatibility
+- {% if include_tests %}Update tests alongside code changes{% endif +%}
+- Keep commits focused and atomic
+
+## Domain Knowledge
+
+**Project Purpose:** {{ project_description }}
+
+**User Workflow:**
+1. User launches application (main.py)
+2. Main window displays (src/main_window.py)
+3. User interacts with GUI controls
+{% if has_database %}4. Data persists to {{ database_type | title }} database{% endif +%}
+{% if has_logging %}5. All actions logged to logs/{% endif %}
+
+**Key Components:**
+- `MainWindow`: Primary GUI class{% if gui_framework == 'customtkinter' %} (CTk subclass){% elif gui_framework in ['pyqt6', 'pyside6'] %} (QMainWindow subclass){% endif +%}
+{% if has_config_file %}- `AppConfig`: Configuration management{% endif +%}
+- `utils.py`: Shared helper functions
+
+{% if has_database %}
+## Database Schema
+
+**Type:** {{ database_type | title }}
+
+{% if database_type == 'sqlite' %}**Location:** `data/{{ project_name | snake_case }}.db`
+{% elif database_type in ['postgresql', 'mysql'] %}**Connection:** Configured in `config.{{ config_format }}`
+{% elif database_type == 'mongodb' %}**Connection:** MongoDB at localhost:27017
+{% endif %}
+
+**Schema:** (To be defined based on application requirements)
+{% endif %}
+
+## Quick Reference
+
+### Important Files
+- `main.py` - Application entry point
+- `src/main_window.py` - GUI implementation
+{% if has_config_file %}- `config.{{ config_format }}` - Configuration{% endif +%}
+- `requirements.txt` - Dependencies
+- `README.md` - User documentation
+- `TECHNICAL_SPECIFICATION.md` - Detailed specs
+
+### Dependencies
+```
+{% if gui_framework == 'customtkinter' %}customtkinter>=5.2.2{% elif gui_framework == 'pyqt6' %}PyQt6>=6.5.0{% elif gui_framework == 'pyside6' %}PySide6>=6.5.0{% elif gui_framework == 'tkinter' %}pillow>=10.0.0{% elif gui_framework == 'kivy' %}kivy>=2.2.0{% endif +%}
+{% if has_database %}{% if database_type == 'sqlite' %}sqlalchemy>=2.0.0{% elif database_type == 'postgresql' %}psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0{% elif database_type == 'mysql' %}mysql-connector-python>=8.0.0
+sqlalchemy>=2.0.0{% elif database_type == 'mongodb' %}pymongo>=4.5.0{% endif %}{% endif +%}
+{% if include_tests %}pytest>=7.4.0{% endif +%}
+```
+
+### Environment Setup
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 main.py
+```
+
+---
+
+This document provides context for AI assistants working on {{ project_name }}.  
+**Generated:** {{ current_date }}  
+**Generator:** Project Architect

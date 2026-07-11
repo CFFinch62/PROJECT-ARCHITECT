@@ -1,0 +1,179 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+**Primary Goals:**
+- Provide a professional command-line interface using {% if cli_framework == 'click' %}Click{% elif cli_framework == 'typer' %}Typer{% elif cli_framework == 'argparse' %}Argparse{% endif +%}
+{% if has_config_file %}- Support flexible configuration via {{ config_format | upper }} files{% endif +%}
+{% if has_plugins %}- Enable extensibility through a plugin system{% endif +%}
+- Maintain high code quality through testing and linting
+
+## 2. Core Features
+
+### 2.1 Command-Line Interface
+
+**CLI Framework:** {% if cli_framework == 'click' %}Click 8.1+{% elif cli_framework == 'typer' %}Typer 0.9+{% elif cli_framework == 'argparse' %}Argparse (built-in){% endif %}
+
+**Command Structure:**
+{% if cli_framework == 'click' or cli_framework == 'typer' %}
+- Main CLI group with subcommands
+- Nested command groups for related functionality
+- Shared options via decorators
+{% else %}
+- Argument parser with subparsers
+- Positional and optional arguments
+- Argument groups for organization
+{% endif %}
+
+**Standard Options:**
+- `--help`: Show help message
+- `--version`: Show version number
+{% if has_logging %}- `--verbose / -v`: Increase output verbosity
+- `--quiet / -q`: Suppress output{% endif +%}
+{% if has_config_file %}- `--config FILE`: Specify config file{% endif %}
+
+{% if has_config_file %}
+### 2.2 Configuration Management
+
+**Format:** {{ config_format | upper }}
+
+**Configuration File:** `config.{{ config_format }}`
+
+**Configuration Sources (priority order):**
+1. Command-line arguments (highest)
+2. Environment variables
+3. User config file (~/.{{ project_name | snake_case }}/config.{{ config_format }})
+4. Project config file (./config.{{ config_format }})
+5. Default values (lowest)
+
+**Features:**
+- Automatic config file discovery
+- Environment variable override ({{ project_name | upper | replace(' ', '_') }}_*)
+- Graceful handling of missing configuration
+{% endif %}
+
+{% if has_logging %}
+### 2.3 Logging System
+
+**Default Log Level:** {{ log_level }}
+
+**Log Outputs:**
+- Console: stderr (with colors if terminal supports)
+- File: Optional log file output
+
+**Log Format:** `%(asctime)s - %(name)s - %(levelname)s - %(message)s`
+{% endif %}
+
+{% if has_autocomplete %}
+### 2.4 Shell Completion
+
+**Supported Shells:** Bash, Zsh, Fish
+
+**Installation:**
+- Bash: `eval "$(_{{ project_name | upper | replace(' ', '_') }}_COMPLETE=bash_source {{ project_name | snake_case }}.py)"`
+- Zsh: `eval "$(_{{ project_name | upper | replace(' ', '_') }}_COMPLETE=zsh_source {{ project_name | snake_case }}.py)"`
+{% endif %}
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+**Core:**
+- Python 3.12+
+- {% if cli_framework == 'click' %}Click 8.1+{% elif cli_framework == 'typer' %}Typer 0.9+ (with Rich for output){% elif cli_framework == 'argparse' %}Argparse (built-in){% endif %}
+
+**Dependencies:**
+{% if cli_framework == 'typer' %}- Rich 13.0+ (for beautiful terminal output){% endif +%}
+{% if has_config_file %}{% if config_format == 'yaml' %}- PyYAML 6.0+{% elif config_format == 'toml' %}- tomli 2.0+{% endif %}{% endif %}
+
+**Development Tools:**
+{% if include_tests %}- pytest 7.4+, pytest-cov 4.1+{% endif +%}
+{% if include_linting %}- flake8 6.0+, pylint 2.17+{% endif %}
+
+### 3.2 Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── {{ project_name | snake_case }}.py     # CLI entry point
+├── src/
+│   ├── __init__.py
+│   ├── commands/                # Command implementations
+│   │   ├── __init__.py
+│   │   └── main_commands.py
+│   ├── core/                    # Business logic
+│   │   ├── __init__.py
+│   │   └── processor.py
+│   ├── utils/                   # Utilities
+│   │   ├── __init__.py
+│   │   └── helpers.py
+│   └── config.py               # Configuration
+├── tests/
+│   ├── __init__.py
+│   ├── test_commands.py
+│   └── conftest.py
+{% if has_config_file %}├── config.{{ config_format }}.example       # Example config
+{% endif %}├── requirements.txt
+├── setup.py
+└── README.md
+```
+
+## 4. Quality Assurance
+
+{% if include_tests %}
+### 4.1 Testing Strategy
+
+**Framework:** pytest
+
+**Test Coverage Target:** 80%+
+
+**Test Execution:**
+```bash
+pytest                          # Run all tests
+pytest --cov=src               # With coverage
+pytest tests/test_commands.py  # Specific tests
+```
+{% endif %}
+
+## 5. Development Guidelines
+
+### 5.1 Coding Standards
+
+- Follow PEP 8 Python style guide
+- Maximum line length: 88 characters
+- Comprehensive docstrings for all commands
+- Type hints for all functions
+
+### 5.2 Exit Codes
+
+- `0`: Success
+- `1`: General error
+- `2`: Invalid usage/arguments
+
+## 6. Deployment
+
+### 6.1 Installation
+
+```bash
+pip install -e .        # Development mode
+pip install .           # Production install
+```
+
+### 6.2 Distribution
+
+- PyPI package (optional)
+- Standalone script
+- Docker container (optional)
+
+---
+
+**Document Version:** 1.0  
+**Last Updated:** {{ current_date }}  
+**Author:** {{ author_name }}
+

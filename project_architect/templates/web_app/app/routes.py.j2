@@ -1,0 +1,42 @@
+"""API routes for {{ project_name }}"""
+{% if web_framework == 'fastapi' %}
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+router = APIRouter()
+
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+
+
+@router.get("/items")
+async def list_items():
+    """List all items."""
+    return {"items": []}
+
+
+@router.post("/items")
+async def create_item(item: Item):
+    """Create a new item."""
+    return {"item": item.dict(), "id": 1}
+
+{% elif web_framework == 'flask' %}
+from flask import Blueprint, jsonify, request
+
+bp = Blueprint('api', __name__)
+
+
+@bp.route('/items', methods=['GET'])
+def list_items():
+    """List all items."""
+    return jsonify({"items": []})
+
+
+@bp.route('/items', methods=['POST'])
+def create_item():
+    """Create a new item."""
+    data = request.get_json()
+    return jsonify({"item": data, "id": 1}), 201
+{% endif %}

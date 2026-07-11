@@ -1,0 +1,60 @@
+# {{ project_name }} - Development Sessions
+
+## Purpose
+
+Track development sessions and progress for {{ project_name }}.
+
+## Session Format
+
+**Filename:** `YYYY-MM-DD_session_N.md`
+
+```markdown
+# Development Session - YYYY-MM-DD
+
+## Session Goals
+- [ ] Goal 1
+- [ ] Goal 2
+
+## Work Completed
+- Description of changes
+
+## Files Modified
+- `index.html`: Added navigation
+- `src/css/style.css`: Styled header
+
+## Issues Encountered
+### Issue 1
+**Problem:** Description
+**Solution:** How resolved
+
+## Browser Testing
+- [x] Chrome
+- [ ] Firefox
+- [ ] Safari
+
+## Next Steps
+- [ ] Next task 1
+```
+
+## Current Status
+
+**Project:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Phase:** Initial Development
+
+### Component Status
+
+| Component | Status |
+|-----------|--------|
+| HTML Structure | 🟢 Complete |
+| Navigation | 🟡 In Progress |
+| Main Content | ⬜ Not Started |
+{% if has_footer %}| Footer | ⬜ Not Started |{% endif +%}
+{% if has_responsive %}| Responsive | ⬜ Not Started |{% endif +%}
+{% if has_dark_mode %}| Dark Mode | ⬜ Not Started |{% endif %}
+
+---
+
+**Generated:** {{ current_date }}  
+**Author:** {{ author_name }}
+

@@ -1,0 +1,65 @@
+# Changelog
+
+All notable changes to {{ project_name }} will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned Features
+- Additional features to be determined
+
+## [{{ project_version }}] - {{ current_date }}
+
+### Added
+- Initial project setup
+- Main application window with {% if gui_framework == 'customtkinter' %}CustomTkinter{% elif gui_framework == 'pyqt6' %}PyQt6{% elif gui_framework == 'pyside6' %}PySide6{% elif gui_framework == 'tkinter' %}Tkinter{% elif gui_framework == 'kivy' %}Kivy{% endif %} interface
+{% if has_menu_bar %}- Menu bar with File and Help menus{% endif +%}
+{% if has_toolbar %}- Toolbar with common actions{% endif +%}
+{% if has_status_bar %}- Status bar for user feedback{% endif +%}
+{% if has_database %}- {{ database_type | title }} database integration{% endif +%}
+{% if has_config_file %}- Configuration management using {{ config_format | upper }} format{% endif +%}
+{% if has_logging %}- Logging system with file and console output{% endif +%}
+{% if include_tests %}- Unit testing framework with pytest{% endif +%}
+{% if include_linting %}- Code linting with Flake8 and Pylint{% endif +%}
+{% if include_formatting %}- Code formatting with Black{% endif +%}
+{% if include_type_checking %}- Static type checking with MyPy{% endif +%}
+{% if init_git %}- Git repository initialization{% endif +%}
+{% if create_venv %}- Virtual environment setup{% endif +%}
+- Project documentation (README, this CHANGELOG)
+- Basic application structure and organization
+
+### Technical Details
+- Python {{ "3.12" }} as minimum version
+- {% if gui_framework == 'customtkinter' %}CustomTkinter {{ "5.2.2" }}+{% elif gui_framework == 'pyqt6' %}PyQt6 {{ "6.5.0" }}+{% elif gui_framework == 'pyside6' %}PySide6 {{ "6.5.0" }}+{% elif gui_framework == 'tkinter' %}Tkinter (built-in){% elif gui_framework == 'kivy' %}Kivy {{ "2.2.0" }}+{% endif %} for GUI
+{% if has_database %}- {{ database_type | title }} for data storage{% endif +%}
+- Modular code structure following best practices
+- Professional development setup
+
+### Documentation
+- Comprehensive README with installation and usage instructions
+- Code documentation and docstrings
+- Development guidelines
+{% if include_tests %}- Testing documentation{% endif %}
+
+---
+
+## Version History Format
+
+Each version entry should include:
+- **Added**: New features
+- **Changed**: Changes to existing functionality
+- **Deprecated**: Soon-to-be-removed features
+- **Removed**: Removed features
+- **Fixed**: Bug fixes
+- **Security**: Security-related changes
+
+---
+
+## Notes
+
+- This project was generated using Project Architect
+- Generated on {{ current_date }}
+- Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "- Organization: " + organization if organization else "" }}

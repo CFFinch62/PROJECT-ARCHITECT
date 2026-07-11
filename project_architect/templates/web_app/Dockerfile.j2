@@ -1,0 +1,36 @@
+# {{ project_name }} - Dockerfile
+
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE {% if web_framework == 'fastapi' %}8000{% elif web_framework == 'django' %}8000{% else %}5000{% endif %}
+
+{% if api_type != 'microservice' %}
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:{% if web_framework == 'fastapi' %}8000{% elif web_framework == 'django' %}8000{% else %}5000{% endif %}/health')" || exit 1
+{% endif %}
+
+{% if web_framework == 'fastapi' %}
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+{% elif web_framework == 'django' %}
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app.wsgi:application"]
+{% else %}
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "main:app"]
+{% endif %}

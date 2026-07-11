@@ -1,0 +1,278 @@
+{
+  "questionnaire": {
+    "name": "Go CLI Tool Questionnaire",
+    "description": "Gather requirements for Go command-line tool development",
+    "version": "1.0.0"
+  },
+
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "What is the name of your CLI tool?",
+      "description": "Used for the binary name and module defaults",
+      "required": true,
+      "section": "project_basics",
+      "order": 1,
+      "validation_pattern": "^[a-zA-Z0-9\\s\\-_]+$"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Provide a brief description of your CLI tool",
+      "required": true,
+      "section": "project_basics",
+      "order": 2
+    },
+    {
+      "id": "project_version",
+      "type": "version",
+      "prompt": "What is the initial version number?",
+      "description": "Use semantic versioning (e.g., 0.1.0)",
+      "required": true,
+      "default": "0.1.0",
+      "section": "project_basics",
+      "order": 3
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "What is your name (author)?",
+      "required": true,
+      "section": "project_basics",
+      "order": 4
+    },
+    {
+      "id": "author_email",
+      "type": "email",
+      "prompt": "What is your email address?",
+      "required": false,
+      "section": "project_basics",
+      "order": 5
+    },
+    {
+      "id": "organization",
+      "type": "text",
+      "prompt": "Organization or company name (optional)",
+      "required": false,
+      "section": "project_basics",
+      "order": 6
+    },
+    {
+      "id": "module_path",
+      "type": "text",
+      "prompt": "Go module path",
+      "description": "e.g. github.com/yourname/toolname. Leave blank for a local-only module name.",
+      "required": false,
+      "section": "project_basics",
+      "order": 7
+    },
+
+    {
+      "id": "cli_framework",
+      "type": "choice",
+      "prompt": "Which CLI framework would you like to use?",
+      "description": "Cobra: full-featured, subcommands (kubectl/hugo-style). urfave/cli: simpler API, still supports subcommands. Stdlib: zero dependencies, uses the built-in flag package.",
+      "required": true,
+      "options": ["cobra", "urfave-cli", "stdlib"],
+      "default": "cobra",
+      "section": "technical_stack",
+      "order": 10
+    },
+
+    {
+      "id": "has_config_file",
+      "type": "boolean",
+      "prompt": "Will your tool read a configuration file?",
+      "default": true,
+      "section": "features",
+      "order": 20
+    },
+    {
+      "id": "config_format",
+      "type": "choice",
+      "prompt": "Configuration file format",
+      "options": ["yaml", "json"],
+      "default": "yaml",
+      "required": true,
+      "section": "features",
+      "order": 21,
+      "depends_on": "has_config_file",
+      "depends_value": true
+    },
+    {
+      "id": "has_logging",
+      "type": "boolean",
+      "prompt": "Include structured logging?",
+      "description": "Uses the standard library's log/slog package",
+      "default": true,
+      "section": "features",
+      "order": 22
+    },
+    {
+      "id": "log_level",
+      "type": "choice",
+      "prompt": "Default logging level?",
+      "options": ["debug", "info", "warn", "error"],
+      "default": "info",
+      "required": true,
+      "section": "features",
+      "order": 23,
+      "depends_on": "has_logging",
+      "depends_value": true
+    },
+
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include unit tests?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 30
+    },
+    {
+      "id": "test_coverage",
+      "type": "boolean",
+      "prompt": "Show coverage when running tests?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 31,
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "use_testify",
+      "type": "boolean",
+      "prompt": "Use testify for test assertions?",
+      "description": "Adds github.com/stretchr/testify for readable assert/require statements. Otherwise uses stdlib testing only.",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 32,
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include a golangci-lint configuration?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 33
+    },
+    {
+      "id": "include_github_actions",
+      "type": "boolean",
+      "prompt": "Include a GitHub Actions CI workflow?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 34
+    },
+
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git repository?",
+      "default": true,
+      "section": "development_setup",
+      "order": 40
+    },
+    {
+      "id": "create_github_repo",
+      "type": "boolean",
+      "prompt": "Create GitHub repository? (requires GitHub CLI)",
+      "required": false,
+      "default": false,
+      "section": "development_setup",
+      "order": 41,
+      "depends_on": "init_git",
+      "depends_value": true
+    },
+    {
+      "id": "github_visibility",
+      "type": "choice",
+      "prompt": "GitHub repository visibility",
+      "options": ["public", "private"],
+      "default": "private",
+      "required": true,
+      "section": "development_setup",
+      "order": 42,
+      "depends_on": "create_github_repo",
+      "depends_value": true
+    }
+  ],
+
+  "update_project_questions": [
+    {
+      "id": "update_reason",
+      "type": "choice",
+      "prompt": "What type of update are you making?",
+      "options": ["feature_addition", "bug_fix", "performance_improvement", "architecture_change", "dependency_update", "documentation_update"],
+      "required": true,
+      "section": "update_info",
+      "order": 1
+    },
+    {
+      "id": "update_description",
+      "type": "text",
+      "prompt": "Describe the changes you want to make",
+      "required": true,
+      "section": "update_info",
+      "order": 2
+    },
+    {
+      "id": "breaking_changes",
+      "type": "boolean",
+      "prompt": "Will this update include breaking changes?",
+      "default": false,
+      "section": "update_info",
+      "order": 3
+    }
+  ],
+
+  "feature_addition_questions": [
+    {
+      "id": "feature_name",
+      "type": "text",
+      "prompt": "What is the name of the new feature?",
+      "required": true,
+      "section": "feature_details",
+      "order": 1
+    },
+    {
+      "id": "feature_description",
+      "type": "text",
+      "prompt": "Describe the new feature in detail",
+      "required": true,
+      "section": "feature_details",
+      "order": 2
+    },
+    {
+      "id": "feature_priority",
+      "type": "choice",
+      "prompt": "What is the priority of this feature?",
+      "options": ["low", "medium", "high", "critical"],
+      "default": "medium",
+      "required": true,
+      "section": "feature_details",
+      "order": 3
+    },
+    {
+      "id": "requires_new_dependencies",
+      "type": "boolean",
+      "prompt": "Does this feature require new Go modules?",
+      "default": false,
+      "section": "feature_details",
+      "order": 4
+    },
+    {
+      "id": "new_dependencies",
+      "type": "text",
+      "prompt": "List the new modules needed",
+      "required": true,
+      "section": "feature_details",
+      "order": 5,
+      "depends_on": "requires_new_dependencies",
+      "depends_value": true
+    }
+  ]
+}

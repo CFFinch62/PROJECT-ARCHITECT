@@ -1,0 +1,144 @@
+# {{ project_name }} - Development Rules
+
+## Core Principles
+
+1. **API-First Design** - Design endpoints before implementation
+2. **Security First** - Never commit secrets, validate all input
+3. **Code Quality** - Follow patterns, write tests, keep modules focused
+
+## Development Standards
+
+### Module Size
+- **Target:** < 300 lines per file
+- **Maximum:** 500 lines
+- **Action:** Split into multiple files if needed
+
+### Code Quality Checklist
+
+- [ ] Code follows PEP 8
+{% if include_linting %}- [ ] No lint errors{% endif +%}
+{% if include_tests %}- [ ] Tests written for new endpoints
+- [ ] All tests pass{% endif +%}
+- [ ] API documentation updated
+- [ ] No debug statements
+- [ ] No hardcoded secrets
+
+## API Design Rules
+
+### Endpoint Naming
+- Use plural nouns: `/users`, `/items`
+- Use kebab-case: `/user-profiles`
+- Version prefix: `/api/v1/`
+
+### HTTP Methods
+- `GET`: Retrieve
+- `POST`: Create
+- `PUT`: Full update
+- `PATCH`: Partial update
+- `DELETE`: Remove
+
+### Status Codes
+- `200`: Success
+- `201`: Created
+- `400`: Bad request
+- `401`: Unauthorized
+- `404`: Not found
+- `422`: Validation error
+- `500`: Server error
+
+### Response Format
+```python
+# Always use consistent format
+return {"success": True, "data": {...}, "message": "..."}
+```
+
+## Testing Requirements
+
+{% if include_tests %}
+### Unit Tests
+- All endpoints must have tests
+- Coverage target: >80%
+- Location: `tests/`
+
+### Example Test
+```python
+async def test_get_items(client):
+    response = await client.get("/api/v1/items")
+    assert response.status_code == 200
+    assert response.json()["success"] is True
+```
+{% endif %}
+
+## Git Workflow
+
+### Commit Format
+```
+<type>(<scope>): <subject>
+```
+
+**Types:** feat, fix, docs, refactor, test
+
+**Example:**
+```
+feat(api): Add user registration endpoint
+```
+
+## Error Handling
+
+### API Errors
+```python
+{% if api_framework == 'fastapi' %}
+raise HTTPException(
+    status_code=404,
+    detail={"code": "NOT_FOUND", "message": "Item not found"}
+)
+{% else %}
+return jsonify({"success": False, "error": "NOT_FOUND"}), 404
+{% endif %}
+```
+
+## Security Rules
+
+### Never Commit
+- API keys or secrets
+- Database credentials
+- .env files
+- Private keys
+
+### Input Validation
+- Validate all request data
+- Use Pydantic schemas
+- Sanitize user input
+- Limit request sizes
+
+{% if has_authentication %}
+### Authentication
+- Always verify tokens
+- Use secure password hashing
+- Implement rate limiting
+- Log auth failures
+{% endif %}
+
+## Documentation
+
+### Endpoint Docstrings
+```python
+{% if api_framework == 'fastapi' %}
+@router.get("/items/{item_id}")
+async def get_item(item_id: int):
+    """
+    Get item by ID.
+    
+    - **item_id**: Unique identifier
+    
+    Returns item or 404.
+    """
+{% endif %}
+```
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Updated:** {{ current_date }}
+

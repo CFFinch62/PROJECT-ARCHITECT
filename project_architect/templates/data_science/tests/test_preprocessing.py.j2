@@ -1,0 +1,88 @@
+"""
+Tests for preprocessing module.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+import pandas as pd
+import numpy as np
+
+from src.preprocessing import (
+    handle_missing_values,
+    scale_features,
+    encode_categorical,
+    remove_outliers
+)
+
+
+class TestHandleMissingValues:
+    """Tests for handle_missing_values function."""
+    
+    def test_mean_imputation(self, sample_dataframe):
+        """Test mean imputation strategy."""
+        df = sample_dataframe.copy()
+        df.loc[0, "feature_1"] = np.nan
+        
+        result = handle_missing_values(df, strategy="mean")
+        
+        assert result["feature_1"].isnull().sum() == 0
+    
+    def test_drop_strategy(self, sample_dataframe):
+        """Test drop strategy."""
+        df = sample_dataframe.copy()
+        df.loc[0, "feature_1"] = np.nan
+        
+        result = handle_missing_values(df, strategy="drop")
+        
+        assert len(result) == len(df) - 1
+
+
+class TestScaleFeatures:
+    """Tests for scale_features function."""
+    
+    def test_scaling(self, sample_dataframe):
+        """Test feature scaling."""
+        df = sample_dataframe.copy()
+        numeric_cols = ["feature_1", "feature_2"]
+        
+        result, scaler = scale_features(df, columns=numeric_cols)
+        
+        # Check mean is approximately 0
+        assert abs(result["feature_1"].mean()) < 0.1
+        assert scaler is not None
+
+
+class TestEncodeCategorial:
+    """Tests for encode_categorical function."""
+    
+    def test_onehot_encoding(self, sample_dataframe):
+        """Test one-hot encoding."""
+        df = sample_dataframe.copy()
+        
+        result = encode_categorical(df, columns=["feature_3"], method="onehot")
+        
+        assert "feature_3" not in result.columns
+        assert any("feature_3_" in col for col in result.columns)
+    
+    def test_label_encoding(self, sample_dataframe):
+        """Test label encoding."""
+        df = sample_dataframe.copy()
+        
+        result = encode_categorical(df, columns=["feature_3"], method="label")
+        
+        assert result["feature_3"].dtype in [np.int64, np.int32]
+
+
+class TestRemoveOutliers:
+    """Tests for remove_outliers function."""
+    
+    def test_iqr_method(self, sample_dataframe):
+        """Test IQR outlier removal."""
+        df = sample_dataframe.copy()
+        df.loc[0, "feature_1"] = 100  # Add outlier
+        
+        result = remove_outliers(df, columns=["feature_1"], method="iqr")
+        
+        assert len(result) < len(df)
+

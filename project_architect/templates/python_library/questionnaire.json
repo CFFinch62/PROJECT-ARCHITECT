@@ -1,0 +1,211 @@
+{
+  "questionnaire": {
+    "name": "Project Questionnaire",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "Library Name",
+      "required": true,
+      "section": "project_info",
+      "order": 1,
+      "description": "Name for PyPI (lowercase, hyphens allowed)"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Description",
+      "required": true,
+      "section": "project_info",
+      "order": 2,
+      "description": "A Python library that..."
+    },
+    {
+      "id": "project_version",
+      "type": "text",
+      "prompt": "Initial Version",
+      "required": true,
+      "section": "project_info",
+      "order": 3,
+      "default": "0.1.0"
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "Author Name",
+      "required": true,
+      "section": "project_info",
+      "order": 4
+    },
+    {
+      "id": "author_email",
+      "type": "text",
+      "prompt": "Author Email",
+      "required": false,
+      "section": "project_info",
+      "order": 5
+    },
+    {
+      "id": "license_type",
+      "type": "choice",
+      "prompt": "License",
+      "required": false,
+      "section": "project_info",
+      "order": 6,
+      "default": "MIT",
+      "options": [
+        "MIT",
+        "Apache-2.0",
+        "GPL-3.0",
+        "BSD-3-Clause",
+        "Proprietary"
+      ]
+    },
+    {
+      "id": "min_python_version",
+      "type": "choice",
+      "prompt": "Minimum Python Version",
+      "required": false,
+      "section": "library_config",
+      "order": 1,
+      "default": "3.10",
+      "options": [
+        "3.8",
+        "3.9",
+        "3.10",
+        "3.11",
+        "3.12"
+      ]
+    },
+    {
+      "id": "has_cli",
+      "type": "boolean",
+      "prompt": "Include CLI Interface",
+      "required": false,
+      "section": "library_config",
+      "order": 2,
+      "default": false,
+      "description": "Add command-line interface to the library"
+    },
+    {
+      "id": "cli_framework",
+      "type": "choice",
+      "prompt": "CLI Framework",
+      "required": false,
+      "section": "library_config",
+      "order": 3,
+      "default": "click",
+      "options": [
+        "click",
+        "typer",
+        "argparse"
+      ],
+      "depends_on": "has_cli",
+      "depends_value": true
+    },
+    {
+      "id": "has_async",
+      "type": "boolean",
+      "prompt": "Async Support",
+      "required": false,
+      "section": "library_config",
+      "order": 4,
+      "default": false,
+      "description": "Include async/await functionality"
+    },
+    {
+      "id": "has_type_hints",
+      "type": "boolean",
+      "prompt": "Full Type Hints",
+      "required": false,
+      "section": "library_config",
+      "order": 5,
+      "default": true,
+      "description": "Include comprehensive type annotations"
+    },
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include Test Suite",
+      "required": false,
+      "section": "quality",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "test_framework",
+      "type": "choice",
+      "prompt": "Test Framework",
+      "required": false,
+      "section": "quality",
+      "order": 2,
+      "default": "pytest",
+      "options": [
+        "pytest",
+        "unittest"
+      ],
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include Linting Tools",
+      "required": false,
+      "section": "quality",
+      "order": 3,
+      "default": true
+    },
+    {
+      "id": "include_docs",
+      "type": "boolean",
+      "prompt": "Include Documentation",
+      "required": false,
+      "section": "quality",
+      "order": 4,
+      "default": true,
+      "description": "Generate MkDocs documentation"
+    },
+    {
+      "id": "publish_to_pypi",
+      "type": "boolean",
+      "prompt": "Prepare for PyPI",
+      "required": false,
+      "section": "publishing",
+      "order": 1,
+      "default": true,
+      "description": "Include PyPI publishing configuration"
+    },
+    {
+      "id": "include_github_actions",
+      "type": "boolean",
+      "prompt": "GitHub Actions CI",
+      "required": false,
+      "section": "publishing",
+      "order": 2,
+      "default": true,
+      "description": "Include CI/CD workflow"
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git Repository",
+      "required": false,
+      "section": "project_setup",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create Virtual Environment",
+      "required": false,
+      "section": "project_setup",
+      "order": 2,
+      "default": true
+    }
+  ]
+}

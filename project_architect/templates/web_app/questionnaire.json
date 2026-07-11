@@ -1,0 +1,280 @@
+{
+  "questionnaire": {
+    "name": "Web Application Questionnaire",
+    "version": "1.0.0",
+    "description": "Interactive questionnaire for web application projects"
+  },
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "What is the name of your web application?",
+      "description": "This will be used for the project directory and package name",
+      "required": true,
+      "section": "project_basics",
+      "order": 1
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Briefly describe your web application",
+      "required": true,
+      "section": "project_basics",
+      "order": 2
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "Author name",
+      "required": true,
+      "section": "project_basics",
+      "order": 3
+    },
+    {
+      "id": "author_email",
+      "type": "email",
+      "prompt": "Author email",
+      "required": false,
+      "section": "project_basics",
+      "order": 4
+    },
+    {
+      "id": "organization",
+      "type": "text",
+      "prompt": "Organization/Company name",
+      "required": false,
+      "section": "project_basics",
+      "order": 5
+    },
+    {
+      "id": "project_version",
+      "type": "version",
+      "prompt": "Initial version number",
+      "default": "0.1.0",
+      "required": true,
+      "section": "project_basics",
+      "order": 6
+    },
+    {
+      "id": "web_framework",
+      "type": "choice",
+      "prompt": "Which web framework would you like to use?",
+      "options": [
+        "flask",
+        "fastapi",
+        "django"
+      ],
+      "default": "fastapi",
+      "description": "Flask: Lightweight and flexible. FastAPI: Modern, fast, with automatic API docs. Django: Full-featured with ORM and admin.",
+      "required": true,
+      "section": "technical_stack",
+      "order": 10
+    },
+    {
+      "id": "api_type",
+      "type": "choice",
+      "prompt": "What type of web application?",
+      "options": [
+        "rest_api",
+        "full_stack",
+        "microservice"
+      ],
+      "default": "rest_api",
+      "description": "REST API: Backend API only. Full Stack: Backend + frontend templates. Microservice: Lightweight service.",
+      "required": true,
+      "section": "technical_stack",
+      "order": 11
+    },
+    {
+      "id": "has_database",
+      "type": "boolean",
+      "prompt": "Include database integration?",
+      "default": true,
+      "section": "features",
+      "order": 20
+    },
+    {
+      "id": "database_type",
+      "type": "choice",
+      "prompt": "Which database system?",
+      "options": [
+        "postgresql",
+        "mysql",
+        "sqlite",
+        "mongodb"
+      ],
+      "default": "postgresql",
+      "section": "features",
+      "order": 21,
+      "depends_on": "has_database",
+      "depends_value": true
+    },
+    {
+      "id": "use_orm",
+      "type": "boolean",
+      "prompt": "Use ORM (SQLAlchemy)?",
+      "default": true,
+      "section": "features",
+      "order": 22,
+      "depends_on": "has_database",
+      "depends_value": true
+    },
+    {
+      "id": "has_authentication",
+      "type": "boolean",
+      "prompt": "Include user authentication?",
+      "default": true,
+      "section": "features",
+      "order": 23
+    },
+    {
+      "id": "auth_type",
+      "type": "choice",
+      "prompt": "Authentication method",
+      "options": [
+        "jwt",
+        "session",
+        "oauth2"
+      ],
+      "default": "jwt",
+      "section": "features",
+      "order": 24,
+      "depends_on": "has_authentication",
+      "depends_value": true
+    },
+    {
+      "id": "has_api_docs",
+      "type": "boolean",
+      "prompt": "Include automatic API documentation?",
+      "default": true,
+      "description": "FastAPI includes Swagger UI automatically. Flask uses Flask-RESTX or similar.",
+      "section": "features",
+      "order": 25
+    },
+    {
+      "id": "has_cors",
+      "type": "boolean",
+      "prompt": "Enable CORS (Cross-Origin Resource Sharing)?",
+      "default": true,
+      "description": "Required if frontend and backend are on different domains",
+      "section": "features",
+      "order": 26
+    },
+    {
+      "id": "has_caching",
+      "type": "boolean",
+      "prompt": "Include caching support (Redis)?",
+      "default": false,
+      "section": "features",
+      "order": 27
+    },
+    {
+      "id": "has_celery",
+      "type": "boolean",
+      "prompt": "Include Celery for background tasks?",
+      "default": false,
+      "section": "features",
+      "order": 28
+    },
+    {
+      "id": "include_docker",
+      "type": "boolean",
+      "prompt": "Include Docker configuration?",
+      "default": true,
+      "section": "deployment",
+      "order": 30
+    },
+    {
+      "id": "include_docker_compose",
+      "type": "boolean",
+      "prompt": "Include Docker Compose for multi-container setup?",
+      "default": true,
+      "section": "deployment",
+      "order": 31,
+      "depends_on": "include_docker",
+      "depends_value": true
+    },
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include unit testing framework?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 40
+    },
+    {
+      "id": "test_framework",
+      "type": "choice",
+      "prompt": "Testing framework",
+      "options": [
+        "pytest",
+        "unittest"
+      ],
+      "default": "pytest",
+      "section": "quality_assurance",
+      "order": 41,
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "test_coverage",
+      "type": "boolean",
+      "prompt": "Include test coverage reporting?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 42,
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include linting tools (Flake8, Pylint)?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 43
+    },
+    {
+      "id": "include_formatting",
+      "type": "boolean",
+      "prompt": "Include code formatting (Black)?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 44
+    },
+    {
+      "id": "include_type_checking",
+      "type": "boolean",
+      "prompt": "Include static type checking (MyPy)?",
+      "default": true,
+      "section": "quality_assurance",
+      "order": 45
+    },
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create Python virtual environment?",
+      "default": true,
+      "section": "development_setup",
+      "order": 50
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git repository?",
+      "default": true,
+      "section": "development_setup",
+      "order": 51
+    },
+    {
+      "id": "create_github_repo",
+      "type": "boolean",
+      "prompt": "Create GitHub repository configuration?",
+      "default": false,
+      "section": "development_setup",
+      "order": 52,
+      "depends_on": "init_git",
+      "depends_value": true
+    }
+  ]
+}

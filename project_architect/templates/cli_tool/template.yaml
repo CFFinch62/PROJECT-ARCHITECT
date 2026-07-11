@@ -1,0 +1,136 @@
+template:
+  name: "Command-Line Tool"
+  type: "cli_tool"
+  description: "Professional command-line application with rich features"
+  version: "1.0.0"
+  author: "Project Architect"
+  frameworks:
+    - "Click"
+    - "Typer"
+    - "Argparse"
+
+structure:
+  # Directories
+  - path: "src"
+    type: "directory"
+  - path: "src/commands"
+    type: "directory"
+  - path: "src/core"
+    type: "directory"
+  - path: "src/utils"
+    type: "directory"
+  - path: "tests"
+    type: "directory"
+  - path: "dev_sessions"
+    type: "directory"
+
+  # Main CLI file
+  - path: "{{ project_name | snake_case }}.py"
+    type: "file"
+    template: "cli_main.py.j2"
+
+  # Source files
+  - path: "src/__init__.py"
+    type: "file"
+    content: ""
+  - path: "src/commands/__init__.py"
+    type: "file"
+    content: ""
+  - path: "src/core/__init__.py"
+    type: "file"
+    content: ""
+  - path: "src/utils/__init__.py"
+    type: "file"
+    content: ""
+
+  # Build/Install files
+  - path: "requirements.txt"
+    type: "file"
+    template: "requirements.txt.j2"
+  - path: "setup.py"
+    type: "file"
+    template: "setup.py.j2"
+  - path: "pyproject.toml"
+    type: "file"
+    template: "pyproject.toml.j2"
+
+  # Documentation
+  - path: "README.md"
+    type: "file"
+    template: "README.md.j2"
+  - path: "CHANGELOG.md"
+    type: "file"
+    template: "CHANGELOG.md.j2"
+  - path: "TECHNICAL_SPECIFICATION.md"
+    type: "file"
+    template: "TECHNICAL_SPECIFICATION.md.j2"
+  - path: "IMPLEMENTATION_PLAN.md"
+    type: "file"
+    template: "IMPLEMENTATION_PLAN.md.j2"
+  - path: "AI_CONTEXT.md"
+    type: "file"
+    template: "AI_CONTEXT.md.j2"
+  - path: "CODING_STANDARDS.md"
+    type: "file"
+    template: "CODING_STANDARDS.md.j2"
+  - path: "DEV_RULES.md"
+    type: "file"
+    template: "DEV_RULES.md.j2"
+  - path: "DEV_PROCESS.md"
+    type: "file"
+    template: "DEV_PROCESS.md.j2"
+
+  # Development session tracking
+  - path: "dev_sessions/README.md"
+    type: "file"
+    template: "dev_sessions/README.md.j2"
+
+  # Testing files
+  - path: "tests/__init__.py"
+    type: "file"
+    content: ""
+  - path: "tests/conftest.py"
+    type: "file"
+    template: "tests/conftest.py.j2"
+  - path: "tests/test_cli.py"
+    type: "file"
+    template: "tests/test_cli.py.j2"
+    condition: "include_tests"
+  - path: "pytest.ini"
+    type: "file"
+    template: "pytest.ini.j2"
+    condition: "include_tests"
+
+  # Configuration files
+  - path: ".gitignore"
+    type: "file"
+    template: ".gitignore.j2"
+  - path: "config.{{ config_format }}.example"
+    type: "file"
+    template: "config_example.j2"
+    condition: "has_config_file"
+
+requirements:
+  click:
+    - "click>=8.1.0"
+  typer:
+    - "typer>=0.9.0"
+    - "rich>=13.0.0"
+  argparse:
+    - []  # Built-in
+  config:
+    yaml:
+      - "pyyaml>=6.0.0"
+    toml:
+      - "tomli>=2.0.0"
+  testing:
+    - "pytest>=7.4.0"
+    - "pytest-cov>=4.1.0"
+
+git_ignore:
+  - "__pycache__/"
+  - "*.py[cod]"
+  - ".venv/"
+  - "venv/"
+  - ".pytest_cache/"
+  - "*.log"

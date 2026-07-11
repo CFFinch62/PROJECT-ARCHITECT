@@ -1,0 +1,258 @@
+{
+  "questionnaire": {
+    "name": "Project Questionnaire",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "Project Name",
+      "required": true,
+      "section": "project_info",
+      "order": 1,
+      "description": "My API Service"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Project Description",
+      "required": true,
+      "section": "project_info",
+      "order": 2,
+      "description": "A brief description of your API service..."
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "Author Name",
+      "required": true,
+      "section": "project_info",
+      "order": 3,
+      "description": "Your Name"
+    },
+    {
+      "id": "author_email",
+      "type": "text",
+      "prompt": "Author Email",
+      "required": false,
+      "section": "project_info",
+      "order": 4,
+      "description": "your.email@example.com"
+    },
+    {
+      "id": "project_version",
+      "type": "text",
+      "prompt": "Initial Version",
+      "required": true,
+      "section": "project_info",
+      "order": 5,
+      "default": "0.1.0"
+    },
+    {
+      "id": "api_framework",
+      "type": "choice",
+      "prompt": "API Framework",
+      "required": true,
+      "section": "api_config",
+      "order": 1,
+      "default": "fastapi",
+      "options": [
+        "fastapi",
+        "flask"
+      ]
+    },
+    {
+      "id": "api_type",
+      "type": "choice",
+      "prompt": "API Type",
+      "required": true,
+      "section": "api_config",
+      "order": 2,
+      "default": "rest",
+      "options": [
+        "rest",
+        "graphql"
+      ]
+    },
+    {
+      "id": "api_versioning",
+      "type": "boolean",
+      "prompt": "Enable API Versioning",
+      "required": false,
+      "section": "api_config",
+      "order": 3,
+      "default": true
+    },
+    {
+      "id": "has_database",
+      "type": "boolean",
+      "prompt": "Include Database Support",
+      "required": false,
+      "section": "database",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "database_type",
+      "type": "choice",
+      "prompt": "Database Type",
+      "required": false,
+      "section": "database",
+      "order": 2,
+      "default": "postgresql",
+      "options": [
+        "postgresql",
+        "sqlite"
+      ],
+      "depends_on": "has_database",
+      "depends_value": true
+    },
+    {
+      "id": "use_async_db",
+      "type": "boolean",
+      "prompt": "Use Async Database Driver",
+      "required": false,
+      "section": "database",
+      "order": 3,
+      "default": true,
+      "depends_on": "has_database",
+      "depends_value": true
+    },
+    {
+      "id": "has_authentication",
+      "type": "boolean",
+      "prompt": "Include Authentication",
+      "required": false,
+      "section": "security",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "auth_type",
+      "type": "choice",
+      "prompt": "Authentication Type",
+      "required": false,
+      "section": "security",
+      "order": 2,
+      "default": "jwt",
+      "options": [
+        "jwt",
+        "api_key"
+      ],
+      "depends_on": "has_authentication",
+      "depends_value": true
+    },
+    {
+      "id": "has_rate_limiting",
+      "type": "boolean",
+      "prompt": "Include Rate Limiting",
+      "required": false,
+      "section": "security",
+      "order": 3,
+      "default": true
+    },
+    {
+      "id": "has_cors",
+      "type": "boolean",
+      "prompt": "Enable CORS",
+      "required": false,
+      "section": "security",
+      "order": 4,
+      "default": true
+    },
+    {
+      "id": "has_caching",
+      "type": "boolean",
+      "prompt": "Include Redis Caching",
+      "required": false,
+      "section": "features",
+      "order": 1,
+      "default": false
+    },
+    {
+      "id": "has_background_tasks",
+      "type": "boolean",
+      "prompt": "Include Background Tasks",
+      "required": false,
+      "section": "features",
+      "order": 2,
+      "default": false
+    },
+    {
+      "id": "has_health_check",
+      "type": "boolean",
+      "prompt": "Include Health Check Endpoint",
+      "required": false,
+      "section": "features",
+      "order": 3,
+      "default": true
+    },
+    {
+      "id": "has_metrics",
+      "type": "boolean",
+      "prompt": "Include Prometheus Metrics",
+      "required": false,
+      "section": "features",
+      "order": 4,
+      "default": false
+    },
+    {
+      "id": "include_docker",
+      "type": "boolean",
+      "prompt": "Include Dockerfile",
+      "required": false,
+      "section": "deployment",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "include_docker_compose",
+      "type": "boolean",
+      "prompt": "Include Docker Compose",
+      "required": false,
+      "section": "deployment",
+      "order": 2,
+      "default": true,
+      "depends_on": "include_docker",
+      "depends_value": true
+    },
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include Test Suite",
+      "required": false,
+      "section": "deployment",
+      "order": 3,
+      "default": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include Linting Tools",
+      "required": false,
+      "section": "deployment",
+      "order": 4,
+      "default": true
+    },
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create Virtual Environment",
+      "required": false,
+      "section": "deployment",
+      "order": 5,
+      "default": true
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git Repository",
+      "required": false,
+      "section": "deployment",
+      "order": 6,
+      "default": true
+    }
+  ]
+}

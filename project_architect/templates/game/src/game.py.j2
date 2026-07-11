@@ -1,0 +1,201 @@
+"""
+{{ project_name }} - Core Game Logic
+
+{% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif %} implementation of the game loop and state.
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+{% if game_framework == 'pygame' %}
+import pygame
+
+from src.config import GameConfig
+{% elif game_framework == 'arcade' %}
+import arcade
+
+from src.config import GameConfig
+{% elif game_framework == 'pyglet' %}
+import pyglet
+from pyglet import shapes  # noqa: F401  (handy for quick prototyping)
+
+from src.config import GameConfig
+{% elif game_framework == 'pgzero' %}
+from pgzero.keyboard import keys
+
+from src.config import GameConfig
+{% endif %}
+{% if has_logging %}
+from typing import Optional
+import logging
+{% endif %}
+
+
+{% if game_framework == 'pygame' %}
+class Game:
+    """Main game loop and state for {{ project_name }} (Pygame)."""
+
+    def __init__(self, screen: "pygame.Surface", config: GameConfig{% if has_logging %}, logger: Optional[logging.Logger] = None{% endif %}):
+        """Initialize game state."""
+        self.screen = screen
+        self.config = config
+        self.clock = pygame.time.Clock()
+        self.running = True
+        {% if has_logging %}
+        self.logger = logger
+        {% endif %}
+        {% if has_score_tracking %}
+        self.score = config.starting_score
+        {% endif %}
+
+    def run(self) -> None:
+        """Run the main game loop until the player quits."""
+        while self.running:
+            dt = self.clock.tick(self.config.target_fps) / 1000.0
+            self.handle_events()
+            self.update(dt)
+            self.draw()
+            pygame.display.flip()
+
+    def handle_events(self) -> None:
+        """Process the Pygame event queue."""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.KEYDOWN:
+                self.on_key_down(event.key)
+
+    def on_key_down(self, key: int) -> None:
+        """Handle a key press."""
+        if key == pygame.K_ESCAPE:
+            self.running = False
+
+    def update(self, dt: float) -> None:
+        """Advance game state by dt seconds. Override with real gameplay logic."""
+        pass
+
+    def draw(self) -> None:
+        """Draw the current frame."""
+        self.screen.fill((0, 0, 0))
+        {% if has_score_tracking %}
+        self._draw_score()
+        {% endif %}
+
+    {% if has_score_tracking %}
+    def _draw_score(self) -> None:
+        """Render the current score in the top-left corner."""
+        font = pygame.font.SysFont(None, 28)
+        text = font.render(f"Score: {self.score}", True, (255, 255, 255))
+        self.screen.blit(text, (10, 10))
+    {% endif %}
+
+
+{% elif game_framework == 'arcade' %}
+class Game(arcade.Window):
+    """Main game window and state for {{ project_name }} (Arcade)."""
+
+    def __init__(self, config: GameConfig{% if has_logging %}, logger: Optional[logging.Logger] = None{% endif %}):
+        """Initialize the game window."""
+        super().__init__(config.screen_width, config.screen_height, config.title)
+        self.config = config
+        {% if has_logging %}
+        self.logger = logger
+        {% endif %}
+        {% if has_score_tracking %}
+        self.score = config.starting_score
+        {% endif %}
+        arcade.set_background_color(arcade.color.BLACK)
+
+    def setup(self) -> None:
+        """Set up game state before the first frame. Called once before arcade.run()."""
+        pass
+
+    def on_draw(self) -> None:
+        """Render the current frame."""
+        self.clear()
+        {% if has_score_tracking %}
+        arcade.draw_text(f"Score: {self.score}", 10, self.config.screen_height - 30, arcade.color.WHITE, 16)
+        {% endif %}
+
+    def on_update(self, delta_time: float) -> None:
+        """Advance game state by delta_time seconds. Override with real gameplay logic."""
+        pass
+
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
+        """Handle a key press."""
+        if symbol == arcade.key.ESCAPE:
+            self.close()
+
+
+{% elif game_framework == 'pyglet' %}
+class Game(pyglet.window.Window):
+    """Main game window and state for {{ project_name }} (Pyglet)."""
+
+    def __init__(self, config: GameConfig{% if has_logging %}, logger: Optional[logging.Logger] = None{% endif %}):
+        """Initialize the game window and schedule the update loop."""
+        super().__init__(config.screen_width, config.screen_height, config.title)
+        self.config = config
+        {% if has_logging %}
+        self.logger = logger
+        {% endif %}
+        {% if has_score_tracking %}
+        self.score = config.starting_score
+        self._score_label = pyglet.text.Label(
+            f"Score: {self.score}", x=10, y=config.screen_height - 20
+        )
+        {% endif %}
+        pyglet.clock.schedule_interval(self.update, 1.0 / config.target_fps)
+
+    def on_draw(self) -> None:
+        """Render the current frame."""
+        self.clear()
+        {% if has_score_tracking %}
+        self._score_label.text = f"Score: {self.score}"
+        self._score_label.draw()
+        {% endif %}
+
+    def update(self, dt: float) -> None:
+        """Advance game state by dt seconds. Override with real gameplay logic."""
+        pass
+
+    def on_key_press(self, symbol: int, modifiers: int) -> None:
+        """Handle a key press."""
+        if symbol == pyglet.window.key.ESCAPE:
+            self.close()
+
+
+{% elif game_framework == 'pgzero' %}
+class Game:
+    """Game state for {{ project_name }} (Pygame Zero).
+
+    Pygame Zero owns the window and main loop; this class only holds state
+    and is driven by the draw()/update()/on_key_down() hooks in main.py.
+    """
+
+    def __init__(self, config: GameConfig{% if has_logging %}, logger: Optional[logging.Logger] = None{% endif %}):
+        """Initialize game state."""
+        self.config = config
+        {% if has_logging %}
+        self.logger = logger
+        {% endif %}
+        {% if has_score_tracking %}
+        self.score = config.starting_score
+        {% endif %}
+
+    def draw(self, screen) -> None:
+        """Render the current frame. `screen` is the Pygame Zero screen surface."""
+        screen.fill((0, 0, 0))
+        {% if has_score_tracking %}
+        screen.draw.text(f"Score: {self.score}", (10, 10), color="white")
+        {% endif %}
+
+    def update(self, dt: float) -> None:
+        """Advance game state by dt seconds. Override with real gameplay logic."""
+        pass
+
+    def on_key_down(self, key) -> None:
+        """Handle a key press."""
+        if key == keys.ESCAPE:
+            import sys
+
+            sys.exit(0)
+{% endif %}

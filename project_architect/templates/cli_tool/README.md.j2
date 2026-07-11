@@ -1,0 +1,29 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Installation
+
+```bash
+pip install -e .
+```
+
+## Usage
+
+```bash
+{{ project_name | snake_case }} hello World
+{{ project_name | snake_case }} version
+```
+
+## Development
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+{% if include_tests %}pytest{% endif +%}
+```
+
+## Author
+
+{{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}

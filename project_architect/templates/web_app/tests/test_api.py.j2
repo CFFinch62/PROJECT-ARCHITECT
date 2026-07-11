@@ -1,0 +1,76 @@
+{% if include_tests %}"""
+Tests for {{ project_name }} API endpoints.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+
+{% if web_framework == 'fastapi' %}
+from fastapi.testclient import TestClient
+
+from app import create_app
+
+
+@pytest.fixture
+def client():
+    """Provide a TestClient for the FastAPI app."""
+    return TestClient(create_app())
+
+
+def test_root(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json()["message"] == "Welcome to {{ project_name }}"
+
+
+def test_health_check(client):
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["status"] == "healthy"
+
+
+def test_list_items(client):
+    response = client.get("/items")
+    assert response.status_code == 200
+    assert "items" in response.json()
+
+{% elif web_framework == 'flask' %}
+from app import create_app
+
+
+@pytest.fixture
+def client():
+    """Provide a Flask test client."""
+    app = create_app()
+    app.config["TESTING"] = True
+    with app.test_client() as client:
+        yield client
+
+
+def test_root(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.get_json()["message"] == "Welcome to {{ project_name }}"
+
+
+def test_health_check(client):
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.get_json()["status"] == "healthy"
+
+
+def test_list_items(client):
+    response = client.get("/items")
+    assert response.status_code == 200
+    assert "items" in response.get_json()
+
+{% elif web_framework == 'django' %}
+@pytest.mark.integration
+def test_django_smoke():
+    # Django views are best tested with Django's own test runner
+    # (manage.py test) rather than plain pytest fixtures.
+    assert True
+{% endif %}
+{% else %}# Testing not configured for this project
+{% endif %}

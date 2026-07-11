@@ -1,0 +1,113 @@
+"""
+Configuration settings for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+{% if api_framework == 'fastapi' %}
+from pydantic_settings import BaseSettings
+from typing import List
+
+
+class Settings(BaseSettings):
+    """Application settings."""
+    
+    # Project
+    PROJECT_NAME: str = "{{ project_name }}"
+    VERSION: str = "{{ project_version }}"
+    DEBUG: bool = False
+    
+    # Server
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
+    
+    {% if has_cors %}
+    # CORS
+    CORS_ORIGINS: List[str] = ["*"]
+    {% endif %}
+    
+    {% if has_database %}
+    # Database
+    {% if database_type == 'postgresql' %}
+    DATABASE_URL: str = "postgresql{% if use_async_db %}+asyncpg{% endif %}://user:password@localhost:5432/{{ project_name | snake_case }}"
+    {% elif database_type == 'sqlite' %}
+    DATABASE_URL: str = "sqlite{% if use_async_db %}+aiosqlite{% endif %}:///./data/{{ project_name | snake_case }}.db"
+    {% endif %}
+    {% endif %}
+    
+    {% if has_authentication %}
+    # Authentication
+    SECRET_KEY: str = "your-secret-key-change-in-production"
+    {% if auth_type == 'jwt' %}
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    {% endif %}
+    {% endif %}
+    
+    {% if has_caching %}
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379/0"
+    {% endif %}
+    
+    {% if has_rate_limiting %}
+    # Rate Limiting
+    RATE_LIMIT_PER_MINUTE: int = 60
+    {% endif %}
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
+
+
+settings = Settings()
+{% elif api_framework == 'flask' %}
+import os
+
+
+class Settings:
+    """Application settings."""
+    
+    # Project
+    PROJECT_NAME = "{{ project_name }}"
+    VERSION = "{{ project_version }}"
+    DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+    
+    # Server
+    HOST = os.getenv("HOST", "0.0.0.0")
+    PORT = int(os.getenv("PORT", 5000))
+    
+    {% if has_database %}
+    # Database
+    {% if database_type == 'postgresql' %}
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "postgresql://user:password@localhost:5432/{{ project_name | snake_case }}"
+    )
+    {% elif database_type == 'sqlite' %}
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "sqlite:///./data/{{ project_name | snake_case }}.db"
+    )
+    {% endif %}
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    {% endif %}
+    
+    {% if has_authentication %}
+    # Authentication
+    SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
+    {% if auth_type == 'jwt' %}
+    JWT_ALGORITHM = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    {% endif %}
+    {% endif %}
+    
+    {% if has_caching %}
+    # Redis
+    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    {% endif %}
+
+
+settings = Settings()
+{% endif %}
+

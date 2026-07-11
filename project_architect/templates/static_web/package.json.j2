@@ -1,0 +1,30 @@
+{
+  "name": "{{ project_name | snake_case }}",
+  "version": "{{ project_version }}",
+  "description": "{{ project_description }}",
+  "author": "{{ author_name }}",
+  "license": "MIT",
+  "scripts": {
+{% if use_live_server %}
+    "start": "live-server --port=3000",
+    "dev": "live-server --port=3000 --open=/",
+{% endif %}
+    "format": "prettier --write \"**/*.{html,css,js}\""
+  },
+  "devDependencies": {
+{% if use_live_server %}
+    "live-server": "^1.2.2",
+{% endif %}
+    "prettier": "^3.1.0"
+{% if css_framework == 'tailwind' %},
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.0"
+{% endif %}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
+

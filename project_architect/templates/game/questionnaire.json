@@ -1,0 +1,361 @@
+{
+  "questionnaire": {
+    "name": "Game Project Questionnaire",
+    "description": "Gather requirements for Python game development",
+    "version": "1.0.0"
+  },
+
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "What is the name of your game?",
+      "description": "Enter a descriptive name for your game",
+      "required": true,
+      "section": "project_basics",
+      "order": 1,
+      "validation_pattern": "^[a-zA-Z0-9\\s\\-_]+$"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Provide a brief description of your game",
+      "description": "Describe the gameplay and main purpose of your game",
+      "required": true,
+      "section": "project_basics",
+      "order": 2
+    },
+    {
+      "id": "project_version",
+      "type": "version",
+      "prompt": "What is the initial version number?",
+      "description": "Use semantic versioning (e.g., 1.0.0)",
+      "required": true,
+      "default": "0.1.0",
+      "section": "project_basics",
+      "order": 3
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "What is your name (author)?",
+      "description": "Your name will appear in documentation and code headers",
+      "required": true,
+      "section": "project_basics",
+      "order": 4
+    },
+    {
+      "id": "author_email",
+      "type": "email",
+      "prompt": "What is your email address?",
+      "description": "Contact email for the project",
+      "required": false,
+      "section": "project_basics",
+      "order": 5
+    },
+    {
+      "id": "organization",
+      "type": "text",
+      "prompt": "Organization or company name (optional)",
+      "description": "Name of your organization or company",
+      "required": false,
+      "section": "project_basics",
+      "order": 6
+    },
+
+    {
+      "id": "game_framework",
+      "type": "choice",
+      "prompt": "Which game framework would you like to use?",
+      "description": "Pygame: the de facto standard, full manual control. Arcade: modern OpenGL-based, easier API. Pyglet: lightweight, no dependencies, event-driven. Pygame Zero: beginner-friendly, near-zero boilerplate.",
+      "required": true,
+      "options": ["pygame", "arcade", "pyglet", "pgzero"],
+      "default": "pygame",
+      "section": "technical_stack",
+      "order": 10
+    },
+    {
+      "id": "screen_width",
+      "type": "choice",
+      "prompt": "Game window width (pixels)?",
+      "description": "Width of the game window in pixels",
+      "required": true,
+      "options": ["640", "800", "1024", "1280", "1920"],
+      "default": "800",
+      "section": "technical_stack",
+      "order": 11
+    },
+    {
+      "id": "screen_height",
+      "type": "choice",
+      "prompt": "Game window height (pixels)?",
+      "description": "Height of the game window in pixels",
+      "required": true,
+      "options": ["480", "600", "768", "720", "1080"],
+      "default": "600",
+      "section": "technical_stack",
+      "order": 12
+    },
+    {
+      "id": "target_fps",
+      "type": "choice",
+      "prompt": "Target frame rate (FPS)?",
+      "description": "Frames per second the game loop should target",
+      "required": true,
+      "options": ["30", "60", "120"],
+      "default": "60",
+      "section": "technical_stack",
+      "order": 13,
+      "depends_on": "game_framework",
+      "depends_value": "pygame"
+    },
+    {
+      "id": "fullscreen",
+      "type": "boolean",
+      "prompt": "Launch in fullscreen mode?",
+      "description": "Start the game window in fullscreen instead of windowed mode",
+      "required": true,
+      "default": false,
+      "section": "technical_stack",
+      "order": 14
+    },
+
+    {
+      "id": "has_sound",
+      "type": "boolean",
+      "prompt": "Will your game use sound effects or music?",
+      "description": "Set up an audio mixer and an assets/sounds directory",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 20
+    },
+    {
+      "id": "has_sprites",
+      "type": "boolean",
+      "prompt": "Will your game use sprite images?",
+      "description": "Set up an assets/images directory and sprite-loading helpers",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 21
+    },
+    {
+      "id": "has_score_tracking",
+      "type": "boolean",
+      "prompt": "Include score tracking?",
+      "description": "Add a simple score counter to the game state",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 22
+    },
+    {
+      "id": "has_logging",
+      "type": "boolean",
+      "prompt": "Include logging functionality?",
+      "description": "Add comprehensive logging to your game",
+      "required": true,
+      "default": true,
+      "section": "features",
+      "order": 23
+    },
+    {
+      "id": "log_level",
+      "type": "choice",
+      "prompt": "Default logging level?",
+      "description": "Choose the default logging level",
+      "required": true,
+      "options": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+      "default": "INFO",
+      "section": "features",
+      "order": 24,
+      "depends_on": "has_logging",
+      "depends_value": true
+    },
+
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include unit testing framework?",
+      "description": "Set up pytest and testing infrastructure",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 30
+    },
+    {
+      "id": "test_coverage",
+      "type": "boolean",
+      "prompt": "Include code coverage reporting?",
+      "description": "Add pytest-cov for test coverage analysis",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 31,
+      "depends_on": "include_tests",
+      "depends_value": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include code linting tools?",
+      "description": "Set up flake8 and pylint for code quality",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 32
+    },
+    {
+      "id": "include_formatting",
+      "type": "boolean",
+      "prompt": "Include code formatting tools?",
+      "description": "Set up Black for automatic code formatting",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 33
+    },
+    {
+      "id": "include_type_checking",
+      "type": "boolean",
+      "prompt": "Include type checking?",
+      "description": "Set up MyPy for static type checking",
+      "required": true,
+      "default": true,
+      "section": "quality_assurance",
+      "order": 34
+    },
+
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create virtual environment?",
+      "description": "Automatically create and configure a virtual environment",
+      "required": true,
+      "default": true,
+      "section": "development_setup",
+      "order": 40
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git repository?",
+      "description": "Set up Git version control with initial commit",
+      "required": true,
+      "default": true,
+      "section": "development_setup",
+      "order": 41
+    },
+    {
+      "id": "create_github_repo",
+      "type": "boolean",
+      "prompt": "Create GitHub repository? (requires GitHub CLI)",
+      "description": "Automatically create a GitHub repository",
+      "required": false,
+      "default": false,
+      "section": "development_setup",
+      "order": 42,
+      "depends_on": "init_git",
+      "depends_value": true
+    },
+    {
+      "id": "github_visibility",
+      "type": "choice",
+      "prompt": "GitHub repository visibility",
+      "description": "Choose repository visibility on GitHub",
+      "required": true,
+      "options": ["public", "private"],
+      "default": "private",
+      "section": "development_setup",
+      "order": 43,
+      "depends_on": "create_github_repo",
+      "depends_value": true
+    }
+  ],
+
+  "update_project_questions": [
+    {
+      "id": "update_reason",
+      "type": "choice",
+      "prompt": "What type of update are you making?",
+      "description": "Select the primary reason for this project update",
+      "required": true,
+      "options": ["feature_addition", "bug_fix", "performance_improvement", "architecture_change", "dependency_update", "documentation_update"],
+      "section": "update_info",
+      "order": 1
+    },
+    {
+      "id": "update_description",
+      "type": "text",
+      "prompt": "Describe the changes you want to make",
+      "description": "Provide a detailed description of the updates",
+      "required": true,
+      "section": "update_info",
+      "order": 2
+    },
+    {
+      "id": "breaking_changes",
+      "type": "boolean",
+      "prompt": "Will this update include breaking changes?",
+      "description": "Changes that might break existing functionality",
+      "required": true,
+      "default": false,
+      "section": "update_info",
+      "order": 3
+    }
+  ],
+
+  "feature_addition_questions": [
+    {
+      "id": "feature_name",
+      "type": "text",
+      "prompt": "What is the name of the new feature?",
+      "description": "Provide a clear, descriptive name for the feature",
+      "required": true,
+      "section": "feature_details",
+      "order": 1
+    },
+    {
+      "id": "feature_description",
+      "type": "text",
+      "prompt": "Describe the new feature in detail",
+      "description": "Explain what the feature does and how it works",
+      "required": true,
+      "section": "feature_details",
+      "order": 2
+    },
+    {
+      "id": "feature_priority",
+      "type": "choice",
+      "prompt": "What is the priority of this feature?",
+      "description": "Select the development priority level",
+      "required": true,
+      "options": ["low", "medium", "high", "critical"],
+      "default": "medium",
+      "section": "feature_details",
+      "order": 3
+    },
+    {
+      "id": "requires_new_dependencies",
+      "type": "boolean",
+      "prompt": "Does this feature require new dependencies?",
+      "description": "Will you need to add new Python packages?",
+      "required": true,
+      "default": false,
+      "section": "feature_details",
+      "order": 4
+    },
+    {
+      "id": "new_dependencies",
+      "type": "text",
+      "prompt": "List the new dependencies needed",
+      "description": "Provide a comma-separated list of new packages",
+      "required": true,
+      "section": "feature_details",
+      "order": 5,
+      "depends_on": "requires_new_dependencies",
+      "depends_value": true
+    }
+  ]
+}

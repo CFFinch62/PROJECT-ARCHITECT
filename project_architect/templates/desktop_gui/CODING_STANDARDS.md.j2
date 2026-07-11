@@ -1,0 +1,415 @@
+# {{ project_name }} - Coding Standards
+
+## Python Style Guide
+
+### PEP 8 Compliance
+
+This project follows [PEP 8](https://pep.python.org/pep-0008/) - Python's official style guide.
+
+**Key Points:**
+- Indentation: 4 spaces (no tabs)
+{% if include_formatting %}- Line length: 88 characters (Black default){% else %}- Line length: 79 characters (PEP 8 standard){% endif +%}
+- Encoding: UTF-8
+- Imports: Grouped (standard library, third-party, local)
+
+## Naming Conventions
+
+### Variables and Functions
+```python
+# Good
+user_name = "John"
+def calculate_total():
+    pass
+
+# Bad
+userName = "John"  # camelCase
+def CalculateTotal():  # PascalCase for function
+    pass
+```
+
+### Classes
+```python
+# Good
+class MainWindow:
+    pass
+
+class UserProfile:
+    pass
+
+# Bad
+class main_window:  # snake_case
+    pass
+```
+
+### Constants
+```python
+# Good
+MAX_CONNECTION_TIMEOUT = 30
+DEFAULT_COLOR = "blue"
+
+# Bad
+max_connection_timeout = 30  # lowercase
+```
+
+### Private Methods/Variables
+```python
+class Example:
+    def __init__(self):
+        self._private_var = 10      # Single underscore: internal use
+        self.__really_private = 20  # Double underscore: name mangling
+    
+    def _internal_method(self):
+        pass
+```
+
+## Code Organization
+
+### Module Structure
+```python
+"""
+Module docstring describing purpose.
+
+Author: {{ author_name }}
+"""
+
+# Standard library imports
+import os
+import sys
+
+# Third-party imports
+{% if gui_framework == 'customtkinter' %}import customtkinter as ctk{% endif %}
+
+# Local application imports
+from .config import AppConfig
+
+
+# Constants
+MAX_SIZE = 100
+
+# Classes
+class MyClass:
+    pass
+
+# Functions
+def my_function():
+    pass
+
+# Main execution
+if __name__ == "__main__":
+    main()
+```
+
+### Import Order
+1. Standard library imports
+2. Related third-party imports
+3. Local application/library imports
+4. Separated by blank lines
+
+```python
+# Standard library
+import os
+from pathlib import Path
+
+# Third-party
+import customtkinter as ctk
+
+# Local
+from src.config import AppConfig
+```
+
+## Documentation Standards
+
+### Module Docstrings
+```python
+"""
+Brief description of module.
+
+Detailed description if needed. Can span multiple lines and
+provide comprehensive overview of the module's purpose.
+
+Author: {{ author_name }}
+"""
+```
+
+### Function Docstrings (Google Style)
+```python
+def calculate_total(items: list, tax_rate: float = 0.08) -> float:
+    """
+    Calculate total cost including tax.
+    
+    This function takes a list of item prices and applies
+    the specified tax rate to calculate the final total.
+    
+    Args:
+        items: List of item prices (floats)
+        tax_rate: Tax rate as decimal (default: 0.08 for 8%)
+    
+    Returns:
+        Total cost including tax
+        
+    Raises:
+        ValueError: If tax_rate is negative
+        
+    Example:
+        >>> calculate_total([10.0, 20.0], 0.10)
+        33.0
+    """
+    if tax_rate < 0:
+        raise ValueError("Tax rate cannot be negative")
+    
+    subtotal = sum(items)
+    return subtotal * (1 + tax_rate)
+```
+
+### Class Docstrings
+```python
+class UserManager:
+    """
+    Manage user accounts and authentication.
+    
+    This class provides methods for creating, updating, and
+    deleting user accounts, as well as authentication.
+    
+    Attributes:
+        users: Dictionary of username to User objects
+        max_users: Maximum number of users allowed
+    """
+    
+    def __init__(self, max_users: int = 100):
+        """
+        Initialize the UserManager.
+        
+        Args:
+            max_users: Maximum number of users (default: 100)
+        """
+        self.users = {}
+        self.max_users = max_users
+```
+
+## Type Hints
+
+### Function Signatures
+```python
+from typing import List, Dict, Optional, Union
+
+def process_data(
+    data: List[str],
+    options: Optional[Dict[str, any]] = None
+) -> Union[str, None]:
+    """Process data with optional configuration."""
+    if options is None:
+        options = {}
+    # ...
+    return result
+```
+
+### Variable Annotations
+```python
+# Type hints for variables
+count: int = 0
+name: str = "default"
+items: List[str] = []
+config: Optional[dict] = None
+```
+
+## Error Handling
+
+### Exception Handling
+```python
+# Good
+try:
+    result = process_file(filename)
+except FileNotFoundError as e:
+    {% if has_logging %}logger.error(f"File not found: {filename}"){% else %}print(f"Error: File not found: {filename}"){% endif +%}
+    return None
+except PermissionError as e:
+    {% if has_logging %}logger.error(f"Permission denied: {filename}"){% else %}print(f"Error: Permission denied: {filename}"){% endif +%}
+    return None
+
+# Bad
+try:
+    result = process_file(filename)
+except:  # Too broad, catches everything
+    pass  # Silent failure
+```
+
+### Custom Exceptions
+```python
+class ValidationError(Exception):
+    """Raised when data validation fails."""
+    pass
+
+class ConfigurationError(Exception):
+    """Raised when configuration is invalid."""
+    pass
+```
+
+{% if has_logging %}
+## Logging Practices
+
+### Log Levels
+- **DEBUG:** Detailed diagnostic information
+- **INFO:** General informational messages
+- **WARNING:** Warning messages for recoverable issues
+- **ERROR:** Error messages for serious problems
+- **CRITICAL:** Critical errors causing shutdown
+
+### Usage
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Debug information
+logger.debug(f"Processing item: {item_id}")
+
+# General info
+logger.info("Application started successfully")
+
+# Warnings
+logger.warning("Configuration file not found, using defaults")
+
+# Errors
+logger.error(f"Failed to connect to database: {e}")
+
+# Critical
+logger.critical("Critical failure, shutting down")
+```
+{% endif %}
+
+## Code Formatting
+
+{% if include_formatting %}
+### Black Formatter
+
+This project uses [Black](https://github.com/psf/black) for automatic code formatting.
+
+**Run Black:**
+```bash
+black src/ tests/
+```
+
+**Black Config (in pyproject.toml):**
+```toml
+[tool.black]
+line-length = 88
+target-version = ['py312']
+include = '\.pyi?$'
+```
+{% else %}
+### Manual Formatting
+
+- Line length: 79 characters (PEP 8)
+- Use 4 spaces for indentation
+- Two blank lines between top-level definitions
+- One blank line between method definitions
+{% endif %}
+
+## Testing Standards
+
+{% if include_tests %}
+### Test Structure
+```python
+import pytest
+from src.utils import calculate_total
+
+class TestCalculateTotal:
+    """Tests for calculate_total function."""
+    
+    def test_basic_calculation(self):
+        """Test basic total calculation."""
+        result = calculate_total([10.0, 20.0], 0.10)
+        assert result == 33.0
+    
+    def test_zero_tax(self):
+        """Test calculation with zero tax."""
+        result = calculate_total([10.0, 20.0], 0.0)
+        assert result == 30.0
+    
+    def test_negative_tax_raises_error(self):
+        """Test that negative tax raises ValueError."""
+        with pytest.raises(ValueError):
+            calculate_total([10.0], -0.1)
+```
+
+### Test Naming
+- Test files: `test_<module>.py`
+- Test classes: `Test<ClassName>`
+- Test methods: `test_<what_it_tests>`
+
+### Coverage Target
+- Aim for >80% code coverage
+- Focus on critical business logic
+{% endif %}
+
+## Best Practices
+
+### General Principles
+1. **DRY:** Don't Repeat Yourself - extract common code into functions
+2. **KISS:** Keep It Simple, Stupid - prefer simple solutions
+3. **YAGNI:** You Aren't Gonna Need It - don't add unnecessary features
+4. **Single Responsibility:** Each function/class should do one thing well
+
+### Code Reviews
+- Keep functions under 50 lines when possible
+- Limit function parameters to 5 or fewer
+- Avoid deep nesting (max 3-4 levels)
+- Write self-documenting code with clear names
+
+### Comments
+```python
+# Good: Explain WHY, not WHAT
+# Use fast approximation for large datasets (>10000 items)
+if len(data) > 10000:
+    return approximate_calculation(data)
+
+# Bad: States the obvious
+# Loop through items
+for item in items:
+    process(item)
+```
+
+## File Organization
+
+### Module Size
+- Target: < 300 lines per file
+- Maximum: 500 lines per file
+- If larger, split into multiple modules
+
+### Directory Structure
+- Group related functionality in packages
+- Use `__init__.py` to expose public API
+- Keep implementation details private
+
+## Version Control
+
+### Commit Messages
+```
+# Good
+feat: Add user authentication system
+fix: Resolve database connection timeout
+docs: Update installation instructions
+test: Add tests for config module
+
+# Bad
+Updated stuff
+Fixed bug
+Changes
+```
+
+### Commit Format
+```
+<type>: <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:** feat, fix, docs, style, refactor, test, chore
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}

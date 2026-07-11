@@ -1,0 +1,162 @@
+"""
+{{ project_name }} - API Service
+
+{{ project_description }}
+
+Author: {{ author_name }}
+Version: {{ project_version }}
+"""
+
+{% if api_framework == 'fastapi' %}
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
+from app.core.config import settings
+from app.api.v1.endpoints import router as api_router
+
+
+{% if has_database %}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan events."""
+    # Startup
+    print(f"Starting {settings.PROJECT_NAME}...")
+    yield
+    # Shutdown
+    print(f"Shutting down {settings.PROJECT_NAME}...")
+
+
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="{{ project_description }}",
+    version="{{ project_version }}",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
+{% else %}
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    description="{{ project_description }}",
+    version="{{ project_version }}",
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
+{% endif %}
+
+{% if has_cors %}
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+{% endif %}
+
+# Include API router
+{% if api_versioning %}
+app.include_router(api_router, prefix="/api/v1")
+{% else %}
+app.include_router(api_router, prefix="/api")
+{% endif %}
+
+
+{% if has_health_check %}
+@app.get("/health", tags=["Health"])
+async def health_check():
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "service": settings.PROJECT_NAME,
+        "version": "{{ project_version }}"
+    }
+{% endif %}
+
+
+@app.get("/", tags=["Root"])
+async def root():
+    """Root endpoint with API information."""
+    return {
+        "name": settings.PROJECT_NAME,
+        "version": "{{ project_version }}",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.DEBUG
+    )
+{% elif api_framework == 'flask' %}
+from flask import Flask, jsonify
+from flask_restx import Api
+{% if has_cors %}from flask_cors import CORS{% endif %}
+
+from app.core.config import settings
+from app.api.v1.endpoints import api_ns
+
+
+def create_app():
+    """Application factory."""
+    app = Flask(__name__)
+    app.config.from_object(settings)
+    
+    {% if has_cors %}
+    CORS(app)
+    {% endif %}
+    
+    # Initialize API
+    api = Api(
+        app,
+        title=settings.PROJECT_NAME,
+        version="{{ project_version }}",
+        description="{{ project_description }}",
+        doc="/docs"
+    )
+    
+    # Register namespaces
+    {% if api_versioning %}
+    api.add_namespace(api_ns, path="/api/v1")
+    {% else %}
+    api.add_namespace(api_ns, path="/api")
+    {% endif %}
+    
+    {% if has_health_check %}
+    @app.route("/health")
+    def health_check():
+        return jsonify({
+            "status": "healthy",
+            "service": settings.PROJECT_NAME,
+            "version": "{{ project_version }}"
+        })
+    {% endif %}
+    
+    @app.route("/")
+    def root():
+        return jsonify({
+            "name": settings.PROJECT_NAME,
+            "version": "{{ project_version }}",
+            "docs": "/docs"
+        })
+    
+    return app
+
+
+app = create_app()
+
+if __name__ == "__main__":
+    app.run(
+        host=settings.HOST,
+        port=settings.PORT,
+        debug=settings.DEBUG
+    )
+{% endif %}
+

@@ -4,8 +4,8 @@
 
 {{ project_description }}
 
-Author: {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}
-{% if organization %}Organization: {{ organization }}{% endif %}
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "Organization: " + organization if organization else "" }}
 Created: {{ current_date }}
 Version: {{ project_version }}
 
@@ -36,6 +36,9 @@ import customtkinter as ctk
 {% elif gui_framework == 'pyqt6' %}
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
+{% elif gui_framework == 'pyside6' %}
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
 {% elif gui_framework == 'tkinter' %}
 import tkinter as tk
 from tkinter import ttk
@@ -160,10 +163,18 @@ class {{ project_name_pascal }}App:
             # Configure PyQt6
             QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
             QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
-            
+
             if self.logger:
                 self.logger.info("PyQt6 high DPI scaling enabled")
-            
+
+            {% elif gui_framework == 'pyside6' %}
+            # Configure PySide6
+            QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
+            QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
+
+            if self.logger:
+                self.logger.info("PySide6 high DPI scaling enabled")
+
             {% elif gui_framework == 'tkinter' %}
             # Configure Tkinter
             # Basic Tkinter doesn't require special configuration
@@ -206,16 +217,16 @@ class {{ project_name_pascal }}App:
             min_width, min_height = "{{ minimum_resolution }}".split('x')
             self.main_window.minsize(int(min_width), int(min_height))
             
-            {% elif gui_framework == 'pyqt6' %}
+            {% elif gui_framework in ['pyqt6', 'pyside6'] %}
             app = QApplication(sys.argv)
             app.setApplicationName("{{ project_name }}")
             app.setApplicationVersion("{{ project_version }}")
             app.setOrganizationName("{{ organization or author_name }}")
-            
+
             self.main_window = MainWindow()
             self.main_window.setWindowTitle(f"{{ project_name }} v{self.version}")
             self.main_window.resize({{ minimum_resolution.split('x')[0] }}, {{ minimum_resolution.split('x')[1] }})
-            
+
             {% elif gui_framework == 'tkinter' %}
             root = tk.Tk()
             root.title(f"{{ project_name }} v{self.version}")
@@ -266,11 +277,11 @@ class {{ project_name_pascal }}App:
             # Start CustomTkinter main loop
             self.main_window.mainloop()
             
-            {% elif gui_framework == 'pyqt6' %}
-            # Start PyQt6 main loop
+            {% elif gui_framework in ['pyqt6', 'pyside6'] %}
+            # Start {{ 'PyQt6' if gui_framework == 'pyqt6' else 'PySide6' }} main loop
             self.main_window.show()
             return app.exec()
-            
+
             {% elif gui_framework == 'tkinter' %}
             # Start Tkinter main loop
             self.main_window.mainloop()
@@ -317,8 +328,10 @@ class {{ project_name_pascal }}App:
             if self.main_window:
                 {% if gui_framework in ['customtkinter', 'tkinter'] %}
                 self.main_window.quit()
-                {% elif gui_framework == 'pyqt6' %}
+                {% elif gui_framework in ['pyqt6', 'pyside6'] %}
                 self.main_window.close()
+                {% elif gui_framework == 'kivy' %}
+                pass  # Kivy shutdown is handled via App.stop(), not the widget itself
                 {% endif %}
             
             if self.logger:

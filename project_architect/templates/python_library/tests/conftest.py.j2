@@ -1,0 +1,42 @@
+"""
+pytest configuration and fixtures for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if has_async %}
+import asyncio
+{% endif %}
+
+
+@pytest.fixture
+def sample_data():
+    """Provide sample test data."""
+    return {
+        "name": "test",
+        "value": 123,
+        "nested": {
+            "key": "value"
+        }
+    }
+
+
+@pytest.fixture
+def sample_config():
+    """Provide sample configuration."""
+    return {
+        "debug": True,
+        "timeout": 30
+    }
+
+
+{% if has_async %}
+@pytest.fixture
+def event_loop():
+    """Create event loop for async tests."""
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+{% endif %}
+

@@ -1,0 +1,60 @@
+"""
+{{ project_name }} - Utility Functions
+
+Shared helpers for asset loading and other cross-cutting concerns.
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+from pathlib import Path
+{% if has_sprites and game_framework in ['pygame'] %}
+import pygame
+{% endif %}
+
+
+{% if has_sprites and game_framework == 'pygame' %}
+def load_image(filename: str, assets_dir: Path) -> "pygame.Surface":
+    """
+    Load an image from the assets directory.
+
+    Args:
+        filename: Image filename relative to assets_dir
+        assets_dir: Directory containing image assets
+
+    Returns:
+        Loaded and converted Pygame surface
+    """
+    path = assets_dir / filename
+    image = pygame.image.load(str(path))
+    return image.convert_alpha()
+
+
+{% endif %}
+{% if has_sound and game_framework == 'pygame' %}
+def load_sound(filename: str, sounds_dir: Path) -> "pygame.mixer.Sound":
+    """
+    Load a sound effect from the sounds directory.
+
+    Args:
+        filename: Sound filename relative to sounds_dir
+        sounds_dir: Directory containing sound assets
+
+    Returns:
+        Loaded Pygame sound object
+    """
+    path = sounds_dir / filename
+    return pygame.mixer.Sound(str(path))
+
+
+{% endif %}
+def asset_path(*parts: str) -> Path:
+    """
+    Build a path under the project's assets/ directory.
+
+    Args:
+        *parts: Path segments relative to assets/
+
+    Returns:
+        Resolved Path under assets/
+    """
+    return Path("assets").joinpath(*parts)

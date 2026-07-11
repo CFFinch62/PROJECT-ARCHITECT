@@ -1,0 +1,82 @@
+"""
+{{ project_name }} Application Package
+
+Author: {{ author_name }}
+"""
+
+{% if web_framework == 'fastapi' %}
+from fastapi import FastAPI
+{% if has_cors %}
+from fastapi.middleware.cors import CORSMiddleware
+{% endif %}
+from .config import get_settings
+from . import routes
+{% if has_authentication %}from . import auth{% endif %}
+
+
+def create_app() -> FastAPI:
+    """Create and configure FastAPI application."""
+    settings = get_settings()
+    
+    app = FastAPI(
+        title="{{ project_name }}",
+        description="{{ project_description }}",
+        version="{{ project_version }}",
+        {% if not has_api_docs %}docs_url=None, redoc_url=None{% endif +%}
+    )
+    
+    {% if has_cors %}
+    # CORS middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    {% endif %}
+    
+    # Include routers
+    app.include_router(routes.router)
+    {% if has_authentication %}
+    app.include_router(auth.router, prefix="/auth", tags=["authentication"])
+    {% endif %}
+    
+    return app
+
+{% elif web_framework == 'flask' %}
+from flask import Flask
+{% if has_cors %}
+from flask_cors import CORS
+{% endif %}
+from .config import get_settings
+from . import routes
+{% if has_authentication %}from . import auth{% endif %}
+
+
+def create_app() -> Flask:
+    """Create and configure Flask application."""
+    app = Flask(__name__)
+    settings = get_settings()
+    
+    app.config.from_object(settings)
+    
+    {% if has_cors %}
+    # Enable CORS
+    CORS(app)
+    {% endif %}
+    
+    # Register blueprints
+    app.register_blueprint(routes.bp)
+    {% if has_authentication %}
+    app.register_blueprint(auth.bp, url_prefix='/auth')
+    {% endif %}
+    
+    return app
+
+{% elif web_framework == 'django' %}
+# Django app initialization
+default_app_config = 'app.apps.AppConfig'
+
+__all__ = []
+{% endif %}

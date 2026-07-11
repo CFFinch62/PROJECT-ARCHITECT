@@ -1,0 +1,18 @@
+// Command {{ project_name | snake_case }} is the entry point for {{ project_name }}.
+//
+// {{ project_description }}
+//
+// Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+package main
+
+import (
+	"os"
+
+	"{{ module_path if module_path else project_name | snake_case }}/internal/cli"
+)
+
+func main() {
+	if err := cli.Execute(); err != nil {
+		os.Exit(1)
+	}
+}

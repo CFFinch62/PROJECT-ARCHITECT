@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""
+Setup script for {{ project_name }}
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+from setuptools import setup, find_packages
+from pathlib import Path
+
+readme_file = Path(__file__).parent / "README.md"
+long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
+
+setup(
+    name="{{ project_name | snake_case }}",
+    version="{{ project_version }}",
+    author="{{ author_name }}",
+    {% if author_email %}author_email="{{ author_email }}",{% endif +%}
+    description="{{ project_description }}",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(),
+    py_modules=["{{ project_name | snake_case }}"],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.12",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires=">=3.12",
+    install_requires=[
+        {% if cli_framework == 'click' %}"click>=8.1.0",
+        {% elif cli_framework == 'typer' %}"typer>=0.9.0",
+        "rich>=13.0.0",
+        {% endif %}
+        {% if has_config_file and config_format == 'yaml' %}"pyyaml>=6.0.0",{% elif has_config_file and config_format == 'toml' %}"tomli>=2.0.0",{% endif +%}
+    ],
+    extras_require={
+        "dev": [
+            {% if include_tests %}"pytest>=7.4.0",
+            "pytest-cov>=4.1.0",
+            {% endif %}
+            {% if include_linting %}"flake8>=6.0.0",{% endif +%}
+        ],
+    },
+    entry_points={
+        "console_scripts": [
+            "{{ project_name | snake_case }}={{ project_name | snake_case }}:{% if cli_framework == 'click' %}cli{% elif cli_framework == 'typer' %}app{% else %}main{% endif %}",
+        ],
+    },
+    include_package_data=True,
+    zip_safe=False,
+)

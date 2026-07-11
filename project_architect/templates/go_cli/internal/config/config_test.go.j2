@@ -1,0 +1,53 @@
+package config
+
+import (
+	"os"
+	"path/filepath"
+	"testing"
+	{% if use_testify %}
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	{% endif %}
+)
+
+func TestLoad_MissingFileReturnsDefault(t *testing.T) {
+	cfg, err := Load(filepath.Join(t.TempDir(), "does-not-exist.{{ config_format }}"))
+	{% if use_testify %}
+	require.NoError(t, err)
+	assert.Equal(t, Default().LogLevel, cfg.LogLevel)
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.LogLevel != Default().LogLevel {
+		t.Errorf("got %q, want %q", cfg.LogLevel, Default().LogLevel)
+	}
+	{% endif %}
+}
+
+func TestLoad_ParsesExistingFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.{{ config_format }}")
+	{% if config_format == 'yaml' %}
+	content := "log_level: debug\n"
+	{% elif config_format == 'json' %}
+	content := `{"log_level": "debug"}`
+	{% endif %}
+
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("failed to write test config: %v", err)
+	}
+
+	cfg, err := Load(path)
+	{% if use_testify %}
+	require.NoError(t, err)
+	assert.Equal(t, "debug", cfg.LogLevel)
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.LogLevel != "debug" {
+		t.Errorf("got %q, want %q", cfg.LogLevel, "debug")
+	}
+	{% endif %}
+}

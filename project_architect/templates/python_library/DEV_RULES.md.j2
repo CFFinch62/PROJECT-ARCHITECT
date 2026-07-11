@@ -1,0 +1,121 @@
+# {{ project_name }} - Development Rules
+
+## Core Principles
+
+1. **API Stability** - Don't break public interface
+2. **Type Safety** - Use type hints everywhere
+3. **Test Coverage** - All public functions tested
+4. **Documentation** - Docstrings for all public API
+
+## Development Standards
+
+### Module Size
+- **Target:** < 300 lines per file
+- **Maximum:** 500 lines
+- **Action:** Split into multiple files if needed
+
+### Code Quality Checklist
+
+- [ ] Code follows PEP 8
+{% if include_linting %}- [ ] No lint errors{% endif +%}
+{% if include_tests %}- [ ] Tests written
+- [ ] All tests pass{% endif +%}
+- [ ] Docstrings added
+- [ ] Type hints added
+- [ ] No debug statements
+
+## API Design Rules
+
+### Public API
+- Export in `src/__init__.py`
+- Document with docstrings
+- Use type hints
+- Maintain backwards compatibility
+
+### Private API
+- Prefix with underscore: `_private_function`
+- Don't export in `__init__.py`
+
+## Testing Requirements
+
+{% if include_tests %}
+### Unit Tests
+- All public functions must have tests
+- Coverage target: >80%
+- Location: `tests/`
+
+### Example Test
+```python
+def test_example_function():
+    result = example_function("test")
+    assert result["processed"] is True
+```
+{% endif %}
+
+## Git Workflow
+
+### Commit Format
+```
+<type>: <subject>
+```
+
+**Types:** feat, fix, docs, refactor, test
+
+**Example:**
+```
+feat: add async processing support
+```
+
+## Error Handling
+
+### Custom Exceptions
+```python
+from .exceptions import ValidationError
+
+if not data:
+    raise ValidationError("Data required", field="data")
+```
+
+## Documentation
+
+### Docstrings (Google Style)
+```python
+def function(arg: str, option: int = 0) -> dict:
+    """Short description.
+    
+    Longer description if needed.
+    
+    Args:
+        arg: Argument description
+        option: Optional parameter
+    
+    Returns:
+        Description of return value
+    
+    Raises:
+        ValidationError: If arg is invalid
+    
+    Example:
+        >>> function("test")
+        {'result': 'test'}
+    """
+```
+
+## Version Management
+
+### Semantic Versioning
+- **MAJOR:** Breaking API changes
+- **MINOR:** New features (backwards compatible)
+- **PATCH:** Bug fixes
+
+### Update Version
+1. Update `src/__init__.py`
+2. Update `pyproject.toml`
+3. Update CHANGELOG.md
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Updated:** {{ current_date }}
+

@@ -1,0 +1,143 @@
+# Go CLI Tool Template Configuration
+# Project Architect Template System
+
+template:
+  name: "Go CLI Tool"
+  type: "go_cli"
+  description: "Command-line tool written in Go, with a choice of Cobra, urfave/cli, or the standard library"
+  version: "1.0.0"
+  author: "Project Architect"
+
+  # Supported CLI frameworks
+  frameworks:
+    - cobra
+    - urfave-cli
+    - stdlib
+
+# Project structure definition
+structure:
+  # Directories
+  - path: "cmd"
+    type: "directory"
+  - path: "internal/cli"
+    type: "directory"
+  - path: "internal/version"
+    type: "directory"
+  - path: "docs"
+    type: "directory"
+  - path: "dev_sessions"
+    type: "directory"
+
+  # Entry point
+  - path: "cmd/main.go"
+    type: "file"
+    template: "cmd/main.go.j2"
+
+  # CLI package
+  - path: "internal/cli/cli.go"
+    type: "file"
+    template: "internal/cli/cli.go.j2"
+  - path: "internal/cli/cli_test.go"
+    type: "file"
+    template: "internal/cli/cli_test.go.j2"
+    condition: "include_tests"
+
+  # Version package
+  - path: "internal/version/version.go"
+    type: "file"
+    template: "internal/version/version.go.j2"
+  - path: "internal/version/version_test.go"
+    type: "file"
+    template: "internal/version/version_test.go.j2"
+    condition: "include_tests"
+
+  # Config package
+  - path: "internal/config/config.go"
+    type: "file"
+    template: "internal/config/config.go.j2"
+    condition: "has_config_file"
+  - path: "internal/config/config_test.go"
+    type: "file"
+    template: "internal/config/config_test.go.j2"
+    condition: "has_config_file"
+
+  # Build and tooling
+  - path: "go.mod"
+    type: "file"
+    template: "go.mod.j2"
+  - path: "Makefile"
+    type: "file"
+    template: "Makefile.j2"
+  - path: ".golangci.yml"
+    type: "file"
+    template: ".golangci.yml.j2"
+    condition: "include_linting"
+  - path: ".github/workflows/ci.yml"
+    type: "file"
+    template: ".github/workflows/ci.yml.j2"
+    condition: "include_github_actions"
+  - path: ".gitignore"
+    type: "file"
+    template: ".gitignore.j2"
+
+  # Documentation
+  - path: "README.md"
+    type: "file"
+    template: "README.md.j2"
+  - path: "CHANGELOG.md"
+    type: "file"
+    template: "CHANGELOG.md.j2"
+  - path: "TECHNICAL_SPECIFICATION.md"
+    type: "file"
+    template: "TECHNICAL_SPECIFICATION.md.j2"
+  - path: "IMPLEMENTATION_PLAN.md"
+    type: "file"
+    template: "IMPLEMENTATION_PLAN.md.j2"
+  - path: "AI_CONTEXT.md"
+    type: "file"
+    template: "AI_CONTEXT.md.j2"
+  - path: "CODING_STANDARDS.md"
+    type: "file"
+    template: "CODING_STANDARDS.md.j2"
+  - path: "DEV_RULES.md"
+    type: "file"
+    template: "DEV_RULES.md.j2"
+  - path: "DEV_PROCESS.md"
+    type: "file"
+    template: "DEV_PROCESS.md.j2"
+
+  # Development session tracking
+  - path: "dev_sessions/README.md"
+    type: "file"
+    template: "dev_sessions/README.md.j2"
+
+# Default requirements based on framework/feature selection
+requirements:
+  cobra:
+    - "github.com/spf13/cobra"
+  urfave-cli:
+    - "github.com/urfave/cli/v2"
+  config:
+    yaml:
+      - "gopkg.in/yaml.v3"
+  testing:
+    - "github.com/stretchr/testify"
+
+# Development tools configuration
+dev_tools:
+  linting:
+    - golangci-lint
+  formatting:
+    - gofmt
+  testing:
+    - "go test"
+
+# Git configuration
+git:
+  ignore_patterns:
+    - "bin/"
+    - "*.exe"
+    - "*.test"
+    - "*.out"
+    - ".env"
+    - "vendor/"

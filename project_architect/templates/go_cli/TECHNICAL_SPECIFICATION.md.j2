@@ -1,0 +1,140 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}
+**Version:** {{ project_version }}
+**Author:** {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "**Organization:** " + organization if organization else "" }}
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+**Primary Goals:**
+- Provide a {% if cli_framework == 'cobra' %}Cobra{% elif cli_framework == 'urfave-cli' %}urfave/cli{% else %}stdlib flag{% endif %}-based command-line tool with a clean, testable architecture
+- Maintain high code quality through `go vet`, {% if include_linting %}golangci-lint, {% endif %}and tests
+- Keep the module layout idiomatic and easy to extend with new subcommands
+
+## 2. Core Features
+
+### 2.1 Command-Line Interface
+
+**Framework:** {% if cli_framework == 'cobra' %}Cobra (github.com/spf13/cobra){% elif cli_framework == 'urfave-cli' %}urfave/cli (github.com/urfave/cli/v2){% else %}Standard library `flag` package{% endif %}
+
+**Architecture:** `cmd/main.go` is a thin entry point that delegates to `internal/cli.Execute()`. All argument parsing and command logic lives in `internal/cli`, which keeps it directly unit-testable without touching `os.Args` or process exit codes.
+
+**Built-in commands:**
+- `hello NAME` - example subcommand, replace with real functionality
+- `--version` - print the current version
+- `--verbose` / `-v` - enable verbose output{% if cli_framework == 'urfave-cli' %} (no short alias, since `-v` is reserved by urfave/cli for `--version`){% endif %}
+
+{% if has_config_file %}
+### 2.2 Configuration
+
+**Format:** {{ config_format | upper }}
+
+**Loading:** `internal/config.Load(path)` reads the file if present; if it does not exist, `internal/config.Default()` supplies built-in defaults. Missing files are not treated as errors.
+{% endif %}
+
+{% if has_logging %}
+### 2.{% if has_config_file %}3{% else %}2{% endif %} Logging
+
+**Library:** standard library `log/slog`
+
+**Default Level:** {{ log_level }} (overridden to `debug` when `--verbose` is passed)
+
+**Output:** stderr, text-formatted
+{% endif %}
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+**Core:**
+- Go 1.22+
+{% if cli_framework == 'cobra' %}- github.com/spf13/cobra
+{% elif cli_framework == 'urfave-cli' %}- github.com/urfave/cli/v2
+{% endif %}
+{% if has_config_file and config_format == 'yaml' %}- gopkg.in/yaml.v3
+{% endif %}
+{% if use_testify %}- github.com/stretchr/testify (tests only)
+{% endif %}
+
+### 3.2 Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── cmd/
+│   └── main.go               # Entry point
+├── internal/
+│   ├── cli/
+│   │   ├── cli.go             # Command definitions and parsing
+│   {% if include_tests %}
+│   │   └── cli_test.go
+│   {% endif %}
+{% if has_config_file %}
+│   ├── config/
+│   │   ├── config.go          # Configuration loading
+│   {% if include_tests %}
+│   │   └── config_test.go
+│   {% endif %}
+{% endif %}
+│   └── version/
+│       ├── version.go         # Version information
+│   {% if include_tests %}
+│       └── version_test.go
+│   {% endif %}
+├── docs/                      # Documentation
+├── go.mod
+├── Makefile
+{% if include_linting %}├── .golangci.yml
+{% endif %}
+{% if include_github_actions %}├── .github/workflows/ci.yml
+{% endif %}
+└── README.md
+```
+
+## 4. Quality Assurance
+
+{% if include_tests %}
+### 4.1 Testing Strategy
+
+**Framework:** standard library `testing`{% if use_testify %} + testify for assertions{% endif %}
+
+**Approach:** `internal/cli` exposes testable entry points (`Run`/`Execute` variants that accept `io.Writer` for output) instead of writing directly to `os.Stdout`, so command behavior can be asserted without spawning a subprocess.
+
+**Test Execution:**
+```bash
+go test ./...{% if test_coverage %} -cover{% endif %}
+```
+{% endif %}
+
+{% if include_linting %}
+### 4.2 Code Quality Standards
+
+**Formatting:** `gofmt` (enforced via `make fmt`)
+**Linting:** golangci-lint (govet, errcheck, staticcheck, unused, gofmt, goimports)
+**Static Analysis:** `go vet`
+{% endif %}
+
+## 5. Performance Requirements
+
+- Cold start time: negligible (compiled binary, no runtime/interpreter startup)
+- Memory usage: minimal; Go's garbage collector handles cleanup automatically
+
+## 6. Future Enhancements
+
+- Additional subcommands
+{% if not has_config_file %}- Configuration file support
+{% endif %}
+{% if not has_logging %}- Structured logging
+{% endif %}
+- Shell completion scripts{% if cli_framework == 'cobra' %} (Cobra generates these out of the box via `completion` subcommand){% endif %}
+
+- Release automation (goreleaser or similar)
+
+---
+
+**Document Version:** 1.0
+**Last Updated:** {{ current_date }}
+**Author:** {{ author_name }}

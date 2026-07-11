@@ -1,0 +1,162 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.12+
+{% if has_database and database_type != 'sqlite' %}- {{ database_type | title }} database{% endif +%}
+{% if include_docker %}- Docker and Docker Compose{% endif %}
+
+### Installation
+
+1. **Clone the repository** (if applicable):
+   ```bash
+   git clone <repository-url>
+   cd {{ project_name | snake_case }}
+   ```
+
+2. **Create virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+{% if has_database and database_type != 'sqlite' %}
+5. **Set up database**:
+   {% if database_type == 'postgresql' %}- Start PostgreSQL server
+   - Create database: `createdb {{ project_name | snake_case }}`
+   {% elif database_type == 'mysql' %}- Start MySQL server
+   - Create database: `CREATE DATABASE {{ project_name | snake_case }};`
+   {% elif database_type == 'mongodb' %}- Start MongoDB server
+   {% endif %}
+{% endif %}
+
+6. **Run the application**:
+   ```bash
+   python main.py
+   ```
+
+{% if include_docker %}
+### Docker Setup
+
+```bash
+docker-compose up -d
+```
+
+The API will be available at `http://localhost:8000`
+{% endif %}
+
+## API Documentation
+
+{% if web_framework == 'fastapi' %}
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+{% elif web_framework == 'flask' and has_api_docs %}
+- API Docs: http://localhost:5000/docs
+{% elif web_framework == 'django' %}
+- Django Admin: http://localhost:8000/admin
+- API Root: http://localhost:8000/api/
+{% endif %}
+
+## Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py              # Application entry point
+├── app/
+│   ├── __init__.py      # App factory
+│   ├── config.py        # Configuration
+│   ├── routes.py        # API routes
+{% if has_database %}│   ├── models.py        # Database models{% endif +%}
+{% if has_authentication %}│   └── auth.py          # Authentication{% endif +%}
+├── tests/               # Unit tests
+{% if include_docker %}├── Dockerfile
+├── docker-compose.yml
+{% endif %}├── requirements.txt
+└── README.md
+```
+
+## Development
+
+{% if include_tests %}
+### Running Tests
+
+```bash
+pytest
+pytest --cov=app --cov-report=html
+```
+{% endif %}
+
+{% if include_formatting %}
+### Code Formatting
+
+```bash
+black .
+isort .
+```
+{% endif %}
+
+{% if include_linting %}
+### Linting
+
+```bash
+flake8 app tests
+pylint app
+```
+{% endif %}
+
+## Endpoints
+
+- `GET /` - Root endpoint
+- `GET /health` - Health check
+{% if has_authentication %}- `POST /auth/login` - User login
+- `POST /auth/register` - User registration
+{% endif %}
+
+See [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for complete API reference.
+
+## Environment Variables
+
+Create a `.env` file with the following:
+
+```env
+# Application
+DEBUG=true
+HOST=0.0.0.0
+PORT=8000
+SECRET_KEY=your-secret-key-here
+
+{% if has_database %}# Database
+DATABASE_URL={{ database_type }}://user:password@localhost/{{ project_name | snake_case }}
+{% endif %}
+
+{% if has_caching %}# Redis
+REDIS_URL=redis://localhost:6379/0
+{% endif %}
+```
+
+## License
+
+{{ "MIT License" }}
+
+## Author
+
+{{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}
+
+---
+
+Generated with Project Architect

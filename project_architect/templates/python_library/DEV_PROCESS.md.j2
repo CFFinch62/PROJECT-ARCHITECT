@@ -1,0 +1,123 @@
+# {{ project_name }} - Development Process
+
+## Daily Workflow
+
+### Start of Day
+```bash
+source venv/bin/activate
+pip install -e .
+```
+
+### Development Cycle
+1. Create feature branch
+2. Implement feature
+3. {% if include_tests %}Write tests{% else %}Test manually{% endif +%}
+4. Update documentation
+5. Commit changes
+
+## Feature Development
+
+### Phase 1: Design
+1. Define function/class interface
+2. Plan type hints
+3. Write docstring first
+
+### Phase 2: Implementation
+
+```python
+# src/core.py
+{% if has_type_hints %}
+def new_feature(data: dict, option: str = "default") -> dict:
+{% else %}
+def new_feature(data, option="default"):
+{% endif %}
+    """
+    Short description.
+    
+    Args:
+        data: Input data
+        option: Processing option
+    
+    Returns:
+        Processed result
+    """
+    # Implementation
+    return {"result": data}
+```
+
+### Phase 3: Export (if public)
+
+```python
+# src/__init__.py
+from .core import new_feature
+
+__all__ = [..., "new_feature"]
+```
+
+### Phase 4: Testing
+
+{% if include_tests %}
+```python
+# tests/test_core.py
+def test_new_feature():
+    result = new_feature({"key": "value"})
+    assert "result" in result
+```
+
+```bash
+pytest tests/test_core.py -v
+pytest --cov=src
+```
+{% endif %}
+
+## Bug Fix Process
+
+1. Reproduce bug
+2. {% if include_tests %}Write failing test{% else %}Document bug{% endif +%}
+3. Fix and verify
+4. Update CHANGELOG
+
+## Release Process
+
+### Pre-Release Checklist
+- [ ] {% if include_tests %}All tests passing{% endif +%}
+- [ ] Version updated
+- [ ] CHANGELOG updated
+- [ ] Documentation current
+
+### Release Steps
+
+```bash
+# Update version in pyproject.toml and src/__init__.py
+
+# Build
+python -m build
+
+{% if publish_to_pypi %}
+# Upload to PyPI
+twine upload dist/*
+{% endif %}
+
+# Tag release
+git tag v{{ project_version }}
+git push --tags
+```
+
+## Debugging
+
+### Common Issues
+
+**Import Error:**
+- Check `__init__.py` exports
+- Verify package installed: `pip install -e .`
+
+**Type Error:**
+- Check type hints match
+- Run mypy: `mypy src`
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

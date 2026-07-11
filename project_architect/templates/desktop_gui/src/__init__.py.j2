@@ -1,0 +1,24 @@
+"""
+{{ project_name }} - {{ project_description }}
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "Organization: " + organization if organization else "" }}
+Version: {{ project_version }}
+Created: {{ current_date }}
+"""
+
+__version__ = "{{ project_version }}"
+__author__ = "{{ author_name }}"
+__description__ = "{{ project_description }}"
+
+# Package-level imports for convenience
+from .main_window import MainWindow
+{% if has_config_file %}
+from .config import AppConfig
+{% endif %}
+from .utils import *
+
+__all__ = [
+    "MainWindow",
+    {% if has_config_file %}"AppConfig",{% endif +%}
+]

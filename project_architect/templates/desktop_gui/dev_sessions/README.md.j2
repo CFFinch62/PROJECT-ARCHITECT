@@ -1,0 +1,104 @@
+# Development Sessions
+
+## Purpose
+
+This directory tracks development sessions for {{ project_name }}. Each session should document:
+
+- Date and duration
+- Goals for the session
+- Work completed
+- Issues encountered
+- Next steps
+
+## Session Format
+
+Create a new file for each session: `sessionN.md` where N is the session number.
+
+### Template
+
+```markdown
+# Session N - [Date]
+
+## Duration
+[Start time] - [End time] (Total: X hours)
+
+## Goals
+- [Goal 1]
+- [Goal 2]
+
+## Work Completed
+- [Task 1]
+- [Task 2]
+
+## Issues & Solutions
+- **Issue**: [Description]
+  - **Solution**: [How it was resolved]
+
+## Next Steps
+- [Next task 1]
+- [Next task 2]
+
+## Notes
+[Any additional notes or observations]
+```
+
+## Why Track Sessions?
+
+1. **Progress tracking**: See what's been accomplished over time
+2. **Problem documentation**: Record issues and solutions for future reference
+3. **AI context**: Helps AI assistants understand project history
+4. **Learning**: Reflect on development process and improve
+
+## Example
+
+Create `session0.md`:
+
+```markdown
+# Session 0 - {{ current_date }}
+
+## Duration
+9:00 AM - 5:00 PM (Total: 8 hours)
+
+## Goals
+- Set up project structure
+- Implement basic GUI
+- Configure testing framework
+
+## Work Completed
+- Created project directories and files
+- Implemented MainWindow class with basic UI
+{% if has_config_file %}- Set up configuration system{% endif +%}
+{% if include_tests %}- Configured pytest with basic tests{% endif +%}
+- Initialized Git repository
+
+## Issues & Solutions
+{% if gui_framework == 'customtkinter' %}- **Issue**: CustomTkinter widgets not displaying
+  - **Solution**: Missing `pack()` call on main frame{% endif %}
+  
+{% if has_database %}- **Issue**: Database connection failed
+  - **Solution**: Created data directory, fixed path in config{% endif %}
+
+## Next Steps
+- Implement core business logic
+- Add more GUI components
+- Expand test coverage
+- Write user documentation
+
+## Notes
+- Remember to run `black src/` before committing
+- Need to add error handling for file operations
+```
+
+## Session Guidelines
+
+- Create a new session file at the start of major development work
+- Update throughout the day or at the end
+- Be honest about issues and blockers
+- Document solutions for future reference
+- Keep entries concise but informative
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}

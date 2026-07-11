@@ -1,0 +1,133 @@
+"""
+API tests for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if api_framework == 'fastapi' %}
+
+
+@pytest.mark.asyncio
+class TestHealthCheck:
+    """Test health check endpoint."""
+    
+    {% if has_health_check %}
+    async def test_health_check(self, client):
+        """Test health endpoint returns healthy status."""
+        response = await client.get("/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "healthy"
+    {% else %}
+    async def test_root(self, client):
+        """Test root endpoint."""
+        response = await client.get("/")
+        assert response.status_code == 200
+    {% endif %}
+
+
+@pytest.mark.asyncio
+class TestAPIInfo:
+    """Test API info endpoint."""
+    
+    async def test_api_info(self, client, api_base_url):
+        """Test API info endpoint."""
+        response = await client.get(f"{api_base_url}/")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+
+
+@pytest.mark.asyncio
+class TestItems:
+    """Test item endpoints."""
+    
+    async def test_list_items(self, client, api_base_url):
+        """Test listing items."""
+        response = await client.get(f"{api_base_url}/items")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert "data" in data
+    
+    async def test_list_items_pagination(self, client, api_base_url):
+        """Test listing items with pagination."""
+        response = await client.get(f"{api_base_url}/items?skip=0&limit=5")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["limit"] == 5
+    
+    async def test_create_item(self, client, api_base_url, sample_item):
+        """Test creating an item."""
+        response = await client.post(f"{api_base_url}/items", json=sample_item)
+        assert response.status_code == 201
+        data = response.json()
+        assert data["success"] is True
+        assert data["data"]["name"] == sample_item["name"]
+    
+    async def test_get_item(self, client, api_base_url):
+        """Test getting a specific item."""
+        response = await client.get(f"{api_base_url}/items/1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+    
+    async def test_update_item(self, client, api_base_url, sample_item):
+        """Test updating an item."""
+        response = await client.put(f"{api_base_url}/items/1", json=sample_item)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+    
+    async def test_delete_item(self, client, api_base_url):
+        """Test deleting an item."""
+        response = await client.delete(f"{api_base_url}/items/1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+
+
+@pytest.mark.asyncio
+class TestValidation:
+    """Test input validation."""
+    
+    async def test_create_item_missing_name(self, client, api_base_url):
+        """Test creating item without required name."""
+        response = await client.post(f"{api_base_url}/items", json={})
+        assert response.status_code == 422  # Validation error
+{% elif api_framework == 'flask' %}
+
+
+class TestHealthCheck:
+    """Test health check endpoint."""
+    
+    {% if has_health_check %}
+    def test_health_check(self, client):
+        """Test health endpoint returns healthy status."""
+        response = client.get("/health")
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["status"] == "healthy"
+    {% else %}
+    def test_root(self, client):
+        """Test root endpoint."""
+        response = client.get("/")
+        assert response.status_code == 200
+    {% endif %}
+
+
+class TestItems:
+    """Test item endpoints."""
+    
+    def test_list_items(self, client, api_base_url):
+        """Test listing items."""
+        response = client.get(f"{api_base_url}/items")
+        assert response.status_code == 200
+    
+    def test_create_item(self, client, api_base_url, sample_item):
+        """Test creating an item."""
+        response = client.post(f"{api_base_url}/items", json=sample_item)
+        assert response.status_code == 201
+{% endif %}
+

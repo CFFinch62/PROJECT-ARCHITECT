@@ -1,0 +1,200 @@
+template:
+  name: "Web Application"
+  type: "web_app"
+  description: "Modern web application with REST API, authentication, and database support"
+  version: "1.0.0"
+  author: "Project Architect"
+  frameworks:
+    - "Flask"
+    - "FastAPI"
+    - "Django"
+
+structure:
+  # Main application file
+  - path: "main.py"
+    type: "file"
+    template: "main.py.j2"
+
+  # Requirements
+  - path: "requirements.txt"
+    type: "file"
+    template: "requirements.txt.j2"
+
+  - path: "setup.py"
+    type: "file"
+    template: "setup.py.j2"
+
+  # Application package
+  - path: "app"
+    type: "directory"
+
+  - path: "app/__init__.py"
+    type: "file"
+    template: "app/__init__.py.j2"
+
+  - path: "app/config.py"
+    type: "file"
+    template: "app/config.py.j2"
+
+  - path: "app/models.py"
+    type: "file"
+    template: "app/models.py.j2"
+    condition: "has_database"
+
+  - path: "app/routes.py"
+    type: "file"
+    template: "app/routes.py.j2"
+
+  - path: "app/auth.py"
+    type: "file"
+    template: "app/auth.py.j2"
+    condition: "has_authentication"
+
+  # Tests
+  - path: "tests"
+    type: "directory"
+
+  - path: "tests/__init__.py"
+    type: "file"
+    content: ""
+
+  - path: "tests/test_api.py"
+    type: "file"
+    template: "tests/test_api.py.j2"
+    condition: "include_tests"
+
+  - path: "tests/conftest.py"
+    type: "file"
+    template: "tests/conftest.py.j2"
+    condition: "include_tests"
+
+  # Development sessions
+  - path: "dev_sessions"
+    type: "directory"
+
+  - path: "dev_sessions/README.md"
+    type: "file"
+    template: "dev_sessions/README.md.j2"
+
+  # Docker
+  - path: "Dockerfile"
+    type: "file"
+    template: "Dockerfile.j2"
+    condition: "include_docker"
+
+  - path: "docker-compose.yml"
+    type: "file"
+    template: "docker-compose.yml.j2"
+    condition: "include_docker_compose"
+
+  # Configuration
+  - path: ".env.example"
+    type: "file"
+    template: ".env.example.j2"
+
+  - path: ".gitignore"
+    type: "file"
+    template: ".gitignore.j2"
+
+  - path: "pytest.ini"
+    type: "file"
+    template: "pytest.ini.j2"
+    condition: "include_tests"
+
+  - path: "pyproject.toml"
+    type: "file"
+    template: "pyproject.toml.j2"
+
+  # Documentation
+  - path: "README.md"
+    type: "file"
+    template: "README.md.j2"
+
+  - path: "CHANGELOG.md"
+    type: "file"
+    template: "CHANGELOG.md.j2"
+
+  - path: "API_DOCUMENTATION.md"
+    type: "file"
+    template: "API_DOCUMENTATION.md.j2"
+
+  # AI-Assist Documentation
+  - path: "AI_CONTEXT.md"
+    type: "file"
+    template: "AI_CONTEXT.md.j2"
+
+  - path: "TECHNICAL_SPECIFICATION.md"
+    type: "file"
+    template: "TECHNICAL_SPECIFICATION.md.j2"
+
+  - path: "DEV_RULES.md"
+    type: "file"
+    template: "DEV_RULES.md.j2"
+
+  - path: "DEV_PROCESS.md"
+    type: "file"
+    template: "DEV_PROCESS.md.j2"
+
+  - path: "CODING_STANDARDS.md"
+    type: "file"
+    template: "CODING_STANDARDS.md.j2"
+
+  - path: "IMPLEMENTATION_PLAN.md"
+    type: "file"
+    template: "IMPLEMENTATION_PLAN.md.j2"
+
+requirements:
+  flask:
+    - "flask>=3.0.0"
+    - "flask-cors>=4.0.0"
+    - "flask-restx>=1.3.0"
+  fastapi:
+    - "fastapi>=0.104.0"
+    - "uvicorn[standard]>=0.24.0"
+    - "python-multipart>=0.0.6"
+  django:
+    - "django>=4.2.0"
+    - "djangorestframework>=3.14.0"
+  database:
+    postgresql:
+      - "psycopg2-binary>=2.9.0"
+      - "sqlalchemy>=2.0.0"
+    mysql:
+      - "mysql-connector-python>=8.0.0"
+      - "sqlalchemy>=2.0.0"
+    sqlite:
+      - "sqlalchemy>=2.0.0"
+    mongodb:
+      - "pymongo>=4.5.0"
+  authentication:
+    jwt:
+      - "pyjwt>=2.8.0"
+    oauth2:
+      - "authlib>=1.2.0"
+  caching:
+    - "redis>=5.0.0"
+  celery:
+    - "celery>=5.3.0"
+  testing:
+    - "pytest>=7.4.0"
+    - "pytest-asyncio>=0.21.0"
+    - "pytest-cov>=4.1.0"
+    - "httpx>=0.25.0"
+  dev_tools:
+    - "black>=23.0.0"
+    - "flake8>=6.0.0"
+    - "mypy>=1.5.0"
+
+git_ignore:
+  - "__pycache__/"
+  - "*.py[cod]"
+  - ".venv/"
+  - "venv/"
+  - ".env"
+  - "*.db"
+  - "*.sqlite"
+  - ".pytest_cache/"
+  - ".coverage"
+  - "htmlcov/"
+  - ".mypy_cache/"
+  - "*.log"

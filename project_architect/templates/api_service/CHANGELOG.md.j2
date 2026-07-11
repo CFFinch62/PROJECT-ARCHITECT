@@ -1,0 +1,43 @@
+# Changelog
+
+All notable changes to {{ project_name }} will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Initial project structure
+- {% if api_framework == 'fastapi' %}FastAPI{% else %}Flask{% endif %} application setup
+{% if has_database %}- {{ database_type | title }} database configuration{% endif +%}
+{% if has_authentication %}- {{ auth_type | upper }} authentication{% endif +%}
+{% if has_health_check %}- Health check endpoint{% endif +%}
+- Basic CRUD endpoints for items
+- API documentation
+
+### Changed
+- Nothing yet
+
+### Deprecated
+- Nothing yet
+
+### Removed
+- Nothing yet
+
+### Fixed
+- Nothing yet
+
+### Security
+- Nothing yet
+
+## [{{ project_version }}] - {{ current_date }}
+
+### Added
+- Initial release
+- Project scaffolding by Project Architect
+
+---
+
+**Author:** {{ author_name }}
+

@@ -1,0 +1,108 @@
+# {{ project_name }} - Technical Specification
+
+## Overview
+
+**Project:** {{ project_name }}  
+**Type:** Data Science / {{ problem_type | title }}  
+**Framework:** {{ ml_framework }}
+
+## Technical Stack
+
+### Core Dependencies
+- Python 3.9+
+- NumPy, Pandas
+- Matplotlib, Seaborn
+- Jupyter
+
+### ML Framework
+{% if ml_framework == 'scikit-learn' %}
+- scikit-learn for classical ML algorithms
+{% elif ml_framework == 'pytorch' %}
+- PyTorch for deep learning
+{% if has_gpu_support %}- CUDA for GPU acceleration{% endif +%}
+{% elif ml_framework == 'tensorflow' %}
+- TensorFlow for deep learning
+{% if has_gpu_support %}- CUDA/cuDNN for GPU acceleration{% endif +%}
+{% endif %}
+
+{% if experiment_tracking != 'none' %}
+### Experiment Tracking
+{% if experiment_tracking == 'mlflow' %}
+- MLflow for experiment tracking and model registry
+{% elif experiment_tracking == 'wandb' %}
+- Weights & Biases for experiment tracking
+{% elif experiment_tracking == 'tensorboard' %}
+- TensorBoard for training visualization
+{% endif %}
+{% endif %}
+
+## Data Pipeline
+
+### Input Data
+- **Source:** {{ data_source }}
+- **Location:** `data/raw/`
+
+### Processing Steps
+1. Load raw data
+2. Handle missing values
+3. Remove outliers
+4. Feature engineering
+5. Encode categoricals
+6. Scale features
+7. Train/test split
+
+### Output
+- Processed data: `data/processed/`
+- Trained models: `models/`
+
+## Model Architecture
+
+### Problem Type: {{ problem_type | title }}
+
+{% if problem_type == 'classification' %}
+**Algorithms:**
+- Random Forest Classifier
+- Gradient Boosting Classifier
+- Logistic Regression
+
+**Metrics:**
+- Accuracy, Precision, Recall, F1
+- ROC-AUC
+- Confusion Matrix
+{% elif problem_type == 'regression' %}
+**Algorithms:**
+- Random Forest Regressor
+- Gradient Boosting Regressor
+- Linear Regression, Ridge
+
+**Metrics:**
+- MSE, RMSE, MAE
+- R² Score
+- MAPE
+{% elif problem_type == 'clustering' %}
+**Algorithms:**
+- K-Means
+- DBSCAN
+
+**Metrics:**
+- Silhouette Score
+- Calinski-Harabasz Index
+{% endif %}
+
+## File Specifications
+
+### Data Files
+- Raw data: CSV, Parquet, or JSON
+- Processed data: CSV or Parquet
+- Models: Pickle (.pkl) or joblib
+
+### Notebooks
+- `01_exploration.ipynb`: EDA
+- `02_preprocessing.ipynb`: Data prep
+- `03_modeling.ipynb`: Training
+
+---
+
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}
+

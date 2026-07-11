@@ -1,0 +1,125 @@
+# {{ project_name }} - Implementation Plan
+
+## Project Overview
+
+**Project:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Type:** API Service  
+**Framework:** {{ api_framework | title }}
+
+## Development Phases
+
+### Phase 1: Foundation ✅
+
+- [x] Project structure
+- [x] {{ api_framework | title }} setup
+{% if has_database %}- [x] Database configuration{% endif +%}
+{% if has_authentication %}- [x] Authentication setup{% endif +%}
+{% if init_git %}- [x] Git repository{% endif %}
+
+### Phase 2: Core API (In Progress)
+
+**Target:** Version {{ project_version }}
+
+- [ ] Base endpoints (health, info)
+- [ ] CRUD operations
+- [ ] Request validation
+- [ ] Error handling
+- [ ] Response formatting
+
+{% if has_database %}
+### Phase 3: Database
+
+- [ ] Define models
+- [ ] Set up migrations
+- [ ] Implement repositories
+- [ ] Add seed data
+{% endif %}
+
+{% if has_authentication %}
+### Phase 4: Authentication
+
+- [ ] User registration
+- [ ] User login
+{% if auth_type == 'jwt' %}- [ ] Token refresh{% endif +%}
+- [ ] Protected routes
+{% endif %}
+
+### Phase 5: Advanced Features
+
+{% if has_caching %}- [ ] Redis caching{% endif +%}
+{% if has_background_tasks %}- [ ] Background tasks{% endif +%}
+{% if has_rate_limiting %}- [ ] Rate limiting{% endif +%}
+{% if has_metrics %}- [ ] Prometheus metrics{% endif %}
+
+### Phase 6: Quality
+
+{% if include_tests %}- [ ] Unit tests (80%+ coverage){% endif +%}
+{% if include_linting %}- [ ] Linting fixes{% endif +%}
+- [ ] Documentation complete
+
+### Phase 7: Deployment
+
+{% if include_docker %}- [ ] Docker optimization{% endif +%}
+- [ ] Production config
+- [ ] CI/CD pipeline
+
+## Technical Specifications
+
+### Architecture
+
+```
+app/
+├── api/v1/endpoints.py   # Routes
+├── core/config.py        # Config
+├── models/               # DB models
+├── schemas/              # Pydantic
+└── services/             # Logic
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+{% if has_health_check %}| GET | /health | Health check |{% endif +%}
+| GET | /api/v1/ | API info |
+| GET | /api/v1/items | List items |
+| POST | /api/v1/items | Create item |
+| GET | /api/v1/items/{id} | Get item |
+| PUT | /api/v1/items/{id} | Update item |
+| DELETE | /api/v1/items/{id} | Delete item |
+
+## Development Workflow
+
+### Adding an Endpoint
+
+1. Add route in `app/api/v1/endpoints.py`
+2. Add schema in `app/schemas/`
+3. Add service in `app/services/`
+{% if include_tests %}4. Write tests{% endif +%}
+5. Update docs
+
+## Success Criteria
+
+- [ ] API starts without errors
+- [ ] All endpoints documented
+{% if has_health_check %}- [ ] Health check returns 200{% endif +%}
+{% if include_tests %}- [ ] Test coverage >80%{% endif +%}
+{% if has_authentication %}- [ ] Auth working{% endif +%}
+- [ ] Ready for deployment
+
+## Timeline
+
+- **Phase 1:** Complete ✅
+- **Phase 2:** 1 week
+- **Phase 3-4:** 1-2 weeks
+- **Phase 5-6:** 1 week
+- **Phase 7:** 1 week
+
+**Total:** 4-5 weeks to v1.0.0
+
+---
+
+**Updated:** {{ current_date }}  
+**Author:** {{ author_name }}
+

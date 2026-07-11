@@ -1,0 +1,281 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+{% if organization %}**Organization:** {{ organization }}{% endif +%}
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+**Primary Goals:**
+- Provide a professional {% if gui_framework == 'customtkinter' %}CustomTkinter{% elif gui_framework == 'pyqt6' %}PyQt6{% elif gui_framework == 'pyside6' %}PySide6{% elif gui_framework == 'tkinter' %}Tkinter{% elif gui_framework == 'kivy' %}Kivy{% endif %}-based desktop application
+{% if has_database %}- Implement robust data storage with {{ database_type | title }}{% endif +%}
+{% if has_config_file %}- Support flexible configuration management{% endif +%}
+- Maintain high code quality through testing and quality assurance
+- Ensure maintainability and extensibility
+
+## 2. Core Features
+
+### 2.1 User Interface
+
+**GUI Framework:** {% if gui_framework == 'customtkinter' %}CustomTkinter 5.2.2+{% elif gui_framework == 'pyqt6' %}PyQt6 6.5.0+{% elif gui_framework == 'pyside6' %}PySide6 6.5.0+{% elif gui_framework == 'tkinter' %}Tkinter (Python built-in){% elif gui_framework == 'kivy' %}Kivy 2.2.0+{% endif %}
+
+**Window Configuration:**
+- Minimum resolution: {{ minimum_resolution }}
+- Resizable: {% if window_resizable %}Yes{% else %}No{% endif +%}
+{% if gui_framework == 'customtkinter' %}- Theme: {{ app_theme }}
+- Color scheme: {{ color_scheme }}{% endif %}
+
+**UI Components:**
+{% if has_menu_bar %}- Menu bar with File, Edit, Help menus{% endif +%}
+{% if has_toolbar %}- Toolbar with quick-access buttons{% endif +%}
+{% if has_status_bar %}- Status bar for user feedback and application state{% endif +%}
+- Main content area for application functionality
+
+{% if has_database %}
+### 2.2 Database Integration
+
+**Database System:** {{ database_type | title }}
+
+**Purpose:** Persistent data storage for application state and user data
+
+**Configuration:**
+{% if database_type == 'sqlite' %}- Local SQLite database stored in `data/{{ project_name | snake_case }}.db`
+- No external database server required
+- Uses SQLAlchemy ORM for database operations
+{% elif database_type == 'postgresql' %}- PostgreSQL database server
+- Default connection: localhost:5432
+- Database name: {{ project_name | snake_case }}
+- Uses SQLAlchemy ORM for database operations
+{% elif database_type == 'mysql' %}- MySQL database server
+- Default connection: localhost:3306
+- Database name: {{ project_name | snake_case }}
+- Uses SQLAlchemy ORM for database operations
+{% elif database_type == 'mongodb' %}- MongoDB NoSQL database
+- Default connection: localhost:27017
+- Database name: {{ project_name | snake_case }}
+- Uses PyMongo for database operations
+{% endif %}
+{% endif %}
+
+{% if has_config_file %}
+### 2.3 Configuration Management
+
+**Format:** {{ config_format | upper}}
+
+**Configuration File:** `config.{{ config_format }}`
+
+**Managed Settings:**
+- Application metadata (name, version, author)
+{% if gui_framework == 'customtkinter' %}- Appearance settings (theme, color scheme){% endif +%}
+{% if has_logging %}- Logging configuration (level, file path){% endif +%}
+{% if has_database %}- Database connection parameters{% endif +%}
+- User preferences and application state
+
+**Features:**
+- Default configuration automatically created on first run
+- Graceful handling of missing or invalid configuration
+- Runtime configuration updates with save functionality
+{% endif %}
+
+{% if has_logging %}
+### 2.4 Logging System
+
+**Default Log Level:** {{ log_level }}
+
+**Log Outputs:**
+- File: `logs/{{ project_name | snake_case }}.log`
+- Console: stdout (for development)
+
+**Log Format:** `%(asctime)s - %(name)s - %(levelname)s - %(message)s`
+
+**Features:**
+- Automatic log directory creation
+- Rotating file handler (optional enhancement)
+- Colored console output (via colorlog)
+- Comprehensive logging throughout application
+{% endif %}
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+**Core:**
+- Python 3.12+
+- {% if gui_framework == 'customtkinter' %}CustomTkinter 5.2.2+{% elif gui_framework == 'pyqt6' %}PyQt6 6.5.0+{% elif gui_framework == 'pyside6' %}PySide6 6.5.0+{% elif gui_framework == 'tkinter' %}Tkinter (built-in){% elif gui_framework == 'kivy' %}Kivy 2.2.0+{% endif %}
+
+**Dependencies:**
+{% if has_database %}- {% if database_type == 'sqlite' %}SQLAlchemy 2.0+{% elif database_type == 'postgresql' %}psycopg2-binary 2.9+, SQLAlchemy 2.0+{% elif database_type == 'mysql' %}mysql-connector-python 8.0+, SQLAlchemy 2.0+{% elif database_type == 'mongodb' %}PyMongo 4.5+{% endif %}{% endif +%}
+{% if has_config_file and config_format == 'yaml' %}- PyYAML 6.0+{% endif +%}
+- python-dateutil 2.8+
+{% if has_logging %}- colorlog 6.7+{% endif %}
+
+**Development Tools:**
+{% if include_tests %}- pytest 7.4+, pytest-cov 4.1+, pytest-mock 3.11+{% endif +%}
+{% if include_linting %}- flake8 6.0+, pylint 2.17+{% endif +%}
+{% if include_formatting %}- black 23.0+{% endif +%}
+{% if include_type_checking %}- mypy 1.5+{% endif %}
+
+### 3.2 Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py                 # Application entry point
+├── src/                    # Source code
+│   ├── __init__.py
+│   ├── main_window.py      # Main window implementation
+│   ├── config.py           # Configuration management
+│   └── utils.py            # Utility functions
+├── tests/                  # Unit tests
+│   ├── __init__.py
+│   ├── test_main_window.py
+│   └── conftest.py
+├── assets/                 # Resources
+│   ├── icons/
+│   └── images/
+├── data/                   # Application data{% if database_type == 'sqlite' %}
+│   └── {{ project_name | snake_case }}.db{% endif +%}
+├── logs/                   # Log files
+├── docs/                   # Documentation
+├── requirements.txt        # Dependencies
+├── setup.py               # Package setup
+├── pytest.ini             # Test configuration
+└── README.md              # Project documentation
+```
+
+## 4. Quality Assurance
+
+{% if include_tests %}
+### 4.1 Testing Strategy
+
+**Framework:** pytest
+
+**Test Coverage Target:** 80%+
+
+**Test Types:**
+- Unit tests for individual components
+- Integration tests for system workflows
+- GUI tests (where applicable)
+
+**Test Execution:**
+```bash
+pytest                          # Run all tests
+pytest --cov=src               # With coverage
+pytest tests/test_specific.py  # Specific test file
+```
+{% endif %}
+
+{% if include_linting or include_formatting or include_type_checking %}
+### 4.2 Code Quality Standards
+
+{% if include_formatting %}**Code Formatting:**
+- Tool: Black
+- Line length: 88 characters (Black default)
+- Automatic formatting enforced
+{% endif %}
+
+{% if include_linting %}**Linting:**
+- Flake8: Style guide enforcement
+- Pylint: Static code analysis
+- Target: No linting errors in production code
+{% endif %}
+
+{% if include_type_checking %}**Type Checking:**
+- Tool: MyPy
+- Type hints required for all public functions
+- Gradual typing approach
+{% endif %}
+{% endif %}
+
+## 5. Development Guidelines
+
+### 5.1 Coding Standards
+
+- Follow PEP 8 Python style guide
+- Maximum line length: 88 characters (Black standard)
+- Comprehensive docstrings for all public functions/classes
+- Type hints for function parameters and returns
+- Meaningful variable and function names
+
+### 5.2 Documentation Requirements
+
+- Module-level docstrings
+- Class and method docstrings
+- Inline comments for complex logic
+- README and technical documentation
+- Changelog maintenance
+
+## 6. Deployment
+
+### 6.1 Installation Requirements
+
+- Python 3.12 or higher
+{% if has_database and database_type != 'sqlite' %}- {{ database_type | title }} database server{% endif +%}
+- Virtual environment (recommended)
+- All dependencies from requirements.txt
+
+### 6.2 Environment Setup
+
+1. Create virtual environment: `python3 -m venv venv`
+2. Activate: `source venv/bin/activate`
+3. Install dependencies: `pip install -r requirements.txt`
+{% if has_database and database_type != 'sqlite' %}4. Configure database connection in `config.{{ config_format }}`{% endif +%}
+{% if has_database and database_type != 'sqlite' %}5. Initialize database schema{% endif %}
+
+### 6.3 Distribution
+
+**Package Installation:**
+```bash
+pip install -e .        # Development mode
+pip install .           # Production install
+```
+
+**Executable Creation:** (Future enhancement)
+- PyInstaller for standalone executables
+- Platform-specific builds (Windows, macOS, Linux)
+
+## 7. Performance Requirements
+
+- Application startup time: < 3 seconds
+- UI responsiveness: < 100ms for user interactions
+{% if has_database %}- Database query performance: < 200ms for standard queries{% endif +%}
+- Memory usage: < 200MB under normal operation
+
+## 8. Security Considerations
+
+{% if has_database %}- Database credentials stored in configuration file (ensure proper file permissions)
+- Input validation for all user-provided data
+- SQL injection prevention through ORM usage{% endif +%}
+{% if has_config_file %}- Configuration file security (restrict read permissions){% endif +%}
+- No hardcoded credentials or sensitive data in source code
+- Regular dependency updates for security patches
+
+## 9. Future Enhancements
+
+- Plugin system for extensibility
+- Multi-language support (i18n)
+- Advanced data visualization
+- Export/import functionality
+- Automated backups
+{% if has_database %}- Database migration system{% endif +%}
+- Online documentation
+- User preferences and customization
+
+## 10. Success Metrics
+
+- Application runs without errors on supported platforms
+{% if include_tests %}- Test coverage >80%{% endif +%}
+{% if include_linting %}- No linting errors or warnings{% endif +%}
+- Responsive UI with smooth interactions
+{% if has_database %}- Reliable data persistence{% endif +%}
+- Clear and comprehensive documentation
+- Active development and maintenance
+
+---
+
+**Document Version:** 1.0  
+**Last Updated:** {{ current_date }}  
+**Author:** {{ author_name }}

@@ -1,0 +1,211 @@
+# {{ project_name }} - Development Process
+
+## Daily Development Workflow
+
+### 1. Start of Day
+```bash
+# Activate virtual environment
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Verify CLI works
+python {{ project_name | snake_case }}.py --version
+```
+
+### 2. Working on a Feature
+
+#### Create Feature Branch
+```bash
+git checkout -b feature/new-command
+```
+
+#### Development Cycle
+1. **Write/modify code**
+2. **{% if include_tests %}Run tests**: `pytest tests/test_commands.py`{% else %}Test manually{% endif +%}
+3. **Test CLI**: `python {{ project_name | snake_case }}.py <command>`
+4. **Commit changes**
+
+#### Complete Feature
+```bash
+{% if include_tests %}pytest --cov=src{% endif +%}
+git add .
+git commit -m "feat: Add new command"
+git checkout main
+git merge feature/new-command
+```
+
+## Command Development Process
+
+### Phase 1: Planning
+1. **Define command purpose**
+   - What does this command do?
+   - What options/arguments needed?
+   
+2. **Design interface**
+   ```
+   {{ project_name | snake_case }} <command> [OPTIONS] <ARGS>
+   ```
+
+### Phase 2: Implementation
+
+#### Add New Command ({{ cli_framework }})
+{% if cli_framework == 'click' %}
+```python
+# src/commands/new_command.py
+import click
+
+@click.command()
+@click.option('--option', '-o', help='Option description')
+@click.argument('input')
+def new_command(option, input):
+    """Command description."""
+    click.echo(f"Processing {input}")
+```
+{% elif cli_framework == 'typer' %}
+```python
+# src/commands/new_command.py
+import typer
+
+def new_command(
+    input: str = typer.Argument(..., help="Input value"),
+    option: str = typer.Option(None, "--option", "-o", help="Option description")
+):
+    """Command description."""
+    typer.echo(f"Processing {input}")
+```
+{% else %}
+```python
+# src/commands/new_command.py
+def setup_parser(subparsers):
+    parser = subparsers.add_parser('command', help='Command description')
+    parser.add_argument('input', help='Input value')
+    parser.add_argument('--option', '-o', help='Option description')
+    parser.set_defaults(func=run_command)
+
+def run_command(args):
+    print(f"Processing {args.input}")
+```
+{% endif %}
+
+### Phase 3: Testing
+
+{% if include_tests %}
+#### Write Tests
+```python
+# tests/test_new_command.py
+from click.testing import CliRunner
+from {{ project_name | snake_case }} import cli
+
+def test_new_command():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['new-command', 'input'])
+    assert result.exit_code == 0
+
+def test_new_command_with_option():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['new-command', '-o', 'value', 'input'])
+    assert result.exit_code == 0
+```
+
+#### Run Tests
+```bash
+pytest tests/test_new_command.py -v
+pytest --cov=src/commands
+```
+{% else %}
+#### Manual Testing
+```bash
+# Test basic usage
+python {{ project_name | snake_case }}.py new-command input
+
+# Test with options
+python {{ project_name | snake_case }}.py new-command --option value input
+
+# Test error cases
+python {{ project_name | snake_case }}.py new-command  # Missing required arg
+```
+{% endif %}
+
+### Phase 4: Documentation
+1. Update command help text
+2. Update README.md with usage examples
+3. Update CHANGELOG.md
+
+## Bug Fix Process
+
+### 1. Reproduce Bug
+```bash
+python {{ project_name | snake_case }}.py <command that fails>
+```
+
+### 2. Identify Root Cause
+{% if has_logging %}- Enable verbose logging: `--verbose`{% endif +%}
+- Add debug prints if needed
+
+### 3. {% if include_tests %}Write Failing Test
+```python
+def test_bug_fix():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['command', 'problematic-input'])
+    assert result.exit_code == 0  # Currently fails
+```
+{% else %}Document the bug
+{% endif %}
+
+### 4. Fix and Verify
+
+## Debugging Guide
+
+### Common Issues
+
+**Command not found:**
+- Check command is registered in main CLI group
+- Verify imports are correct
+
+**Option not recognized:**
+- Check option naming (--option, not -option)
+- Verify decorator is applied
+
+{% if has_config_file %}
+**Configuration not loading:**
+- Verify file exists and is valid {{ config_format | upper }}
+- Check file permissions
+{% endif %}
+
+### Debug Tools
+
+**Verbose output:**
+```bash
+python {{ project_name | snake_case }}.py --verbose <command>
+```
+
+**Python debugger:**
+```python
+import pdb; pdb.set_trace()
+```
+
+## Release Process
+
+### Pre-Release Checklist
+- [ ] {% if include_tests %}All tests passing{% else %}All features tested{% endif +%}
+- [ ] Version number updated
+- [ ] CHANGELOG.md updated
+- [ ] README.md current
+- [ ] --help text is accurate
+
+### Version Numbering
+- **MAJOR:** Breaking changes
+- **MINOR:** New commands/features
+- **PATCH:** Bug fixes
+
+### Release Steps
+1. Update version in `setup.py` and `__init__.py`
+2. Update CHANGELOG.md
+3. Commit and tag: `git tag v{{ project_version }}`
+4. Build: `python setup.py sdist bdist_wheel`
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

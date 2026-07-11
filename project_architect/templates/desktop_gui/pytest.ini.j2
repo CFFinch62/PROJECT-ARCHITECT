@@ -1,0 +1,57 @@
+{% if include_tests %}# pytest configuration for {{ project_name }}
+
+[pytest]
+# Test discovery patterns
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+
+# Paths
+testpaths = tests
+pythonpath = .
+
+# Output options
+addopts = 
+    -v
+    --strict-markers
+    --tb=short
+    --disable-warnings
+{% if test_coverage %}    --cov=src
+    --cov-report=html
+    --cov-report=term-missing
+    --cov-fail-under=80
+{% endif %}
+
+# Markers
+markers =
+    slow: marks tests as slow (deselect with '-m "not slow"')
+    integration: marks tests as integration tests
+    unit: marks tests as unit tests
+    gui: marks tests that require GUI
+
+# Coverage (if pytest-cov installed)
+{% if test_coverage %}[coverage:run]
+source = src
+omit = 
+    */tests/*
+    */venv/*
+    */env/*
+    */__pycache__/*
+
+[coverage:report]
+precision = 2
+show_missing = True
+skip_covered = False
+
+[coverage:html]
+directory = htmlcov
+{% endif %}
+
+# Logging during tests
+log_cli = false
+log_cli_level = INFO
+log_cli_format = %(asctime)s [%(levelname)8s] %(message)s
+log_cli_date_format = %Y-%m-%d %H:%M:%S
+{% else %}# Testing not configured for this project
+# To enable testing, install pytest: pip install pytest pytest-cov
+{% endif %}

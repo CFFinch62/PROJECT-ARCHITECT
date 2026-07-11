@@ -1,0 +1,134 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+## 2. Core Features
+
+### 2.1 API Framework
+
+**Framework:** {% if api_framework == 'fastapi' %}FastAPI 0.104+{% else %}Flask 3.0+ with Flask-RESTX{% endif %}
+
+**Base URL:** `/api/v1`
+
+**Standard Endpoints:**
+{% if has_health_check %}- Health: `GET /health`{% endif +%}
+- API Info: `GET /api/v1/`
+- CRUD: `GET/POST/PUT/DELETE /api/v1/items`
+
+{% if has_database %}
+### 2.2 Database
+
+**System:** {{ database_type | title }}
+**ORM:** SQLAlchemy 2.0+
+{% if use_async_db %}**Driver:** Async ({% if database_type == 'postgresql' %}asyncpg{% else %}aiosqlite{% endif %}){% endif +%}
+{% endif %}
+
+{% if has_authentication %}
+### 2.3 Authentication
+
+**Method:** {{ auth_type | upper }}
+{% if auth_type == 'jwt' %}
+- Access token: 30 min expiry
+- Refresh token: 7 days expiry
+- Algorithm: HS256
+{% endif %}
+{% endif %}
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+**Core:**
+- Python 3.12+
+- {% if api_framework == 'fastapi' %}FastAPI + Uvicorn{% else %}Flask + Gunicorn{% endif +%}
+- Pydantic 2.5+
+
+**Dependencies:**
+{% if has_database %}- SQLAlchemy 2.0+{% endif +%}
+{% if has_authentication and auth_type == 'jwt' %}- PyJWT 2.8+{% endif +%}
+{% if has_caching %}- Redis 5.0+{% endif %}
+
+### 3.2 Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py
+├── app/
+│   ├── api/v1/endpoints.py
+│   ├── core/config.py
+│   ├── models/
+│   ├── schemas/common.py
+│   └── services/
+├── tests/
+{% if include_docker %}├── Dockerfile
+{% endif %}└── requirements.txt
+```
+
+## 4. API Response Format
+
+### Success
+```json
+{"success": true, "data": {...}, "message": "..."}
+```
+
+### Error
+```json
+{"success": false, "error": "CODE", "detail": "..."}
+```
+
+### Pagination
+```json
+{"success": true, "data": [...], "total": 100, "skip": 0, "limit": 10}
+```
+
+## 5. Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| DEBUG | Debug mode | false |
+| PORT | Server port | {% if api_framework == 'fastapi' %}8000{% else %}5000{% endif %} |
+{% if has_database %}| DATABASE_URL | DB connection | - |{% endif +%}
+{% if has_authentication %}| SECRET_KEY | App secret | - |{% endif %}
+
+## 6. Quality Assurance
+
+{% if include_tests %}
+### Testing
+- Framework: pytest + httpx
+- Coverage target: 80%+
+- Run: `pytest --cov=app`
+{% endif %}
+
+### Code Quality
+- Style: PEP 8
+- Line length: 88 chars
+- Type hints required
+
+## 7. Deployment
+
+{% if include_docker %}
+### Docker
+```bash
+docker build -t {{ project_name | snake_case }} .
+docker run -p 8000:8000 {{ project_name | snake_case }}
+```
+{% endif %}
+
+### Production
+- Use proper WSGI/ASGI server
+- Set DEBUG=false
+- Configure proper secrets
+- Enable HTTPS
+
+---
+
+**Version:** 1.0  
+**Updated:** {{ current_date }}
+

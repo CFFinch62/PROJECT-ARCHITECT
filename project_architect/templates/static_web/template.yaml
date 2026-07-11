@@ -1,0 +1,110 @@
+template:
+  name: "Static Web App"
+  type: "static_web"
+  description: "Frontend web application with HTML, CSS, and JavaScript"
+  version: "1.0.0"
+  author: "Project Architect"
+  frameworks:
+    - "vanilla"
+    - "tailwind"
+    - "bootstrap"
+
+structure:
+  # Directories
+  - path: "src"
+    type: "directory"
+  - path: "src/css"
+    type: "directory"
+  - path: "src/js"
+    type: "directory"
+  - path: "src/images"
+    type: "directory"
+  - path: "dev_sessions"
+    type: "directory"
+
+  # HTML Files
+  - path: "index.html"
+    type: "file"
+    template: "index.html.j2"
+  - path: "src/about.html"
+    type: "file"
+    template: "src/about.html.j2"
+    condition: "has_multiple_pages"
+
+  # CSS Files
+  - path: "src/css/style.css"
+    type: "file"
+    template: "src/css/style.css.j2"
+  - path: "src/css/variables.css"
+    type: "file"
+    template: "src/css/variables.css.j2"
+    condition: "use_css_variables"
+  - path: "src/css/responsive.css"
+    type: "file"
+    template: "src/css/responsive.css.j2"
+    condition: "has_responsive"
+
+  # JavaScript Files
+  - path: "src/js/main.js"
+    type: "file"
+    template: "src/js/main.js.j2"
+  - path: "src/js/utils.js"
+    type: "file"
+    template: "src/js/utils.js.j2"
+  - path: "src/js/api.js"
+    type: "file"
+    template: "src/js/api.js.j2"
+    condition: "has_api_integration"
+
+  # Images placeholder
+  - path: "src/images/.gitkeep"
+    type: "file"
+    content: ""
+
+  # Configuration
+  - path: ".gitignore"
+    type: "file"
+    template: ".gitignore.j2"
+  - path: "package.json"
+    type: "file"
+    template: "package.json.j2"
+    condition: "use_npm"
+
+  # Dev sessions
+  - path: "dev_sessions/README.md"
+    type: "file"
+    template: "dev_sessions/README.md.j2"
+
+  # Documentation
+  - path: "README.md"
+    type: "file"
+    template: "README.md.j2"
+  - path: "AI_CONTEXT.md"
+    type: "file"
+    template: "AI_CONTEXT.md.j2"
+  - path: "TECHNICAL_SPECIFICATION.md"
+    type: "file"
+    template: "TECHNICAL_SPECIFICATION.md.j2"
+  - path: "DEV_RULES.md"
+    type: "file"
+    template: "DEV_RULES.md.j2"
+  - path: "DEV_PROCESS.md"
+    type: "file"
+    template: "DEV_PROCESS.md.j2"
+  - path: "CODING_STANDARDS.md"
+    type: "file"
+    template: "CODING_STANDARDS.md.j2"
+  - path: "IMPLEMENTATION_PLAN.md"
+    type: "file"
+    template: "IMPLEMENTATION_PLAN.md.j2"
+
+requirements:
+  npm_dev:
+    - "live-server"
+    - "prettier"
+  tailwind:
+    - "tailwindcss"
+    - "autoprefixer"
+  bootstrap:
+    - "bootstrap"
+

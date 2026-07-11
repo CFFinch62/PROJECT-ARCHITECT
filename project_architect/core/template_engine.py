@@ -362,9 +362,18 @@ class TemplateEngine:
             bool: True if item generated successfully
         """
         try:
-            item_path = Path(item['path'])
+            # Skip items whose condition flag evaluates falsy in the context
+            condition = item.get('condition')
+            if condition and not context.get(condition):
+                self.logger.debug(f"Skipping structure item (condition '{condition}' not met): {item['path']}")
+                return True
+
+            # Render the path itself as a template, so paths like
+            # "{{ project_name | snake_case }}.py" resolve to a real filename
+            rendered_path = self.jinja_env.from_string(item['path']).render(**context)
+            item_path = Path(rendered_path)
             item_type = item.get('type', 'file')
-            
+
             # Resolve output path
             output_path = output_dir / item_path
             

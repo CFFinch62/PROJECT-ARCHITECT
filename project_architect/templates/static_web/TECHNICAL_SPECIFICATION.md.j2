@@ -1,0 +1,112 @@
+# {{ project_name }} - Technical Specification
+
+## Overview
+
+**Project:** {{ project_name }}  
+**Type:** Static Web Application  
+**Version:** {{ project_version }}
+
+## Technology Stack
+
+### Frontend
+- **HTML5:** Semantic markup
+- **CSS3:** {% if css_framework == 'vanilla' %}Custom styles{% else %}{{ css_framework | title }}{% endif +%}
+- **JavaScript:** {% if js_type == 'es6_modules' %}ES6 Modules{% else %}Vanilla ES6+{% endif %}
+
+{% if css_framework == 'tailwind' %}
+### Tailwind CSS
+- Utility-first CSS framework
+- JIT compilation (CDN for dev)
+- Custom configuration available
+{% elif css_framework == 'bootstrap' %}
+### Bootstrap 5
+- Component-based framework
+- Responsive grid system
+- Pre-built components
+{% endif %}
+
+## Browser Support
+
+| Browser | Version |
+|---------|---------|
+| Chrome | Last 2 versions |
+| Firefox | Last 2 versions |
+| Safari | Last 2 versions |
+| Edge | Last 2 versions |
+
+## CSS Architecture
+
+{% if css_framework == 'vanilla' %}
+### File Organization
+- `style.css` - Main styles
+{% if use_css_variables %}- `variables.css` - Design tokens{% endif +%}
+{% if has_responsive %}- `responsive.css` - Media queries{% endif %}
+
+{% if use_css_variables %}
+### CSS Variables
+```css
+--primary-color: #2563eb;
+--bg-color: #ffffff;
+--text-color: #1f2937;
+```
+{% endif %}
+{% endif %}
+
+{% if has_responsive %}
+### Breakpoints
+| Name | Width |
+|------|-------|
+| Mobile | < 576px |
+| Tablet | ≥ 768px |
+| Desktop | ≥ 992px |
+| Large | ≥ 1200px |
+{% endif %}
+
+## JavaScript Architecture
+
+{% if js_type == 'es6_modules' %}
+### Module Structure
+```
+src/js/
+├── main.js      # Entry point
+├── utils.js     # Utility functions
+{% if has_api_integration %}└── api.js       # API client{% endif +%}
+```
+
+### Module Exports
+- `main.js`: Application initialization
+- `utils.js`: `$`, `$$`, `debounce`, `formatDate`
+{% if has_api_integration %}- `api.js`: `api.get()`, `api.post()`, etc.{% endif +%}
+{% endif %}
+
+{% if has_api_integration %}
+## API Integration
+
+### Fetch Utilities
+```javascript
+// GET request
+api.get('/endpoint');
+
+// POST request
+api.post('/endpoint', { data });
+```
+{% endif %}
+
+## Performance
+
+### Optimization Goals
+- First Contentful Paint < 1.5s
+- Time to Interactive < 3s
+- Lighthouse Score > 90
+
+### Best Practices
+- Minimize HTTP requests
+- Optimize images
+- Defer non-critical JS
+- Use CSS efficiently
+
+---
+
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}
+

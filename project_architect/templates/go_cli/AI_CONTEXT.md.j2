@@ -1,0 +1,184 @@
+# {{ project_name }} - AI Context
+
+## Quick Project Overview
+
+**Project Name:** {{ project_name }}
+**Type:** Go CLI Tool
+**Technology:** Go 1.22+ / {% if cli_framework == 'cobra' %}Cobra{% elif cli_framework == 'urfave-cli' %}urfave/cli{% else %}stdlib flag{% endif %}
+**Purpose:** {{ project_description }}
+**Author:** {{ author_name }}
+
+## Architecture at a Glance
+
+```
+{{ project_name | snake_case }}/
+├── cmd/main.go            # Entry point - calls cli.Execute()
+├── internal/
+│   ├── cli/cli.go          # Command definitions and argument parsing
+{% if has_config_file %}
+│   ├── config/config.go     # Configuration loading
+{% endif %}
+│   └── version/version.go   # Version string
+├── docs/                   # Documentation
+└── Makefile                 # build/run/test/lint targets
+```
+
+## Key Technologies
+
+- **CLI framework:** {% if cli_framework == 'cobra' %}Cobra 1.x (github.com/spf13/cobra) - subcommand-based, kubectl/hugo-style{% elif cli_framework == 'urfave-cli' %}urfave/cli v2 (github.com/urfave/cli/v2) - simpler subcommand API{% else %}Standard library `flag` package - zero dependencies{% endif %}
+{% if has_config_file %}- **Config:** {{ config_format | upper }} via `internal/config`
+{% endif %}
+{% if has_logging %}- **Logging:** `log/slog` (standard library structured logging)
+{% endif %}
+{% if include_tests %}- **Testing:** stdlib `testing`{% if use_testify %} + testify{% endif %}
+
+{% endif %}
+{% if include_linting %}- **Quality:** golangci-lint, go vet, gofmt
+{% endif %}
+
+## Development Patterns
+
+### File Structure
+- `cmd/main.go` stays thin - it only calls `cli.Execute()` and handles the exit code
+- All real logic lives in `internal/` (not importable outside this module - correct for application code)
+- Commands should write to the `io.Writer`/`cmd.OutOrStdout()` provided by the framework, not `fmt.Println` directly, so they stay testable
+
+### Common Operations
+
+**Build:**
+```bash
+make build
+```
+
+**Run without building:**
+```bash
+go run ./cmd hello World
+```
+
+{% if include_tests %}**Run Tests:**
+```bash
+make test                    # or: go test ./...{% if test_coverage %} -cover{% endif %}
+
+```
+{% endif %}
+**Format Code:**
+```bash
+make fmt
+```
+
+{% if include_linting %}**Check Quality:**
+```bash
+make lint
+go vet ./...
+```
+{% endif %}
+
+## Code Conventions
+
+### Naming
+- **Packages:** short, lowercase, no underscores (e.g. `cli`, `config`, `version`)
+- **Exported identifiers:** PascalCase (e.g. `Execute`, `Config`, `Load`)
+- **Unexported identifiers:** camelCase (e.g. `setupLogging`, `parseLogLevel`)
+- **Files:** snake_case matching the primary type/function (e.g. `cli.go`, `cli_test.go`)
+
+### Documentation
+- Every exported function/type has a doc comment starting with its name (`// Execute runs...`)
+- Package-level doc comment at the top of one file per package
+
+### Error Handling
+- Return errors, don't panic, in library code (`internal/*`)
+- Wrap errors with context: `fmt.Errorf("loading config: %w", err)`
+- Only `cmd/main.go` decides the process exit code
+
+## Current State
+
+**Phase:** Initial Development
+**Version:** {{ project_version }}
+**Status:** Foundation complete (CLI skeleton + example command), real functionality not yet implemented
+
+### Implemented
+- ✅ {% if cli_framework == 'cobra' %}Cobra{% elif cli_framework == 'urfave-cli' %}urfave/cli{% else %}stdlib flag{% endif %} command parsing with an example `hello` command
+{% if has_config_file %}- ✅ Configuration loading with defaults
+{% endif %}
+{% if has_logging %}- ✅ Logging infrastructure
+{% endif %}
+- ✅ Module layout
+
+### In Progress
+- Real command implementations (replace `hello`)
+{% if include_tests %}- Expanding test coverage
+{% endif %}
+
+### Planned
+- Additional subcommands
+- Release/distribution setup
+
+## AI Assistant Guidelines
+
+### When Helping with This Project
+
+1. **Respect Structure:** keep `cmd/main.go` thin; put logic in `internal/`
+2. **Follow Style:** run `gofmt`{% if include_linting %} and golangci-lint{% endif %} conventions; accept `io.Writer` for output in testable code
+3. **Add Tests:** {% if include_tests %}write table-driven tests in `_test.go` files next to the code they test{% else %}suggest a testing approach{% endif %}
+
+4. **Document:** add doc comments to exported identifiers
+5. **Be Consistent:** match the existing command pattern in `internal/cli/cli.go` when adding new commands
+
+### Common Tasks
+
+**Adding a New Command:**
+{% if cli_framework == 'cobra' %}
+1. Add a `newXCmd() *cobra.Command` function in `internal/cli/cli.go`
+2. Register it with `rootCmd.AddCommand(newXCmd())` in `NewRootCmd()`
+{% elif cli_framework == 'urfave-cli' %}
+1. Add a `*cli.Command` entry to the `Commands` slice in `NewApp()`
+{% else %}
+1. Add a new `case` to the switch statement in `Run()`
+{% endif %}
+3. {% if include_tests %}Write a test in `internal/cli/cli_test.go`{% endif %}
+
+4. Update CHANGELOG.md
+
+**Debugging Issues:**
+{% if has_logging %}- Run with `--verbose` for debug-level logs
+{% endif %}
+- Run with `go run ./cmd ...` for a fast edit/run loop
+{% if include_tests %}- Run relevant tests: `go test ./internal/cli/... -v`
+{% endif %}
+
+## Domain Knowledge
+
+**Project Purpose:** {{ project_description }}
+
+**Command Flow:**
+1. `main()` calls `cli.Execute()`
+2. `Execute()` {% if cli_framework == 'cobra' %}builds and runs the root Cobra command{% elif cli_framework == 'urfave-cli' %}builds and runs the urfave/cli App{% else %}parses `os.Args` and dispatches to the matching case{% endif %}
+
+{% if has_config_file %}3. Commands that need configuration call `config.Load(path)`
+{% endif %}
+{% if has_logging %}4. `--verbose` raises the log level to debug via `log/slog`
+{% endif %}
+
+## Quick Reference
+
+### Important Files
+- `cmd/main.go` - entry point
+- `internal/cli/cli.go` - command definitions
+{% if has_config_file %}- `internal/config/config.go` - configuration
+{% endif %}
+- `go.mod` - module + dependencies
+- `README.md` - user documentation
+- `TECHNICAL_SPECIFICATION.md` - detailed specs
+
+### Environment Setup
+```bash
+go mod tidy
+make build
+./bin/{{ project_name | snake_case }} hello World
+```
+
+---
+
+This document provides context for AI assistants working on {{ project_name }}.
+**Generated:** {{ current_date }}
+**Generator:** Project Architect

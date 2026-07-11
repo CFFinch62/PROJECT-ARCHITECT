@@ -1,0 +1,94 @@
+"""
+Common Pydantic schemas for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+from pydantic import BaseModel, Field
+from typing import Any, Optional, List
+
+
+class SuccessResponse(BaseModel):
+    """Standard success response."""
+    success: bool = True
+    message: Optional[str] = None
+    data: Optional[Any] = None
+
+
+class ErrorResponse(BaseModel):
+    """Standard error response."""
+    success: bool = False
+    error: str
+    detail: Optional[str] = None
+
+
+class PaginatedResponse(BaseModel):
+    """Paginated response for list endpoints."""
+    success: bool = True
+    data: List[Any]
+    total: int
+    skip: int
+    limit: int
+    
+    @property
+    def has_more(self) -> bool:
+        """Check if there are more items."""
+        return self.skip + self.limit < self.total
+
+
+class ItemBase(BaseModel):
+    """Base schema for items."""
+    name: str = Field(..., min_length=1, max_length=100, description="Item name")
+    description: Optional[str] = Field(None, max_length=500, description="Item description")
+
+
+class ItemCreate(ItemBase):
+    """Schema for creating items."""
+    pass
+
+
+class ItemUpdate(BaseModel):
+    """Schema for updating items."""
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    description: Optional[str] = Field(None, max_length=500)
+
+
+class ItemResponse(ItemBase):
+    """Schema for item responses."""
+    id: int
+    
+    class Config:
+        from_attributes = True
+
+
+{% if has_authentication %}
+class TokenResponse(BaseModel):
+    """JWT token response."""
+    access_token: str
+    token_type: str = "bearer"
+    {% if auth_type == 'jwt' %}
+    refresh_token: Optional[str] = None
+    expires_in: int
+    {% endif %}
+
+
+class UserBase(BaseModel):
+    """Base user schema."""
+    email: str = Field(..., description="User email")
+    username: Optional[str] = Field(None, description="Username")
+
+
+class UserCreate(UserBase):
+    """Schema for user registration."""
+    password: str = Field(..., min_length=8, description="User password")
+
+
+class UserResponse(UserBase):
+    """Schema for user responses."""
+    id: int
+    is_active: bool = True
+    
+    class Config:
+        from_attributes = True
+{% endif %}
+

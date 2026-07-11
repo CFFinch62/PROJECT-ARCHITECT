@@ -1,0 +1,10 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include requirements.txt
+recursive-include src *.py
+recursive-include tests *.py
+{% if include_docs %}recursive-include docs *.md{% endif +%}
+global-exclude __pycache__
+global-exclude *.py[cod]
+

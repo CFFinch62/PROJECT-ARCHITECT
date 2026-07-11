@@ -1,0 +1,54 @@
+// Package config loads {{ project_name }} configuration from disk.
+package config
+
+import (
+	{% if config_format == 'json' %}
+	"encoding/json"
+	{% endif %}
+	"os"
+
+	{% if config_format == 'yaml' %}
+	"gopkg.in/yaml.v3"
+	{% endif %}
+)
+
+// Config holds {{ project_name }}'s runtime configuration.
+type Config struct {
+	{% if config_format == 'yaml' %}
+	LogLevel string `yaml:"log_level"`
+	{% elif config_format == 'json' %}
+	LogLevel string `json:"log_level"`
+	{% endif %}
+}
+
+// Default returns the built-in default configuration.
+func Default() *Config {
+	return &Config{
+		LogLevel: "{{ log_level if has_logging else 'info' }}",
+	}
+}
+
+// Load reads configuration from path. If the file does not exist, the
+// default configuration is returned instead of an error.
+func Load(path string) (*Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return Default(), nil
+		}
+		return nil, err
+	}
+
+	cfg := Default()
+	{% if config_format == 'yaml' %}
+	if err := yaml.Unmarshal(data, cfg); err != nil {
+		return nil, err
+	}
+	{% elif config_format == 'json' %}
+	if err := json.Unmarshal(data, cfg); err != nil {
+		return nil, err
+	}
+	{% endif %}
+
+	return cfg, nil
+}

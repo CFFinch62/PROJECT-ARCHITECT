@@ -1,0 +1,157 @@
+# {{ project_name }} - Implementation Plan
+
+## Project Overview
+
+**Project:** {{ project_name }}
+**Version:** {{ project_version }}
+**Type:** Go CLI Tool
+**Framework:** {% if cli_framework == 'cobra' %}Cobra{% elif cli_framework == 'urfave-cli' %}urfave/cli{% else %}Standard library (flag){% endif %}
+
+## Development Phases
+
+### Phase 1: Foundation (Complete)
+
+**Status:** ✅ Complete
+
+- [x] Module structure created (`cmd/`, `internal/`)
+- [x] CLI framework wired up with an example `hello` command
+{% if has_config_file %}- [x] Configuration loading implemented
+{% endif %}
+{% if has_logging %}- [x] Logging configured
+{% endif %}
+{% if init_git %}- [x] Git repository initialized
+{% endif %}
+
+### Phase 2: Core Commands (In Progress)
+
+**Priority:** High
+**Target:** Version {{ project_version }}
+
+#### Task 1: Replace the Example Command
+- [ ] Remove or repurpose the `hello` command in `internal/cli/cli.go`
+- [ ] Add real subcommands for your tool's actual functionality
+- [ ] Wire up flags/arguments per command
+
+{% if has_config_file %}
+#### Task 2: Configuration
+- [ ] Extend `Config` in `internal/config/config.go` with real settings
+- [ ] Add validation for required fields
+- [ ] Document the configuration schema in the README
+{% endif %}
+
+#### Task 3: Error Handling
+- [ ] Return wrapped errors (`fmt.Errorf("...: %w", err)`) from command logic
+- [ ] Ensure `main.go` reports errors clearly before `os.Exit(1)`
+
+### Phase 3: Advanced Features
+
+**Priority:** Medium
+**Target:** Version {{ project_version | replace('.0', '.1') }}
+
+#### Task 4: Enhanced CLI
+{% if cli_framework == 'cobra' %}- [ ] Add shell completion (`rootCmd.GenBashCompletion` etc.)
+{% endif %}
+- [ ] Add `--output json` style flags where useful
+- [ ] Improve help text and usage examples
+
+#### Task 5: Distribution
+- [ ] Set up cross-compilation (`GOOS`/`GOARCH` matrix)
+- [ ] Consider goreleaser for tagged releases
+{% if include_github_actions %}- [ ] Extend CI to build release binaries on tag push
+{% endif %}
+
+### Phase 4: Quality & Testing
+
+**Priority:** High
+**Target:** Ongoing
+
+{% if include_tests %}
+#### Task 6: Unit Testing
+- [ ] Write tests for each new command
+{% if has_config_file %}- [ ] Write tests for configuration edge cases
+{% endif %}
+- [ ] Keep `internal/cli` testable via `io.Writer`-based output, not direct stdout writes
+{% endif %}
+
+{% if include_linting %}
+#### Task 7: Code Quality
+- [ ] Run `make fmt` and `make lint` before every commit
+- [ ] Keep `go vet` clean
+{% endif %}
+
+### Phase 5: Documentation & Release
+
+**Priority:** Medium
+**Target:** Version 1.0.0
+
+#### Task 8: Documentation
+- [ ] Complete README with real usage examples
+- [ ] Document each command's flags
+- [ ] Add installation instructions (go install, binary releases)
+
+#### Task 9: Release
+- [ ] Tag `v{{ project_version }}`
+- [ ] Publish binaries or `go install` instructions
+{% if create_github_repo %}- [ ] Publish to GitHub
+{% endif %}
+
+## Technical Notes
+
+### Architecture
+
+- **Entry point:** `cmd/main.go` (thin, delegates to `internal/cli.Execute()`)
+- **Command logic:** `internal/cli` (testable, framework-specific)
+{% if has_config_file %}- **Configuration:** `internal/config`
+{% endif %}
+- **Version info:** `internal/version` (overridable via `-ldflags`)
+
+### Development Workflow
+
+1. Create feature branch: `git checkout -b feature-name`
+2. Implement with tests
+3. Run quality checks:
+   - `make fmt`
+{% if include_linting %}   - `make lint`
+{% endif %}
+{% if include_tests %}   - `make test`
+{% endif %}
+4. Commit changes: `git commit -am "Description"`
+5. Push and create PR
+
+### Release Process
+
+1. Update `internal/version.Version` (or build with `-ldflags`)
+2. Update CHANGELOG.md
+3. Run full test suite
+4. Tag release: `git tag v{{ project_version }}`
+
+## Risk Management
+
+**Breaking CLI Changes:**
+- Risk: renaming/removing flags or commands breaks existing users
+- Mitigation: deprecate before removing, document breaking changes in CHANGELOG
+
+**Cross-Platform Compatibility:**
+- Risk: platform-specific behavior (paths, line endings)
+- Mitigation: use `path/filepath`, test on Windows/macOS/Linux before release
+
+## Success Criteria
+
+- [ ] Tool builds and runs without errors on supported platforms
+{% if include_tests %}- [ ] Test coverage on core logic
+{% endif %}
+{% if include_linting %}- [ ] No lint errors
+{% endif %}
+- [ ] Clear, accurate `--help` output
+- [ ] Complete documentation
+
+## Next Steps
+
+1. Replace the example `hello` command with real functionality
+2. Expand test coverage
+3. Prepare for v1.0.0 release
+
+---
+
+**Last Updated:** {{ current_date }}
+**Author:** {{ author_name }}

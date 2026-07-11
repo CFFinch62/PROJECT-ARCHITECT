@@ -1,0 +1,13 @@
+# {{ project_name }} - Core Requirements
+
+{% if has_type_hints %}
+typing-extensions>=4.0.0
+{% endif %}
+{% if has_cli %}
+{% if cli_framework == 'click' %}
+click>=8.1.0
+{% elif cli_framework == 'typer' %}
+typer>=0.9.0
+{% endif %}
+{% endif %}
+

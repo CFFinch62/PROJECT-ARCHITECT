@@ -1,0 +1,46 @@
+"""Configuration settings for {{ project_name }}"""
+import os
+from functools import lru_cache
+{% if web_framework == 'fastapi' %}
+from pydantic_settings import BaseSettings
+{% endif %}
+
+
+{% if web_framework == 'fastapi' %}
+class Settings(BaseSettings):
+    """Application settings."""
+    app_name: str = "{{ project_name }}"
+    version: str = "{{ project_version }}"
+    debug: bool = {{ "True" if project_version == "0.1.0" else "False" }}
+    host: str = "0.0.0.0"
+    port: int = 8000
+    secret_key: str = "change-this-secret-key"
+    {% if has_database %}
+    database_url: str = "{{ database_type }}://user:pass@localhost/{{ project_name | snake_case }}"
+    {% endif %}
+    {% if has_cors %}
+    cors_origins: list = ["http://localhost:3000", "http://localhost:8080"]
+    {% endif %}
+    
+    class Config:
+        env_file = ".env"
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()
+
+{% elif web_framework == 'flask' %}
+class Config:
+    """Base configuration."""
+    DEBUG = {{ "True" if project_version == "0.1.0" else "False" }}
+    SECRET_KEY = os.getenv('SECRET_KEY', '{{ project_name | snake_case }}-secret-key')
+    {% if has_database %}
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '{{ database_type }}://localhost/{{ project_name | snake_case }}')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    {% endif %}
+
+
+def get_settings():
+    return Config()
+{% endif %}

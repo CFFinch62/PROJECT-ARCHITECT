@@ -85,7 +85,7 @@ class ProjectUpdater:
     def _load_project_data(self) -> bool:
         """
         Load existing project data.
-        
+
         Returns:
             bool: True if data loaded successfully
         """
@@ -93,24 +93,33 @@ class ProjectUpdater:
             if self.project_data_file.exists():
                 with open(self.project_data_file, 'r', encoding='utf-8') as f:
                     self.project_data = json.load(f)
-                
+
                 self.logger.info("Project data loaded successfully")
                 return True
             else:
                 self.logger.warning("No existing project data found")
-                # Initialize with minimal data
+                # Initialize with minimal data - use desktop_gui as default type
                 self.project_data = {
                     'project_name': self.project_path.name,
-                    'project_type': 'unknown',
+                    'project_type': 'desktop_gui',  # Default to desktop_gui instead of unknown
                     'created_at': datetime.now().isoformat(),
                     'version': '1.0.0',
                     'responses': {}
                 }
                 return False
-                
+
         except Exception as e:
             self.logger.error(f"Error loading project data: {e}")
             return False
+
+    def is_valid_project(self) -> bool:
+        """
+        Check if this is a valid Project Architect project.
+
+        Returns:
+            bool: True if project has valid Project Architect metadata
+        """
+        return self.project_data_file.exists()
     
     def _load_update_history(self) -> bool:
         """

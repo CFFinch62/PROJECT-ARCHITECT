@@ -1,0 +1,100 @@
+# Development Sessions
+
+## Purpose
+
+This directory tracks development sessions for {{ project_name }}. Each session should document:
+
+- Date and duration
+- Goals for the session
+- Work completed
+- Issues encountered
+- Next steps
+
+## Session Format
+
+Create a new file for each session: `sessionN.md` where N is the session number.
+
+### Template
+
+```markdown
+# Session N - [Date]
+
+## Duration
+[Start time] - [End time] (Total: X hours)
+
+## Goals
+- [Goal 1]
+- [Goal 2]
+
+## Work Completed
+- [Task 1]
+- [Task 2]
+
+## Issues & Solutions
+- **Issue**: [Description]
+  - **Solution**: [How it was resolved]
+
+## Next Steps
+- [Next task 1]
+- [Next task 2]
+
+## Notes
+[Any additional notes or observations]
+```
+
+## Why Track Sessions?
+
+1. **Progress tracking**: See what's been accomplished over time
+2. **Problem documentation**: Record issues and solutions for future reference
+3. **AI context**: Helps AI assistants understand project history
+4. **Learning**: Reflect on development process and improve
+
+## Example
+
+Create `session0.md`:
+
+```markdown
+# Session 0 - {{ current_date }}
+
+## Duration
+9:00 AM - 5:00 PM (Total: 8 hours)
+
+## Goals
+- Set up project structure
+- Implement basic game window and loop
+- Configure testing framework
+
+## Work Completed
+- Created project directories and files
+- Implemented `Game` class with a basic {% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif %} game loop
+{% if include_tests %}- Configured pytest with basic tests{% endif +%}
+- Initialized Git repository
+
+## Issues & Solutions
+{% if game_framework == 'pgzero' %}- **Issue**: Pygame Zero didn't detect `draw()`/`update()`
+  - **Solution**: Confirmed they're top-level functions in `main.py`, not methods on a class{% endif %}
+
+## Next Steps
+- Implement core gameplay logic
+{% if has_sprites %}- Add sprite assets and rendering{% endif +%}
+- Expand test coverage
+- Write user documentation
+
+## Notes
+- Remember to run `black src/` before committing
+- Need to add error handling for file operations
+```
+
+## Session Guidelines
+
+- Create a new session file at the start of major development work
+- Update throughout the day or at the end
+- Be honest about issues and blockers
+- Document solutions for future reference
+- Keep entries concise but informative
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}

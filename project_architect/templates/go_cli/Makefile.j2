@@ -1,0 +1,29 @@
+.PHONY: build run{% if include_tests %} test{% endif %}{% if include_linting %} lint{% endif %} fmt vet clean tidy
+
+BINARY := {{ project_name | snake_case }}
+
+build:
+	go build -o bin/$(BINARY) ./cmd
+
+run:
+	go run ./cmd
+
+{% if include_tests %}
+test:
+	go test ./...{% if test_coverage %} -cover{% endif %} -v
+{% endif %}
+{% if include_linting %}
+lint:
+	golangci-lint run ./...
+{% endif %}
+fmt:
+	gofmt -l -w .
+
+vet:
+	go vet ./...
+
+tidy:
+	go mod tidy
+
+clean:
+	rm -rf bin/

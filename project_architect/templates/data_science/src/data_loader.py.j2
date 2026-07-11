@@ -1,0 +1,118 @@
+"""
+Data loading utilities for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+from pathlib import Path
+from typing import Optional, Tuple, Union
+
+import pandas as pd
+import numpy as np
+
+
+# Project paths
+PROJECT_ROOT = Path(__file__).parent.parent
+DATA_RAW = PROJECT_ROOT / "data" / "raw"
+DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
+MODELS_DIR = PROJECT_ROOT / "models"
+
+
+def load_csv(
+    filename: str,
+    data_dir: str = "raw",
+    **kwargs
+) -> pd.DataFrame:
+    """
+    Load CSV file from data directory.
+    
+    Args:
+        filename: Name of the CSV file
+        data_dir: 'raw' or 'processed'
+        **kwargs: Additional arguments for pd.read_csv
+    
+    Returns:
+        Loaded DataFrame
+    """
+    base_dir = DATA_RAW if data_dir == "raw" else DATA_PROCESSED
+    filepath = base_dir / filename
+    
+    if not filepath.exists():
+        raise FileNotFoundError(f"File not found: {filepath}")
+    
+    return pd.read_csv(filepath, **kwargs)
+
+
+def save_csv(
+    df: pd.DataFrame,
+    filename: str,
+    data_dir: str = "processed",
+    **kwargs
+) -> Path:
+    """
+    Save DataFrame to CSV.
+    
+    Args:
+        df: DataFrame to save
+        filename: Output filename
+        data_dir: 'raw' or 'processed'
+        **kwargs: Additional arguments for to_csv
+    
+    Returns:
+        Path to saved file
+    """
+    base_dir = DATA_RAW if data_dir == "raw" else DATA_PROCESSED
+    filepath = base_dir / filename
+    
+    df.to_csv(filepath, index=False, **kwargs)
+    return filepath
+
+
+def train_test_split_data(
+    df: pd.DataFrame,
+    target_column: str,
+    test_size: float = 0.2,
+    random_state: int = 42
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """
+    Split data into train and test sets.
+    
+    Args:
+        df: Input DataFrame
+        target_column: Name of target column
+        test_size: Proportion for test set
+        random_state: Random seed
+    
+    Returns:
+        X_train, X_test, y_train, y_test
+    """
+    from sklearn.model_selection import train_test_split
+    
+    X = df.drop(columns=[target_column])
+    y = df[target_column]
+    
+    return train_test_split(
+        X, y,
+        test_size=test_size,
+        random_state=random_state
+    )
+
+
+def get_data_info(df: pd.DataFrame) -> dict:
+    """
+    Get summary information about DataFrame.
+    
+    Args:
+        df: Input DataFrame
+    
+    Returns:
+        Dictionary with data info
+    """
+    return {
+        "shape": df.shape,
+        "columns": list(df.columns),
+        "dtypes": df.dtypes.to_dict(),
+        "missing": df.isnull().sum().to_dict(),
+        "memory_mb": df.memory_usage(deep=True).sum() / 1024 / 1024
+    }
+

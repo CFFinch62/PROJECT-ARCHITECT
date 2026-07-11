@@ -1,0 +1,108 @@
+# {{ project_name }} - Development Process
+
+## Workflow Overview
+
+```
+Data → Explore → Preprocess → Feature Eng → Model → Evaluate → Deploy
+```
+
+## Phase 1: Data Understanding
+
+### Steps
+1. Load raw data
+2. Examine structure and types
+3. Check for missing values
+4. Identify outliers
+5. Understand distributions
+
+### Deliverables
+- `notebooks/01_exploration.ipynb`
+- Data quality report
+
+## Phase 2: Data Preprocessing
+
+### Steps
+1. Handle missing values
+2. Remove/treat outliers
+3. Encode categoricals
+4. Scale features
+5. Create train/test split
+
+### Deliverables
+- `notebooks/02_preprocessing.ipynb`
+- Processed data in `data/processed/`
+
+## Phase 3: Feature Engineering
+
+### Steps
+1. Create derived features
+2. Feature selection
+3. Dimensionality reduction (if needed)
+
+### Deliverables
+- Updated preprocessing pipeline
+- Feature importance analysis
+
+## Phase 4: Modeling
+
+### Steps
+1. Baseline model
+2. Cross-validation
+3. Hyperparameter tuning
+4. Model comparison
+
+### Deliverables
+- `notebooks/03_modeling.ipynb`
+- Trained models in `models/`
+
+## Phase 5: Evaluation
+
+### Steps
+1. Test set evaluation
+2. Error analysis
+3. Model interpretation
+
+### Metrics
+{% if problem_type == 'classification' %}
+- Accuracy, Precision, Recall, F1
+- ROC-AUC, Confusion Matrix
+{% elif problem_type == 'regression' %}
+- RMSE, MAE, R²
+- Residual analysis
+{% elif problem_type == 'clustering' %}
+- Silhouette Score
+- Cluster visualization
+{% endif %}
+
+## Development Session Template
+
+```markdown
+# Session - YYYY-MM-DD
+
+## Goals
+- [ ] Goal 1
+- [ ] Goal 2
+
+## Work Done
+- Description
+
+## Results
+- Metrics achieved
+
+## Next Steps
+- [ ] Next task
+```
+
+## Code Review Checklist
+
+- [ ] Code follows style guide
+- [ ] Functions have docstrings
+- [ ] Tests pass
+- [ ] Notebooks run cleanly
+- [ ] No data committed
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}
+

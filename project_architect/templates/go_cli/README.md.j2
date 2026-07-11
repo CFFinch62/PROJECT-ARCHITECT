@@ -1,0 +1,137 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Overview
+
+{{ project_name }} is a Go command-line tool built with {% if cli_framework == 'cobra' %}[Cobra](https://github.com/spf13/cobra){% elif cli_framework == 'urfave-cli' %}[urfave/cli](https://github.com/urfave/cli){% else %}the Go standard library{% endif %}.
+
+**Version:** {{ project_version }}
+**Author:** {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "**Organization:** " + organization if organization else "" }}
+
+## Features
+
+{% if has_config_file %}- {{ config_format | upper }} configuration file support
+{% endif %}
+{% if has_logging %}- Structured logging via `log/slog`
+{% endif %}
+- Professional module layout (`cmd/`, `internal/`)
+{% if include_tests %}- Unit tests{% if test_coverage %} with coverage reporting{% endif %}
+
+{% endif %}
+{% if include_linting %}- golangci-lint configuration
+{% endif %}
+{% if include_github_actions %}- GitHub Actions CI workflow
+{% endif %}
+
+## Requirements
+
+- Go 1.22 or higher
+
+## Installation
+
+### Quick Start
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd {{ project_name | snake_case }}
+   ```
+
+2. **Fetch dependencies**:
+   ```bash
+   go mod tidy
+   ```
+
+3. **Build the binary**:
+   ```bash
+   make build
+   ```
+
+4. **Run it**:
+   ```bash
+   ./bin/{{ project_name | snake_case }} hello World
+   ```
+
+### Run Without Building
+
+```bash
+go run ./cmd hello World
+```
+
+## Usage
+
+```bash
+{{ project_name | snake_case | replace('_', '-') }} hello World
+# => Hello, World!
+
+{{ project_name | snake_case | replace('_', '-') }} --version
+{{ project_name | snake_case | replace('_', '-') }} --verbose hello World
+```
+
+{% if has_config_file %}
+## Configuration
+
+{{ project_name }} looks for configuration in a `{{ config_format }}` file. If none is found, built-in defaults are used. See `internal/config/config.go` for the schema.
+{% endif %}
+
+## Development
+
+### Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── cmd/
+│   └── main.go              # Entry point
+├── internal/
+│   ├── cli/                 # Command definitions ({{ cli_framework }})
+│   {% if has_config_file %}
+│   ├── config/               # Configuration loading
+│   {% endif %}
+│   └── version/              # Version information
+├── docs/                    # Documentation
+├── go.mod
+├── Makefile
+└── README.md                 # This file
+```
+
+### Common Commands
+
+```bash
+make build     # Build the binary to bin/
+make run       # Run without building
+{% if include_tests %}make test      # Run tests{% if test_coverage %} with coverage{% endif %}
+
+{% endif %}
+{% if include_linting %}make lint      # Run golangci-lint
+{% endif %}
+make fmt       # Format code with gofmt
+make vet       # Run go vet
+make tidy      # Tidy go.mod/go.sum
+```
+
+## Contributing
+
+{% if init_git %}
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Run `make fmt`{% if include_linting %}, `make lint`{% endif %}{% if include_tests %}, and `make test`{% endif %}
+
+5. Commit: `git commit -am 'Add feature'`
+6. Push: `git push origin feature-name`
+7. Create a Pull Request
+{% else %}
+Contributions are welcome! Please run `make fmt`{% if include_tests %} and `make test`{% endif %} before submitting changes.
+{% endif %}
+
+## License
+
+{{ "Copyright © " + current_year + " " + organization if organization else "Copyright © " + current_year + " " + author_name }}
+
+All rights reserved.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.

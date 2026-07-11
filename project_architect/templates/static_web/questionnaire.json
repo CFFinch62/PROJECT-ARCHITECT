@@ -1,0 +1,184 @@
+{
+  "questionnaire": {
+    "name": "Project Questionnaire",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "Project Name",
+      "required": true,
+      "section": "project_info",
+      "order": 1,
+      "description": "my-website"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Description",
+      "required": true,
+      "section": "project_info",
+      "order": 2,
+      "description": "A modern website that..."
+    },
+    {
+      "id": "project_version",
+      "type": "text",
+      "prompt": "Version",
+      "required": true,
+      "section": "project_info",
+      "order": 3,
+      "default": "1.0.0"
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "Author Name",
+      "required": true,
+      "section": "project_info",
+      "order": 4
+    },
+    {
+      "id": "css_framework",
+      "type": "choice",
+      "prompt": "CSS Framework",
+      "required": false,
+      "section": "css_config",
+      "order": 1,
+      "default": "vanilla",
+      "description": "CSS framework or vanilla CSS",
+      "options": [
+        "vanilla",
+        "tailwind",
+        "bootstrap"
+      ]
+    },
+    {
+      "id": "use_css_variables",
+      "type": "boolean",
+      "prompt": "Use CSS Variables",
+      "required": false,
+      "section": "css_config",
+      "order": 2,
+      "default": true,
+      "description": "Create CSS custom properties for theming"
+    },
+    {
+      "id": "has_dark_mode",
+      "type": "boolean",
+      "prompt": "Dark Mode Support",
+      "required": false,
+      "section": "css_config",
+      "order": 3,
+      "default": false,
+      "description": "Include dark mode theme"
+    },
+    {
+      "id": "has_responsive",
+      "type": "boolean",
+      "prompt": "Responsive Design",
+      "required": false,
+      "section": "css_config",
+      "order": 4,
+      "default": true,
+      "description": "Include responsive breakpoints"
+    },
+    {
+      "id": "js_type",
+      "type": "choice",
+      "prompt": "JavaScript Type",
+      "required": false,
+      "section": "js_config",
+      "order": 1,
+      "default": "vanilla",
+      "description": "Vanilla JS or ES6 modules",
+      "options": [
+        "vanilla",
+        "es6_modules"
+      ]
+    },
+    {
+      "id": "has_api_integration",
+      "type": "boolean",
+      "prompt": "API Integration",
+      "required": false,
+      "section": "js_config",
+      "order": 2,
+      "default": false,
+      "description": "Include fetch API utilities"
+    },
+    {
+      "id": "has_local_storage",
+      "type": "boolean",
+      "prompt": "Local Storage",
+      "required": false,
+      "section": "js_config",
+      "order": 3,
+      "default": false,
+      "description": "Include localStorage utilities"
+    },
+    {
+      "id": "has_multiple_pages",
+      "type": "boolean",
+      "prompt": "Multiple Pages",
+      "required": false,
+      "section": "site_config",
+      "order": 1,
+      "default": false,
+      "description": "Create additional HTML pages"
+    },
+    {
+      "id": "has_navigation",
+      "type": "boolean",
+      "prompt": "Navigation Menu",
+      "required": false,
+      "section": "site_config",
+      "order": 2,
+      "default": true,
+      "description": "Include navigation component"
+    },
+    {
+      "id": "has_footer",
+      "type": "boolean",
+      "prompt": "Footer",
+      "required": false,
+      "section": "site_config",
+      "order": 3,
+      "default": true,
+      "description": "Include footer component"
+    },
+    {
+      "id": "use_npm",
+      "type": "boolean",
+      "prompt": "Use npm",
+      "required": false,
+      "section": "tooling",
+      "order": 1,
+      "default": false,
+      "description": "Include package.json for npm scripts"
+    },
+    {
+      "id": "use_live_server",
+      "type": "boolean",
+      "prompt": "Live Server",
+      "required": false,
+      "section": "tooling",
+      "order": 2,
+      "default": true,
+      "description": "Include live-server for development",
+      "depends_on": "use_npm",
+      "depends_value": true
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git",
+      "required": false,
+      "section": "project_setup",
+      "order": 1,
+      "default": true
+    }
+  ]
+}

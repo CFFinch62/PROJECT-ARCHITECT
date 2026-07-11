@@ -1,0 +1,30 @@
+"""
+{{ project_name }} - Game Configuration
+
+Central place for window, timing, and asset settings.
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+from dataclasses import dataclass, field
+from pathlib import Path
+
+
+@dataclass
+class GameConfig:
+    """Static configuration for {{ project_name }}."""
+
+    title: str = "{{ project_name }}"
+    screen_width: int = {{ screen_width }}
+    screen_height: int = {{ screen_height }}
+    fullscreen: bool = {{ "True" if fullscreen else "False" }}
+    target_fps: int = {{ target_fps if game_framework == 'pygame' else 60 }}
+    {% if has_sprites %}
+    assets_dir: Path = field(default_factory=lambda: Path("assets/images"))
+    {% endif %}
+    {% if has_sound %}
+    sounds_dir: Path = field(default_factory=lambda: Path("assets/sounds"))
+    {% endif %}
+    {% if has_score_tracking %}
+    starting_score: int = 0
+    {% endif %}

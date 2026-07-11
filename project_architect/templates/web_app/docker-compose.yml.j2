@@ -1,0 +1,94 @@
+# {{ project_name }} - Docker Compose
+
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: {{ project_name | snake_case }}_web
+    ports:
+      - "{% if web_framework == 'fastapi' %}8000:8000{% elif web_framework == 'django' %}8000:8000{% else %}5000:5000{% endif %}"
+    environment:
+      - DEBUG=false
+{% if has_database %}
+{% if database_type == 'postgresql' %}
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/{{ project_name | snake_case }}
+{% elif database_type == 'mysql' %}
+      - DATABASE_URL=mysql://root:root@db:3306/{{ project_name | snake_case }}
+{% elif database_type == 'mongodb' %}
+      - DATABASE_URL=mongodb://db:27017/{{ project_name | snake_case }}
+{% endif %}
+{% endif %}
+{% if has_authentication %}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key}
+{% endif %}
+{% if has_caching %}
+      - REDIS_URL=redis://redis:6379/0
+{% endif %}
+    depends_on:
+{% if has_database and database_type != 'sqlite' %}
+      - db
+{% endif %}
+{% if has_caching %}
+      - redis
+{% endif %}
+    restart: unless-stopped
+
+{% if has_database and database_type == 'postgresql' %}
+  db:
+    image: postgres:15-alpine
+    container_name: {{ project_name | snake_case }}_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB={{ project_name | snake_case }}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+{% elif has_database and database_type == 'mysql' %}
+  db:
+    image: mysql:8
+    container_name: {{ project_name | snake_case }}_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE={{ project_name | snake_case }}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+{% elif has_database and database_type == 'mongodb' %}
+  db:
+    image: mongo:7
+    container_name: {{ project_name | snake_case }}_db
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+{% endif %}
+
+{% if has_caching %}
+  redis:
+    image: redis:7-alpine
+    container_name: {{ project_name | snake_case }}_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+{% endif %}
+
+volumes:
+{% if has_database and database_type == 'postgresql' %}
+  postgres_data:
+{% elif has_database and database_type == 'mysql' %}
+  mysql_data:
+{% elif has_database and database_type == 'mongodb' %}
+  mongo_data:
+{% endif %}
+{% if has_caching %}
+  redis_data:
+{% endif %}

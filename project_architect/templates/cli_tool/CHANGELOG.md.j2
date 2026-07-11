@@ -1,0 +1,34 @@
+# Changelog
+
+All notable changes to {{ project_name }} will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned Features
+- Additional features to be determined
+
+## [{{ project_version }}] - {{ current_date }}
+
+### Added
+- Initial project setup
+- CLI built with {% if cli_framework == 'click' %}Click{% elif cli_framework == 'typer' %}Typer{% elif cli_framework == 'argparse' %}argparse{% endif +%}
+{% if has_config_file %}- {{ config_format | upper }} configuration file support{% endif +%}
+{% if has_logging %}- Logging system{% endif +%}
+{% if has_plugins %}- Plugin system{% endif +%}
+{% if has_autocomplete %}- Shell autocomplete support{% endif +%}
+{% if include_tests %}- Unit testing framework with pytest{% endif +%}
+{% if include_linting %}- Code linting tools{% endif +%}
+{% if init_git %}- Git repository initialization{% endif +%}
+{% if create_venv %}- Virtual environment setup{% endif +%}
+- Project documentation (README, this CHANGELOG)
+
+---
+
+## Notes
+
+- This project was generated using Project Architect
+- Generated on {{ current_date }}
+- Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}

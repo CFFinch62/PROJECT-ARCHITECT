@@ -1,0 +1,41 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Installation
+
+```bash
+pip install {{ project_name | snake_case }}
+```
+
+## Quick Start
+
+```python
+from {{ project_name | snake_case | replace('-', '_') }} import example_function, ExampleClass
+
+# Using the function
+result = example_function("hello")
+print(result)
+
+# Using the class
+obj = ExampleClass("my-instance")
+data = obj.process({"key": "value"})
+```
+
+## Features
+
+- 🚀 Modern Python {{ min_python_version }}+ support
+{% if has_type_hints %}- 📝 Full type hints{% endif +%}
+{% if has_async %}- ⚡ Async/await support{% endif +%}
+{% if has_cli %}- 💻 Command-line interface{% endif %}
+
+## Next Steps
+
+- [API Reference](api.md)
+- [Examples](examples.md)
+
+---
+
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}
+

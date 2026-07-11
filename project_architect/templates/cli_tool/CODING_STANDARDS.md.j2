@@ -1,0 +1,230 @@
+# {{ project_name }} - Coding Standards
+
+## Python Style Guide
+
+### PEP 8 Compliance
+
+This project follows [PEP 8](https://pep.python.org/pep-0008/) - Python's official style guide.
+
+**Key Points:**
+- Indentation: 4 spaces (no tabs)
+- Line length: 88 characters
+- Encoding: UTF-8
+- Imports: Grouped (standard library, third-party, local)
+
+## Naming Conventions
+
+### Variables and Functions
+```python
+# Good
+file_path = "/path/to/file"
+def process_input():
+    pass
+
+# Bad
+filePath = "/path/to/file"  # camelCase
+def ProcessInput():  # PascalCase
+    pass
+```
+
+### Classes
+```python
+# Good
+class ConfigManager:
+    pass
+
+# Bad
+class config_manager:  # snake_case
+    pass
+```
+
+### Constants
+```python
+# Good
+DEFAULT_TIMEOUT = 30
+MAX_RETRIES = 3
+
+# Bad
+default_timeout = 30  # lowercase
+```
+
+## CLI-Specific Standards
+
+### Command Structure ({{ cli_framework }})
+{% if cli_framework == 'click' %}
+```python
+import click
+
+@click.group()
+@click.version_option()
+def cli():
+    """{{ project_name }} - {{ project_description }}"""
+    pass
+
+@cli.command()
+@click.option('--format', '-f', type=click.Choice(['json', 'csv']),
+              default='json', help='Output format')
+@click.argument('input_file', type=click.Path(exists=True))
+def process(format, input_file):
+    """Process input file and generate output."""
+    click.echo(f"Processing {input_file} as {format}")
+```
+{% elif cli_framework == 'typer' %}
+```python
+import typer
+from typing import Optional
+
+app = typer.Typer(help="{{ project_description }}")
+
+@app.command()
+def process(
+    input_file: str = typer.Argument(..., help="Input file path"),
+    format: str = typer.Option("json", "--format", "-f", help="Output format")
+):
+    """Process input file and generate output."""
+    typer.echo(f"Processing {input_file} as {format}")
+```
+{% else %}
+```python
+import argparse
+
+def create_parser():
+    parser = argparse.ArgumentParser(
+        prog='{{ project_name | snake_case }}',
+        description='{{ project_description }}'
+    )
+    parser.add_argument('--version', action='version', version='{{ project_version }}')
+    
+    subparsers = parser.add_subparsers(dest='command')
+    
+    # Process command
+    process_parser = subparsers.add_parser('process', help='Process input file')
+    process_parser.add_argument('input_file', help='Input file path')
+    process_parser.add_argument('--format', '-f', choices=['json', 'csv'],
+                                default='json', help='Output format')
+    
+    return parser
+```
+{% endif %}
+
+### Option Naming
+- Use descriptive long names: `--output-file` not `--of`
+- Provide short forms for common options: `-o` for `--output`
+- Use hyphens in long names: `--dry-run` not `--dryrun`
+
+## Documentation Standards
+
+### Command Docstrings
+```python
+def export(format, output):
+    """Export data to specified format.
+    
+    Reads all records from the database and exports them
+    to the specified output file in the chosen format.
+    
+    Examples:
+    
+        {{ project_name | snake_case }} export --format json data.json
+        
+        {{ project_name | snake_case }} export -f csv data.csv
+    """
+```
+
+### Function Docstrings (Google Style)
+```python
+def process_file(path: str, options: dict = None) -> dict:
+    """Process a file and return results.
+    
+    Args:
+        path: Path to the input file
+        options: Optional processing options
+    
+    Returns:
+        Dictionary containing processing results
+        
+    Raises:
+        FileNotFoundError: If file doesn't exist
+        ValueError: If file format is invalid
+    """
+```
+
+## Type Hints
+
+### Function Signatures
+```python
+from typing import List, Optional
+from pathlib import Path
+
+def read_config(path: Path) -> dict:
+    """Read configuration from file."""
+    pass
+
+def process_items(items: List[str], verbose: bool = False) -> Optional[str]:
+    """Process list of items."""
+    pass
+```
+
+## Error Handling
+
+### CLI Errors
+```python
+import sys
+import click
+
+try:
+    result = process_file(path)
+except FileNotFoundError:
+    click.echo(f"Error: File not found: {path}", err=True)
+    sys.exit(1)
+except PermissionError:
+    click.echo(f"Error: Permission denied: {path}", err=True)
+    sys.exit(1)
+```
+
+### Custom Exceptions
+```python
+class ConfigError(Exception):
+    """Raised when configuration is invalid."""
+    pass
+
+class ProcessingError(Exception):
+    """Raised when processing fails."""
+    pass
+```
+
+{% if has_logging %}
+## Logging Practices
+
+### Log Levels
+- **DEBUG:** Detailed command execution info
+- **INFO:** Major operations (file loaded, export complete)
+- **WARNING:** Recoverable issues
+- **ERROR:** Failures that need attention
+
+### Usage
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+logger.debug(f"Processing file: {path}")
+logger.info("Export completed successfully")
+logger.warning("Config file not found, using defaults")
+logger.error(f"Failed to process: {e}")
+```
+{% endif %}
+
+## Best Practices
+
+### General Principles
+1. **Single Responsibility:** Each command does one thing well
+2. **Fail Fast:** Validate input early, exit with clear errors
+3. **Be Quiet:** Don't output unless asked (--verbose)
+4. **Be Consistent:** Same patterns across all commands
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

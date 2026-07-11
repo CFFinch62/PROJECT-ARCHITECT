@@ -1,0 +1,135 @@
+/**
+ * {{ project_name }} - API Utilities
+ * Author: {{ author_name }}
+ */
+
+{% if js_type == 'es6_modules' %}
+/**
+ * API Configuration
+ */
+const API_BASE_URL = '';  // Set your API base URL
+
+/**
+ * Default fetch options
+ */
+const defaultOptions = {
+    headers: {
+        'Content-Type': 'application/json',
+    },
+};
+
+/**
+ * Make API request
+ * @param {string} endpoint - API endpoint
+ * @param {Object} options - Fetch options
+ * @returns {Promise<any>}
+ */
+async function request(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint}`;
+    const config = { ...defaultOptions, ...options };
+    
+    try {
+        const response = await fetch(url, config);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+/**
+ * API methods
+ */
+export const api = {
+    /**
+     * GET request
+     */
+    get(endpoint) {
+        return request(endpoint, { method: 'GET' });
+    },
+    
+    /**
+     * POST request
+     */
+    post(endpoint, data) {
+        return request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+    
+    /**
+     * PUT request
+     */
+    put(endpoint, data) {
+        return request(endpoint, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    },
+    
+    /**
+     * DELETE request
+     */
+    delete(endpoint) {
+        return request(endpoint, { method: 'DELETE' });
+    },
+};
+{% else %}
+/**
+ * API Utilities (Global)
+ */
+const api = {
+    baseUrl: '',  // Set your API base URL
+    
+    /**
+     * Make API request
+     */
+    async request(endpoint, options = {}) {
+        const url = this.baseUrl + endpoint;
+        const config = {
+            headers: { 'Content-Type': 'application/json' },
+            ...options,
+        };
+        
+        try {
+            const response = await fetch(url, config);
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
+        }
+    },
+    
+    get(endpoint) {
+        return this.request(endpoint, { method: 'GET' });
+    },
+    
+    post(endpoint, data) {
+        return this.request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+    
+    put(endpoint, data) {
+        return this.request(endpoint, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    },
+    
+    delete(endpoint) {
+        return this.request(endpoint, { method: 'DELETE' });
+    },
+};
+{% endif %}
+

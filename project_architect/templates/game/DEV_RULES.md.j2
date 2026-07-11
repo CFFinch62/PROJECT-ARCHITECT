@@ -1,0 +1,297 @@
+# {{ project_name }} - Development Rules
+
+## Core Principles
+
+### 1. Code Quality Over Speed
+- Write clean, maintainable code first
+- Optimize only when necessary
+- Test thoroughly before committing
+
+### 2. Consistency is Key
+- Follow established patterns in the codebase
+- Match existing code style
+- Use project conventions for naming and structure
+
+### 3. Communication
+{% if has_logging %}- Log important events and errors
+{% endif %}- Document changes in CHANGELOG.md
+- Write clear commit messages
+- Comment complex logic
+
+## Development Standards
+
+### Module Size Rule
+- **Target:** < 300 lines per file
+- **Maximum:** 500 lines per file
+- **Action:** If approaching limit, refactor into multiple modules
+- **Rationale:** Easier maintenance, better organization, clearer responsibilities
+
+### Code Quality Checklist
+
+Before committing code, ensure:
+- [ ] Code follows PEP 8 / project style guide
+{% if include_formatting %}- [ ] Black formatting applied (`black src/ tests/`){% endif +%}
+{% if include_linting %}- [ ] No lint errors (`flake8 src/ tests/`)
+- [ ] Pylint score > 8.0{% endif +%}
+{% if include_type_checking %}- [ ] Type hints added for all functions
+- [ ] MyPy passes without errors{% endif +%}
+{% if include_tests %}- [ ] Tests written for new features
+- [ ] All tests pass (`pytest`)
+- [ ] Coverage maintained (>80%){% endif +%}
+- [ ] Documentation updated (docstrings, README, etc.)
+- [ ] CHANGELOG.md updated with changes
+- [ ] No debug print statements or commented code
+- [ ] No hardcoded values (use constants/config)
+
+## Testing Requirements
+
+{% if include_tests %}
+### Unit Tests
+- **Requirement:** All new public functions must have tests
+- **Coverage:** Target >80% for critical modules
+- **Location:** Mirror source structure in `tests/`
+- **Naming:** `test_<module>` for files, `test_<function>` for tests
+
+### Test-Driven Development (Encouraged)
+1. Write test first (it fails)
+2. Write minimum code to pass
+3. Refactor for quality
+4. Repeat
+
+### What to Test
+- **Yes:** Business logic, data transformations, edge cases
+- **No:** Simple getters/setters, framework code, external libraries
+{% else %}
+### Manual Testing
+- Test all new features manually before committing
+- Document test scenarios in PR/commit
+- Verify edge cases and error handling
+{% endif %}
+
+## Git Workflow
+
+### Branching Strategy
+- `main`: Production-ready code
+- `develop`: Integration branch (if using)
+- `feature/*`: New features
+- `fix/*`: Bug fixes
+- `refactor/*`: Code improvements
+
+### Commit Guidelines
+
+**Format:**
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation only
+- `style`: Formatting changes
+- `refactor`: Code restructure, no functionality change
+- `test`: Adding/updating tests
+- `chore`: Build process, dependencies
+
+**Example:**
+```
+feat(gui): Add status bar to main window
+
+Added customizable status bar showing current operation state
+and system messages. Updates automatically on events.
+
+Closes #123
+```
+
+### Pull Request Rules (if using)
+1. Keep PRs focused and small
+2. Write descriptive PR description
+3. Link related issues
+4. Ensure CI passes
+5. Request review from at least one person
+6. Address review comments promptly
+
+## Error Handling Rules
+
+### Always Handle Errors
+```python
+# Bad
+def load_file(path):
+    with open(path) as f:
+        return f.read()
+
+# Good
+def load_file(path):
+    try:
+        with open(path) as f:
+            return f.read()
+    except FileNotFoundError:
+        {% if has_logging %}logger.error(f"File not found: {path}"){% else %}print(f"Error: File not found: {path}"){% endif +%}
+        return None
+    except PermissionError:
+        {% if has_logging %}logger.error(f"Permission denied: {path}"){% else %}print(f"Error: Permission denied: {path}"){% endif +%}
+        return None
+```
+
+### User-Facing Errors
+- Show friendly error messages in GUI
+- {% if has_logging %}Log technical details{% else %}Print technical details to console{% endif +%}
+- Provide actionable guidance ("Try X or Y")
+- Never expose stack traces to users
+
+{% if has_logging %}
+### Logging Requirements
+- **DEBUG:** Detailed runtime information
+- **INFO:** Major operations (startup, config load, etc.)
+- **WARNING:** Recoverable issues (missing optional config, etc.)
+- **ERROR:** Failures that need attention
+- **CRITICAL:** Application-breaking errors
+{% endif %}
+
+## Security Rules
+
+### Never Commit
+- Passwords or API keys
+- Database credentials
+- Private keys or certificates
+- Personal data or PII
+
+### Use Environment Variables or Config
+```python
+# Bad
+DB_PASSWORD = "secret123"
+
+# Good
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+# Or
+DB_PASSWORD = config.get("database.password")
+```
+
+### Validate All Input
+- Sanitize user input
+- Validate file paths (prevent directory traversal)
+- Check data types and ranges
+
+## Documentation Rules
+
+### Required Documentation
+- **Module docstrings:** Every `.py` file
+- **Function docstrings:** All public functions
+- **Class docstrings:** All classes
+- **Complex logic:** Inline comments explaining "why"
+- **README.md:** Keep up-to-date with setup/usage
+- **CHANGELOG.md:** Document all user-facing changes
+
+### Docstring Format (Google Style)
+```python
+def function_name(param1: str, param2: int = 0) -> bool:
+    """
+    One-line summary.
+    
+    Detailed description if needed. Can span
+    multiple lines.
+    
+    Args:
+        param1: Description of param1
+        param2: Description of param2 (default: 0)
+    
+    Returns:
+        Description of return value
+        
+    Raises:
+        ValueError: When validation fails
+    """
+```
+
+## Performance Rules
+
+### Profile Before Optimizing
+- Don't assume bottlenecks
+- Measure with profiler
+- Optimize only proven slow paths
+
+### Common Optimizations
+- Cache expensive computations
+- Use appropriate data structures
+- Avoid premature optimization
+- Keep UI responsive (use threads for long operations)
+
+## Dependency Management
+
+### Adding Dependencies
+1. Must serve clear purpose
+2. Check license compatibility
+3. Evaluate maintenance status
+4. Consider bundle size impact
+5. Add to `requirements.txt` with version pin
+
+### Version Pinning
+```
+# Good
+{% if game_framework == 'pygame' %}pygame>=2.5.0,<3.0.0{% elif game_framework == 'arcade' %}arcade>=2.6.17,<3.0.0{% elif game_framework == 'pyglet' %}pyglet>=2.0.0,<3.0.0{% elif game_framework == 'pgzero' %}pgzero>=1.2.1,<2.0.0{% endif %}  # Allow patches, not major
+
+# Avoid
+{% if game_framework == 'pygame' %}pygame{% elif game_framework == 'arcade' %}arcade{% elif game_framework == 'pyglet' %}pyglet{% elif game_framework == 'pgzero' %}pgzero{% endif %}  # No version constraint
+```
+
+## Code Review Checklist
+
+### For Reviewers
+- [ ] Code follows project standards
+- [ ] Logic is sound and efficient
+- [ ] All edge cases handled
+{% if include_tests %}- [ ] Tests cover new code{% endif +%}
+- [ ] Documentation is clear
+- [ ] No security issues
+- [ ] Breaking changes documented
+
+### For Authors
+- [ ] Self-review before requesting
+- [ ] All checklist items complete
+- [ ] CI passing
+- [ ] Addressed previous feedback
+- [ ] PR description clear
+
+## Refactoring Rules
+
+### When to Refactor
+- Code duplicated 3+ times (DRY it)
+- Function/module exceeds size limits
+- Unclear names or confusing logic
+- Adding feature is difficult
+
+### How to Refactor
+1. {% if include_tests %}Ensure tests exist first{% else %}Test current functionality{% endif +%}
+2. Make small, incremental changes
+3. {% if include_tests %}Test after each change{% else %}Test frequently during refactoring{% endif +%}
+4. Commit working states frequently
+5. Don't change behavior (unless fixing bugs)
+
+## Emergency Procedures
+
+### Critical Bug in Production
+1. Create `hotfix/*` branch from `main`
+2. Fix minimal code to resolve issue
+3. Test thoroughly
+4. Fast-track review
+5. Deploy immediately
+6. Merge back to `main` and `develop`
+7. Document in CHANGELOG
+
+### Game Won't Launch / Crashes on Startup
+1. Check for missing or corrupt asset files{% if has_sprites %} (`assets/images/`){% endif %}{% if has_sound %}{% if has_sprites %} and{% endif %} (`assets/sounds/`){% endif +%}
+2. Verify the game framework and its dependencies are installed (`pip install -r requirements.txt`)
+3. Check logs{% if has_logging %} in `logs/{{ project_name | snake_case }}.log`{% endif %} for the traceback
+4. Roll back to the last known-good commit if the cause isn't obvious
+
+---
+
+**Remember:** These rules exist to maintain code quality and team productivity. When in doubt, ask for clarification or propose improvements to these rules.
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Last Updated:** {{ current_date }}

@@ -1,0 +1,29 @@
+# {{ project_name }} - Development Requirements
+
+-r requirements.txt
+
+{% if include_tests %}
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+{% if has_async %}pytest-asyncio>=0.21.0{% endif +%}
+{% endif %}
+
+{% if include_linting %}
+# Linting & Formatting
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
+isort>=5.12.0
+{% endif %}
+
+{% if include_docs %}
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.0.0
+{% endif %}
+
+# Build
+build>=1.0.0
+twine>=4.0.0
+

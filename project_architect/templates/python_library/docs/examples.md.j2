@@ -1,0 +1,81 @@
+# Examples
+
+## Basic Usage
+
+### Using the Function
+
+```python
+from {{ project_name | snake_case | replace('-', '_') }} import example_function
+
+# Simple usage
+result = example_function("hello world")
+print(result)
+# {'input': 'hello world', 'processed': True, 'options': {}}
+
+# With options
+result = example_function(
+    {"key": "value"},
+    options={"debug": True}
+)
+print(result)
+```
+
+### Using the Class
+
+```python
+from {{ project_name | snake_case | replace('-', '_') }} import ExampleClass
+
+# Create instance
+processor = ExampleClass("my-processor")
+
+# Process data
+result = processor.process({"data": "test"})
+print(result)
+# {'name': 'my-processor', 'data': {'data': 'test'}}
+```
+
+{% if has_async %}
+## Async Usage
+
+```python
+import asyncio
+from {{ project_name | snake_case | replace('-', '_') }} import ExampleClass
+
+async def main():
+    processor = ExampleClass("async-processor")
+    result = await processor.process_async({"data": "test"})
+    print(result)
+
+asyncio.run(main())
+```
+{% endif %}
+
+## Error Handling
+
+```python
+from {{ project_name | snake_case | replace('-', '_') }} import example_function, ValidationError
+
+try:
+    result = example_function(None)
+except ValidationError as e:
+    print(f"Validation failed: {e}")
+```
+
+## Configuration
+
+```python
+from {{ project_name | snake_case | replace('-', '_') }} import ExampleClass
+
+# With configuration
+config = {
+    "timeout": 30,
+    "retries": 3
+}
+
+processor = ExampleClass("configured", config=config)
+```
+
+---
+
+**Version:** {{ project_version }}
+

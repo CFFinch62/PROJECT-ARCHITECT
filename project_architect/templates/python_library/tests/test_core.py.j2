@@ -1,0 +1,92 @@
+"""
+Tests for {{ project_name }} core functionality.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if has_async %}
+import asyncio
+{% endif %}
+
+from src import example_function, ExampleClass, ValidationError
+
+
+class TestExampleFunction:
+    """Tests for example_function."""
+    
+    def test_with_string(self):
+        """Test with string input."""
+        result = example_function("hello")
+        assert result["input"] == "hello"
+        assert result["processed"] is True
+    
+    def test_with_dict(self, sample_data):
+        """Test with dictionary input."""
+        result = example_function(sample_data)
+        assert result["input"] == sample_data
+        assert result["processed"] is True
+    
+    def test_with_options(self):
+        """Test with options."""
+        options = {"key": "value"}
+        result = example_function("test", options=options)
+        assert result["options"] == options
+    
+    def test_none_raises_error(self):
+        """Test that None input raises ValidationError."""
+        with pytest.raises(ValidationError):
+            example_function(None)
+
+
+class TestExampleClass:
+    """Tests for ExampleClass."""
+    
+    def test_init(self):
+        """Test initialization."""
+        obj = ExampleClass("test")
+        assert obj.name == "test"
+        assert obj.config == {}
+    
+    def test_init_with_config(self, sample_config):
+        """Test initialization with config."""
+        obj = ExampleClass("test", config=sample_config)
+        assert obj.config == sample_config
+    
+    def test_process(self, sample_data):
+        """Test process method."""
+        obj = ExampleClass("test")
+        result = obj.process(sample_data)
+        assert result["name"] == "test"
+        assert result["data"] == sample_data
+    
+{% if has_async %}
+    @pytest.mark.asyncio
+    async def test_process_async(self, sample_data):
+        """Test async process method."""
+        obj = ExampleClass("test")
+        result = await obj.process_async(sample_data)
+        assert result["name"] == "test"
+        assert result["data"] == sample_data
+{% endif %}
+    
+    def test_repr(self):
+        """Test string representation."""
+        obj = ExampleClass("test")
+        assert repr(obj) == "ExampleClass(name='test')"
+
+
+class TestExceptions:
+    """Tests for custom exceptions."""
+    
+    def test_validation_error(self):
+        """Test ValidationError."""
+        error = ValidationError("Invalid value", field="name")
+        assert "name" in str(error)
+        assert "Invalid value" in str(error)
+    
+    def test_validation_error_without_field(self):
+        """Test ValidationError without field."""
+        error = ValidationError("Invalid value")
+        assert "Invalid value" in str(error)
+

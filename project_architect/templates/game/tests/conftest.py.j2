@@ -1,0 +1,31 @@
+{% if include_tests %}"""
+Pytest configuration and fixtures for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+import sys
+from pathlib import Path
+
+import pytest
+
+# Add src directory to Python path for tests
+src_path = Path(__file__).parent.parent / "src"
+sys.path.insert(0, str(src_path))
+
+from src.config import GameConfig  # noqa: E402
+
+
+@pytest.fixture
+def config():
+    """Provide a GameConfig instance for tests."""
+    return GameConfig()
+
+
+def pytest_configure(config):
+    """Configure custom pytest markers."""
+    config.addinivalue_line(
+        "markers", "integration: marks tests as integration tests"
+    )
+{% else %}# Testing not configured for this project
+{% endif %}

@@ -1,0 +1,135 @@
+template:
+  name: "Python Library"
+  type: "python_library"
+  description: "Distributable Python package for PyPI with modern packaging standards"
+  version: "1.0.0"
+  author: "Project Architect"
+  frameworks:
+    - "setuptools"
+    - "poetry"
+
+structure:
+  # Directories
+  - path: "src"
+    type: "directory"
+  - path: "tests"
+    type: "directory"
+  - path: "docs"
+    type: "directory"
+  - path: "dev_sessions"
+    type: "directory"
+
+  # Source package
+  - path: "src/__init__.py"
+    type: "file"
+    template: "src/__init__.py.j2"
+  - path: "src/core.py"
+    type: "file"
+    template: "src/core.py.j2"
+  - path: "src/utils.py"
+    type: "file"
+    template: "src/utils.py.j2"
+  - path: "src/exceptions.py"
+    type: "file"
+    template: "src/exceptions.py.j2"
+
+  # Tests
+  - path: "tests/__init__.py"
+    type: "file"
+    content: ""
+  - path: "tests/conftest.py"
+    type: "file"
+    template: "tests/conftest.py.j2"
+  - path: "tests/test_core.py"
+    type: "file"
+    template: "tests/test_core.py.j2"
+    condition: "include_tests"
+
+  # Documentation
+  - path: "docs/index.md"
+    type: "file"
+    template: "docs/index.md.j2"
+  - path: "docs/api.md"
+    type: "file"
+    template: "docs/api.md.j2"
+  - path: "docs/examples.md"
+    type: "file"
+    template: "docs/examples.md.j2"
+
+  # Dev sessions
+  - path: "dev_sessions/README.md"
+    type: "file"
+    template: "dev_sessions/README.md.j2"
+
+  # Configuration
+  - path: "pyproject.toml"
+    type: "file"
+    template: "pyproject.toml.j2"
+  - path: "setup.py"
+    type: "file"
+    template: "setup.py.j2"
+  - path: "MANIFEST.in"
+    type: "file"
+    template: "MANIFEST.in.j2"
+  - path: "requirements.txt"
+    type: "file"
+    template: "requirements.txt.j2"
+  - path: "requirements-dev.txt"
+    type: "file"
+    template: "requirements-dev.txt.j2"
+  - path: ".gitignore"
+    type: "file"
+    template: ".gitignore.j2"
+  - path: "pytest.ini"
+    type: "file"
+    template: "pytest.ini.j2"
+    condition: "include_tests"
+
+  # Documentation files
+  - path: "README.md"
+    type: "file"
+    template: "README.md.j2"
+  - path: "CHANGELOG.md"
+    type: "file"
+    template: "CHANGELOG.md.j2"
+  - path: "LICENSE"
+    type: "file"
+    template: "LICENSE.j2"
+  - path: "CONTRIBUTING.md"
+    type: "file"
+    template: "CONTRIBUTING.md.j2"
+
+  # AI documentation
+  - path: "AI_CONTEXT.md"
+    type: "file"
+    template: "AI_CONTEXT.md.j2"
+  - path: "TECHNICAL_SPECIFICATION.md"
+    type: "file"
+    template: "TECHNICAL_SPECIFICATION.md.j2"
+  - path: "DEV_RULES.md"
+    type: "file"
+    template: "DEV_RULES.md.j2"
+  - path: "DEV_PROCESS.md"
+    type: "file"
+    template: "DEV_PROCESS.md.j2"
+  - path: "CODING_STANDARDS.md"
+    type: "file"
+    template: "CODING_STANDARDS.md.j2"
+  - path: "IMPLEMENTATION_PLAN.md"
+    type: "file"
+    template: "IMPLEMENTATION_PLAN.md.j2"
+
+requirements:
+  core:
+    - "typing-extensions>=4.0.0"
+  testing:
+    - "pytest>=7.4.0"
+    - "pytest-cov>=4.1.0"
+  linting:
+    - "black>=23.0.0"
+    - "flake8>=6.0.0"
+    - "mypy>=1.5.0"
+  docs:
+    - "mkdocs>=1.5.0"
+    - "mkdocs-material>=9.0.0"
+

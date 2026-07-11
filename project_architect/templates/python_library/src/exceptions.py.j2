@@ -1,0 +1,58 @@
+"""
+Custom exceptions for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+
+class {{ project_name | pascal_case }}Error(Exception):
+    """Base exception for {{ project_name }}."""
+    
+    def __init__(self, message: str, code: str = None):
+        self.message = message
+        self.code = code or "UNKNOWN_ERROR"
+        super().__init__(self.message)
+    
+    def __str__(self) -> str:
+        return f"[{self.code}] {self.message}"
+
+
+class ConfigurationError({{ project_name | pascal_case }}Error):
+    """Raised when configuration is invalid."""
+    
+    def __init__(self, message: str):
+        super().__init__(message, code="CONFIG_ERROR")
+
+
+class ValidationError({{ project_name | pascal_case }}Error):
+    """Raised when validation fails."""
+    
+    def __init__(self, message: str, field: str = None):
+        self.field = field
+        super().__init__(message, code="VALIDATION_ERROR")
+    
+    def __str__(self) -> str:
+        if self.field:
+            return f"[{self.code}] {self.field}: {self.message}"
+        return super().__str__()
+
+
+class NotFoundError({{ project_name | pascal_case }}Error):
+    """Raised when a resource is not found."""
+    
+    def __init__(self, resource: str, identifier: str = None):
+        message = f"{resource} not found"
+        if identifier:
+            message = f"{resource} '{identifier}' not found"
+        super().__init__(message, code="NOT_FOUND")
+
+
+class OperationError({{ project_name | pascal_case }}Error):
+    """Raised when an operation fails."""
+    
+    def __init__(self, operation: str, reason: str = None):
+        message = f"Operation '{operation}' failed"
+        if reason:
+            message = f"{message}: {reason}"
+        super().__init__(message, code="OPERATION_ERROR")
+

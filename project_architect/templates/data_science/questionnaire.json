@@ -1,0 +1,215 @@
+{
+  "questionnaire": {
+    "name": "Project Questionnaire",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "questions": [
+    {
+      "id": "project_name",
+      "type": "text",
+      "prompt": "Project Name",
+      "required": true,
+      "section": "project_info",
+      "order": 1,
+      "description": "my-ml-project"
+    },
+    {
+      "id": "project_description",
+      "type": "text",
+      "prompt": "Description",
+      "required": true,
+      "section": "project_info",
+      "order": 2,
+      "description": "A machine learning project that..."
+    },
+    {
+      "id": "project_version",
+      "type": "text",
+      "prompt": "Version",
+      "required": true,
+      "section": "project_info",
+      "order": 3,
+      "default": "0.1.0"
+    },
+    {
+      "id": "author_name",
+      "type": "text",
+      "prompt": "Author Name",
+      "required": true,
+      "section": "project_info",
+      "order": 4
+    },
+    {
+      "id": "author_email",
+      "type": "text",
+      "prompt": "Author Email",
+      "required": false,
+      "section": "project_info",
+      "order": 5
+    },
+    {
+      "id": "ml_framework",
+      "type": "choice",
+      "prompt": "ML Framework",
+      "required": false,
+      "section": "ml_config",
+      "order": 1,
+      "default": "scikit-learn",
+      "description": "Primary machine learning framework",
+      "options": [
+        "scikit-learn",
+        "pytorch",
+        "tensorflow",
+        "none"
+      ]
+    },
+    {
+      "id": "problem_type",
+      "type": "choice",
+      "prompt": "Problem Type",
+      "required": false,
+      "section": "ml_config",
+      "order": 2,
+      "default": "classification",
+      "options": [
+        "classification",
+        "regression",
+        "clustering",
+        "nlp",
+        "computer_vision",
+        "other"
+      ]
+    },
+    {
+      "id": "has_deep_learning",
+      "type": "boolean",
+      "prompt": "Deep Learning",
+      "required": false,
+      "section": "ml_config",
+      "order": 3,
+      "default": false,
+      "description": "Include deep learning components"
+    },
+    {
+      "id": "has_gpu_support",
+      "type": "boolean",
+      "prompt": "GPU Support",
+      "required": false,
+      "section": "ml_config",
+      "order": 4,
+      "default": false,
+      "depends_on": "has_deep_learning",
+      "depends_value": true
+    },
+    {
+      "id": "data_source",
+      "type": "choice",
+      "prompt": "Primary Data Source",
+      "required": false,
+      "section": "data_config",
+      "order": 1,
+      "default": "csv",
+      "options": [
+        "csv",
+        "database",
+        "api",
+        "images",
+        "text",
+        "other"
+      ]
+    },
+    {
+      "id": "has_data_versioning",
+      "type": "boolean",
+      "prompt": "Data Versioning (DVC)",
+      "required": false,
+      "section": "data_config",
+      "order": 2,
+      "default": false,
+      "description": "Use DVC for data version control"
+    },
+    {
+      "id": "has_feature_store",
+      "type": "boolean",
+      "prompt": "Feature Store",
+      "required": false,
+      "section": "data_config",
+      "order": 3,
+      "default": false,
+      "description": "Include feature store setup"
+    },
+    {
+      "id": "experiment_tracking",
+      "type": "choice",
+      "prompt": "Experiment Tracking",
+      "required": false,
+      "section": "experiment_config",
+      "order": 1,
+      "default": "none",
+      "description": "Tool for tracking experiments",
+      "options": [
+        "mlflow",
+        "wandb",
+        "tensorboard",
+        "none"
+      ]
+    },
+    {
+      "id": "has_model_registry",
+      "type": "boolean",
+      "prompt": "Model Registry",
+      "required": false,
+      "section": "experiment_config",
+      "order": 2,
+      "default": false,
+      "depends_on": "experiment_tracking",
+      "depends_value": "mlflow"
+    },
+    {
+      "id": "include_tests",
+      "type": "boolean",
+      "prompt": "Include Tests",
+      "required": false,
+      "section": "quality",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "include_linting",
+      "type": "boolean",
+      "prompt": "Include Linting",
+      "required": false,
+      "section": "quality",
+      "order": 2,
+      "default": true
+    },
+    {
+      "id": "init_git",
+      "type": "boolean",
+      "prompt": "Initialize Git",
+      "required": false,
+      "section": "project_setup",
+      "order": 1,
+      "default": true
+    },
+    {
+      "id": "create_venv",
+      "type": "boolean",
+      "prompt": "Create Virtual Environment",
+      "required": false,
+      "section": "project_setup",
+      "order": 2,
+      "default": true
+    },
+    {
+      "id": "include_docker",
+      "type": "boolean",
+      "prompt": "Include Docker",
+      "required": false,
+      "section": "project_setup",
+      "order": 3,
+      "default": false
+    }
+  ]
+}

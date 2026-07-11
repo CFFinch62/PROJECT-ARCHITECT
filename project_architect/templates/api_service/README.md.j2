@@ -1,0 +1,138 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Features
+
+- 🚀 {% if api_framework == 'fastapi' %}FastAPI{% else %}Flask{% endif %} framework
+{% if has_database %}- 💾 {{ database_type | title }} database{% if use_async_db %} with async support{% endif %}{% endif +%}
+{% if has_authentication %}- 🔐 {{ auth_type | upper }} authentication{% endif +%}
+{% if has_cors %}- 🌐 CORS enabled{% endif +%}
+{% if has_caching %}- ⚡ Redis caching{% endif +%}
+{% if has_rate_limiting %}- 🛡️ Rate limiting{% endif +%}
+{% if has_health_check %}- ❤️ Health check endpoint{% endif +%}
+{% if include_docker %}- 🐳 Docker support{% endif +%}
+{% if include_tests %}- ✅ Test suite{% endif %}
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.12+
+{% if has_database and database_type == 'postgresql' %}- PostgreSQL 15+{% endif +%}
+{% if has_caching %}- Redis 7+{% endif +%}
+{% if include_docker %}- Docker & Docker Compose{% endif %}
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd {{ project_name | snake_case }}
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your settings
+```
+
+### Running the Server
+
+```bash
+{% if api_framework == 'fastapi' %}
+# Development
+uvicorn main:app --reload
+
+# Production
+uvicorn main:app --host 0.0.0.0 --port 8000
+{% else %}
+# Development
+flask run --debug
+
+# Production
+gunicorn -w 4 -b 0.0.0.0:5000 main:app
+{% endif %}
+```
+
+{% if include_docker %}
+### Docker
+
+```bash
+# Build and run
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+{% endif %}
+
+## API Documentation
+
+{% if api_framework == 'fastapi' %}
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+{% else %}
+- **Swagger UI**: http://localhost:5000/docs
+{% endif %}
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+{% if has_health_check %}| GET | `/health` | Health check |
+{% endif %}| GET | `/api/v1/` | API info |
+| GET | `/api/v1/items` | List items |
+| POST | `/api/v1/items` | Create item |
+| GET | `/api/v1/items/{id}` | Get item |
+| PUT | `/api/v1/items/{id}` | Update item |
+| DELETE | `/api/v1/items/{id}` | Delete item |
+
+{% if include_tests %}
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# With coverage
+pytest --cov=app
+
+# Specific tests
+pytest tests/test_api.py -v
+```
+{% endif %}
+
+## Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py              # Application entry point
+├── app/
+│   ├── api/v1/         # API endpoints
+│   ├── core/           # Configuration, security
+│   ├── models/         # Database models
+│   ├── schemas/        # Pydantic schemas
+│   └── services/       # Business logic
+├── tests/              # Test suite
+{% if include_docker %}├── Dockerfile
+├── docker-compose.yml
+{% endif %}├── requirements.txt
+└── .env.example
+```
+
+## License
+
+MIT License - see LICENSE file for details.
+
+---
+
+**Author:** {{ author_name }}  
+**Version:** {{ project_version }}  
+**Generated:** {{ current_date }}
+

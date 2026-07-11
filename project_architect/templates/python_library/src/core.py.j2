@@ -1,0 +1,128 @@
+"""
+Core functionality for {{ project_name }}.
+
+Author: {{ author_name }}
+"""
+
+{% if has_type_hints %}
+from typing import Any, Dict, List, Optional, Union
+{% endif %}
+{% if has_async %}
+import asyncio
+{% endif %}
+
+from .exceptions import ValidationError
+
+
+{% if has_type_hints %}
+def example_function(
+    data: Union[str, Dict[str, Any]],
+    options: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+{% else %}
+def example_function(data, options=None):
+{% endif %}
+    """
+    Example function demonstrating library usage.
+    
+    Args:
+        data: Input data to process (string or dictionary)
+        options: Optional configuration options
+    
+    Returns:
+        Processed result as a dictionary
+    
+    Raises:
+        ValidationError: If data is invalid
+    
+    Example:
+        >>> result = example_function("hello")
+        >>> print(result)
+        {'input': 'hello', 'processed': True}
+    """
+    if data is None:
+        raise ValidationError("Data cannot be None")
+    
+    options = options or {}
+    
+    return {
+        "input": data,
+        "processed": True,
+        "options": options
+    }
+
+
+class ExampleClass:
+    """
+    Example class demonstrating library patterns.
+    
+    Attributes:
+        name: Instance name
+        config: Configuration dictionary
+    
+    Example:
+        >>> obj = ExampleClass("test")
+        >>> obj.process("data")
+        {'name': 'test', 'data': 'data'}
+    """
+    
+{% if has_type_hints %}
+    def __init__(self, name: str, config: Optional[Dict[str, Any]] = None) -> None:
+{% else %}
+    def __init__(self, name, config=None):
+{% endif %}
+        """
+        Initialize ExampleClass.
+        
+        Args:
+            name: Instance name
+            config: Optional configuration
+        """
+        self.name = name
+        self.config = config or {}
+    
+{% if has_type_hints %}
+    def process(self, data: Any) -> Dict[str, Any]:
+{% else %}
+    def process(self, data):
+{% endif %}
+        """
+        Process input data.
+        
+        Args:
+            data: Data to process
+        
+        Returns:
+            Processed result
+        """
+        return {
+            "name": self.name,
+            "data": data
+        }
+    
+{% if has_async %}
+{% if has_type_hints %}
+    async def process_async(self, data: Any) -> Dict[str, Any]:
+{% else %}
+    async def process_async(self, data):
+{% endif %}
+        """
+        Process input data asynchronously.
+        
+        Args:
+            data: Data to process
+        
+        Returns:
+            Processed result
+        """
+        await asyncio.sleep(0)  # Yield to event loop
+        return self.process(data)
+{% endif %}
+    
+{% if has_type_hints %}
+    def __repr__(self) -> str:
+{% else %}
+    def __repr__(self):
+{% endif %}
+        return f"ExampleClass(name='{self.name}')"
+

@@ -1,0 +1,165 @@
+{% if include_tests %}"""
+Tests for main window module.
+
+Author: {{ author_name }}
+"""
+
+import pytest
+{% if gui_framework == 'customtkinter' %}
+import customtkinter as ctk
+{% elif gui_framework in ['pyqt6', 'pyside6'] %}
+{% if gui_framework == 'pyqt6' %}
+from PyQt6.QtWidgets import QApplication
+{% else %}
+from PySide6.QtWidgets import QApplication
+{% endif %}
+import sys
+{% elif gui_framework == 'tkinter' %}
+import tkinter as tk
+{% endif %}
+
+from src.main_window import MainWindow
+
+
+class TestMainWindow:
+    """Tests for MainWindow class."""
+
+{% if gui_framework == 'customtkinter' %}
+    def test_window_initialization(self):
+        """Test that main window initializes correctly."""
+        window = MainWindow()
+        assert window is not None
+        assert isinstance(window, ctk.CTk)
+        window.destroy()
+
+    def test_window_title(self):
+        """Test window title is set correctly."""
+        window = MainWindow()
+        assert "{{ project_name }}" in window.title()
+        window.destroy()
+
+    def test_widget_creation(self):
+        """Test that main widgets are created."""
+        window = MainWindow()
+        assert hasattr(window, 'main_frame')
+        assert hasattr(window, 'welcome_label')
+        assert hasattr(window, 'action_button')
+        window.destroy()
+
+{% if has_status_bar %}
+    def test_status_bar_update(self):
+        """Test status bar message update."""
+        window = MainWindow()
+        test_message = "Test message"
+        window.update_status(test_message)
+        assert window.status_label.cget("text") == test_message
+        window.destroy()
+{% endif %}
+{% elif gui_framework in ['pyqt6', 'pyside6'] %}
+    @pytest.fixture
+    def qapp(self):
+        """Create QApplication instance for tests."""
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication(sys.argv)
+        return app
+
+    def test_window_initialization(self, qapp):
+        """Test that main window initializes correctly."""
+        window = MainWindow()
+        assert window is not None
+        assert window.windowTitle() == "{{ project_name }}"
+
+    def test_widget_creation(self, qapp):
+        """Test that main widgets are created."""
+        window = MainWindow()
+        assert window.central_widget is not None
+        assert window.welcome_label is not None
+        assert window.action_button is not None
+{% elif gui_framework == 'tkinter' %}
+    @pytest.fixture
+    def root(self):
+        """Create Tk root for tests."""
+        root = tk.Tk()
+        yield root
+        root.destroy()
+
+    def test_window_initialization(self, root):
+        """Test that main window initializes correctly."""
+        window = MainWindow(root)
+        assert window is not None
+        assert window.root == root
+
+    def test_widget_creation(self, root):
+        """Test that main widgets are created."""
+        window = MainWindow(root)
+        assert hasattr(window, 'main_frame')
+        assert hasattr(window, 'welcome_label')
+        assert hasattr(window, 'action_button')
+
+{% if has_status_bar %}
+    def test_status_bar_update(self, root):
+        """Test status bar message update."""
+        window = MainWindow(root)
+        test_message = "Test message"
+        window.update_status(test_message)
+        assert window.status_label.cget("text") == test_message
+{% endif %}
+{% elif gui_framework == 'kivy' %}
+    def test_widget_creation(self):
+        """Test that main widgets are created."""
+        window = MainWindow()
+        assert window is not None
+        assert window.orientation == 'vertical'
+        assert len(window.children) > 0
+{% endif %}
+
+
+{% if gui_framework == 'customtkinter' %}
+class TestMainWindowMethods:
+    """Tests for MainWindow methods."""
+
+    def test_button_click(self):
+        """Test button click handler."""
+        window = MainWindow()
+        # Simulate button click
+        window._on_button_click()
+        # Verify no exceptions raised
+        window.destroy()
+{% endif %}
+
+
+# Integration tests (optional)
+@pytest.mark.integration
+class TestMainWindowIntegration:
+    """Integration tests for main window."""
+
+{% if gui_framework == 'customtkinter' %}
+    def test_window_lifecycle(self):
+        """Test complete window creation and destruction."""
+        window = MainWindow()
+        assert window.winfo_exists()
+        window.destroy()
+        # After destroy, window should not exist
+{% elif gui_framework in ['pyqt6', 'pyside6'] %}
+    def test_window_lifecycle(self, qapp):
+        """Test complete window creation and destruction."""
+        window = MainWindow()
+        window.show()
+        assert window.isVisible()
+        window.close()
+{% elif gui_framework == 'tkinter' %}
+    def test_window_lifecycle(self, root):
+        """Test complete window creation and destruction."""
+        window = MainWindow(root)
+        assert window.main_frame.winfo_exists()
+{% elif gui_framework == 'kivy' %}
+    def test_window_lifecycle(self):
+        """Test window creation."""
+        window = MainWindow()
+        assert window is not None
+{% endif %}
+{% else %}# Testing not configured for this project
+# To add tests, install pytest: pip install pytest
+# Then create test files in the tests/ directory
+{% endif %}

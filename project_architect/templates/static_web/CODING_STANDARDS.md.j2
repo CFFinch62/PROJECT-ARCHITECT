@@ -1,0 +1,134 @@
+# {{ project_name }} - Coding Standards
+
+## HTML
+
+### Document Structure
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Title</title>
+</head>
+<body>
+    <header></header>
+    <main></main>
+    <footer></footer>
+</body>
+</html>
+```
+
+### Formatting
+- 2 or 4 space indentation (be consistent)
+- Lowercase tag names
+- Double quotes for attributes
+- Self-closing tags: `<img />`, `<br />`
+
+## CSS
+
+{% if css_framework == 'vanilla' %}
+### Property Order
+```css
+.element {
+    /* Positioning */
+    position: relative;
+    top: 0;
+    
+    /* Display & Box Model */
+    display: flex;
+    width: 100%;
+    padding: 1rem;
+    margin: 0;
+    
+    /* Typography */
+    font-size: 1rem;
+    color: var(--text-color);
+    
+    /* Visual */
+    background: var(--bg-color);
+    border-radius: 4px;
+    
+    /* Animation */
+    transition: all 0.2s;
+}
+```
+{% endif %}
+
+### Units
+- `rem` for font sizes
+- `px` for borders and small details
+- `%` or `vw/vh` for responsive widths
+- Avoid `em` except for component-specific scaling
+
+{% if use_css_variables %}
+### CSS Variables
+```css
+:root {
+    /* Colors */
+    --primary-color: #2563eb;
+    
+    /* Spacing */
+    --spacing-md: 1rem;
+    
+    /* Typography */
+    --font-size-base: 1rem;
+}
+```
+{% endif %}
+
+## JavaScript
+
+### Formatting
+```javascript
+// Use const by default
+const data = [];
+
+// Use let when reassignment needed
+let count = 0;
+
+// Arrow functions for callbacks
+items.map(item => item.name);
+
+// Template literals
+const message = `Hello, ${name}!`;
+```
+
+### Functions
+```javascript
+/**
+ * Function description
+ * @param {string} name - Parameter description
+ * @returns {Object} Return description
+ */
+function processData(name) {
+    // Implementation
+    return { name };
+}
+```
+
+### Async/Await
+```javascript
+// Preferred
+async function fetchData() {
+    try {
+        const response = await fetch(url);
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+    }
+}
+```
+
+## File Naming
+
+- HTML: `kebab-case.html`
+- CSS: `kebab-case.css`
+- JavaScript: `camelCase.js` or `kebab-case.js`
+- Images: `kebab-case.png`
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}
+

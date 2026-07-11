@@ -1,0 +1,263 @@
+{% if cli_framework == 'cobra' %}
+// Package cli implements the {{ project_name }} command-line interface.
+package cli
+
+import (
+	"fmt"
+	{% if has_logging %}
+	"log/slog"
+	"os"
+	{% endif %}
+
+	"github.com/spf13/cobra"
+	{% if has_config_file %}
+	"{{ module_path if module_path else project_name | snake_case }}/internal/config"
+	{% endif %}
+	"{{ module_path if module_path else project_name | snake_case }}/internal/version"
+)
+
+var verbose bool
+
+// NewRootCmd builds the root {{ project_name | snake_case | replace('_', '-') }} command.
+func NewRootCmd() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:     "{{ project_name | snake_case | replace('_', '-') }}",
+		Short:   "{{ project_description }}",
+		Version: version.Version,
+		{% if has_logging %}
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			setupLogging(verbose)
+		},
+		{% endif %}
+	}
+
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
+
+	rootCmd.AddCommand(newHelloCmd())
+
+	return rootCmd
+}
+
+func newHelloCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "hello [name]",
+		Short: "Say hello",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Fprintf(cmd.OutOrStdout(), "Hello, %s!\n", args[0])
+			return nil
+		},
+	}
+}
+
+{% if has_logging %}
+func setupLogging(verbose bool) {
+	level := parseLogLevel("{{ log_level }}")
+	if verbose {
+		level = slog.LevelDebug
+	}
+	handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})
+	slog.SetDefault(slog.New(handler))
+}
+
+func parseLogLevel(level string) slog.Level {
+	switch level {
+	case "debug":
+		return slog.LevelDebug
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
+}
+{% endif %}
+{% if has_config_file %}
+
+var _ = config.Default // referenced so the config package stays wired in; use config.Load(path) where needed
+{% endif %}
+
+// Execute runs the root command and returns any error encountered.
+func Execute() error {
+	return NewRootCmd().Execute()
+}
+{% elif cli_framework == 'urfave-cli' %}
+// Package cli implements the {{ project_name }} command-line interface.
+package cli
+
+import (
+	"fmt"
+	{% if has_logging %}
+	"log/slog"
+	{% endif %}
+	"os"
+
+	"github.com/urfave/cli/v2"
+	{% if has_config_file %}
+	"{{ module_path if module_path else project_name | snake_case }}/internal/config"
+	{% endif %}
+	"{{ module_path if module_path else project_name | snake_case }}/internal/version"
+)
+
+// NewApp builds the {{ project_name | snake_case | replace('_', '-') }} CLI application.
+func NewApp() *cli.App {
+	return &cli.App{
+		Name:    "{{ project_name | snake_case | replace('_', '-') }}",
+		Usage:   "{{ project_description }}",
+		Version: version.Version,
+		Flags: []cli.Flag{
+			// Note: -v is reserved by urfave/cli for --version, so --verbose has no short alias.
+			&cli.BoolFlag{Name: "verbose", Usage: "Enable verbose output"},
+		},
+		{% if has_logging %}
+		Before: func(c *cli.Context) error {
+			setupLogging(c.Bool("verbose"))
+			return nil
+		},
+		{% endif %}
+		Commands: []*cli.Command{
+			{
+				Name:      "hello",
+				Usage:     "Say hello",
+				ArgsUsage: "[name]",
+				Action: func(c *cli.Context) error {
+					name := c.Args().First()
+					if name == "" {
+						return fmt.Errorf("name argument is required")
+					}
+					fmt.Fprintf(c.App.Writer, "Hello, %s!\n", name)
+					return nil
+				},
+			},
+		},
+	}
+}
+
+{% if has_logging %}
+func setupLogging(verbose bool) {
+	level := parseLogLevel("{{ log_level }}")
+	if verbose {
+		level = slog.LevelDebug
+	}
+	handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})
+	slog.SetDefault(slog.New(handler))
+}
+
+func parseLogLevel(level string) slog.Level {
+	switch level {
+	case "debug":
+		return slog.LevelDebug
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
+}
+{% endif %}
+{% if has_config_file %}
+
+var _ = config.Default // referenced so the config package stays wired in; use config.Load(path) where needed
+{% endif %}
+
+// Execute runs the CLI application against os.Args and returns any error encountered.
+func Execute() error {
+	return NewApp().Run(os.Args)
+}
+{% else %}
+// Package cli implements the {{ project_name }} command-line interface using
+// only the standard library.
+package cli
+
+import (
+	"flag"
+	"fmt"
+	"io"
+	{% if has_logging %}
+	"log/slog"
+	{% endif %}
+	"os"
+
+	{% if has_config_file %}
+	"{{ module_path if module_path else project_name | snake_case }}/internal/config"
+	{% endif %}
+	"{{ module_path if module_path else project_name | snake_case }}/internal/version"
+)
+
+// Run parses args and executes {{ project_name }}, writing output to stdout.
+// It is separated from Execute so it can be unit tested without touching
+// process-global state.
+func Run(args []string, stdout, stderr io.Writer) error {
+	fs := flag.NewFlagSet("{{ project_name | snake_case | replace('_', '-') }}", flag.ContinueOnError)
+	verbose := fs.Bool("verbose", false, "Enable verbose output")
+	showVersion := fs.Bool("version", false, "Print version and exit")
+	fs.SetOutput(stderr)
+
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+
+	{% if has_logging %}
+	setupLogging(*verbose)
+	{% else %}
+	_ = verbose // reserved for future use
+	{% endif %}
+
+	if *showVersion {
+		fmt.Fprintln(stdout, version.Version)
+		return nil
+	}
+
+	{% if has_config_file %}
+	_ = config.Default() // wire in config.Load(path) where needed
+	{% endif %}
+
+	rest := fs.Args()
+	if len(rest) == 0 {
+		fmt.Fprintln(stderr, "usage: {{ project_name | snake_case | replace('_', '-') }} [--verbose] [--version] hello NAME")
+		return fmt.Errorf("no command given")
+	}
+
+	switch rest[0] {
+	case "hello":
+		if len(rest) < 2 {
+			return fmt.Errorf("hello: name argument is required")
+		}
+		fmt.Fprintf(stdout, "Hello, %s!\n", rest[1])
+		return nil
+	default:
+		return fmt.Errorf("unknown command: %s", rest[0])
+	}
+}
+
+{% if has_logging %}
+func setupLogging(verbose bool) {
+	level := parseLogLevel("{{ log_level }}")
+	if verbose {
+		level = slog.LevelDebug
+	}
+	handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})
+	slog.SetDefault(slog.New(handler))
+}
+
+func parseLogLevel(level string) slog.Level {
+	switch level {
+	case "debug":
+		return slog.LevelDebug
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
+}
+{% endif %}
+
+// Execute runs {{ project_name }} against the real process args and streams.
+func Execute() error {
+	return Run(os.Args[1:], os.Stdout, os.Stderr)
+}
+{% endif %}

@@ -1,0 +1,264 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Overview
+
+{{ project_name }} is a {% if gui_framework == 'customtkinter' %}CustomTkinter{% elif gui_framework == 'pyqt6' %}PyQt6{% elif gui_framework == 'pyside6' %}PySide6{% elif gui_framework == 'tkinter' %}Tkinter{% elif gui_framework == 'kivy' %}Kivy{% endif %}-based desktop application built with Python {{ current_year }}.
+
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+{% if organization %}**Organization:** {{ organization }}{% endif %}
+
+## Features
+
+{% if has_menu_bar %}- Modern GUI with menu bar{% endif +%}
+{% if has_toolbar %}- Toolbar with common actions{% endif +%}
+{% if has_status_bar %}- Status bar for user feedback{% endif +%}
+{% if has_database %}- {{ database_type | title }} database integration{% endif +%}
+{% if has_config_file %}- {{ config_format | upper }} configuration management{% endif +%}
+{% if has_logging %}- Comprehensive logging system{% endif +%}
+- Professional code structure and organization
+{% if include_tests %}- Unit testing with pytest{% endif +%}
+{% if include_linting or include_formatting %}- Code quality tools ({% if include_linting %}linting{% endif %}{% if include_linting and include_formatting %}, {% endif %}{% if include_formatting %}formatting{% endif %}){% endif %}
+
+## Requirements
+
+- Python 3.12 or higher
+- {% if gui_framework == 'customtkinter' %}CustomTkinter 5.2.2+{% elif gui_framework == 'pyqt6' %}PyQt6 6.5.0+{% elif gui_framework == 'pyside6' %}PySide6 6.5.0+{% elif gui_framework == 'tkinter' %}Tkinter (included with Python){% elif gui_framework == 'kivy' %}Kivy 2.2.0+{% endif +%}
+{% if has_database and database_type != 'sqlite' %}- {{ database_type | title }} database server{% endif %}
+
+## Installation
+
+### Quick Start
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd {{ project_name | snake_case }}
+   ```
+
+2. **Create virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the application**:
+   ```bash
+   python3 main.py
+   ```
+
+### Development Installation
+
+For development with additional tools:
+
+```bash
+pip install -e ".[dev]"
+```
+
+{% if has_database and database_type != 'sqlite' %}
+## Database Setup
+
+### {{ database_type | title }}
+
+{% if database_type == 'postgresql' %}
+1. Install PostgreSQL
+2. Create database:
+   ```sql
+   CREATE DATABASE {{ project_name | snake_case }};
+   ```
+3. Update configuration in `config.{% if config_format %}{{ config_format }}{% else %}json{% endif %}` with your database credentials
+{% elif database_type == 'mysql' %}
+1. Install MySQL
+2. Create database:
+   ```sql
+   CREATE DATABASE {{ project_name | snake_case }};
+   ```
+3. Update configuration in `config.{% if config_format %}{{ config_format }}{% else %}json{% endif %}` with your database credentials
+{% elif database_type == 'mongodb' %}
+1. Install MongoDB
+2. Start MongoDB server
+3. Database will be created automatically on first use
+{% endif %}
+{% endif %}
+
+## Configuration
+
+{% if has_config_file %}
+The application uses {{ config_format | upper }} for configuration. Edit `config.{{ config_format }}` to customize:
+
+{% if config_format == 'json' %}
+```json
+{
+  "application": {
+    "name": "{{ project_name }}",
+    "version": "{{ project_version }}"
+  }{% if has_logging %},
+  "logging": {
+    "level": "{{ log_level }}",
+    "file": "logs/{{ project_name | snake_case }}.log"
+  }{% endif %}{% if has_database %},
+  "database": {
+    "type": "{{ database_type }}"
+  }{% endif +%}
+}
+```
+{% elif config_format == 'yaml' %}
+```yaml
+application:
+  name: {{ project_name }}
+  version: {{ project_version }}
+{% if has_logging %}
+logging:
+  level: {{ log_level }}
+  file: logs/{{ project_name | snake_case }}.log
+{% endif %}
+{% if has_database %}
+database:
+  type: {{ database_type }}
+{% endif %}
+```
+{% endif %}
+{% else %}
+Configuration is managed through code. See `src/config.py` for details.
+{% endif %}
+
+## Usage
+
+### Basic Usage
+
+1. Launch the application:
+   ```bash
+   python3 main.py
+   ```
+
+2. The main window will appear with the user interface
+
+3. {% if has_menu_bar %}Access features through the menu bar or {% endif %}interact with the buttons and controls
+
+### Advanced Features
+
+{% if has_logging %}
+- **Logging**: Application logs are saved to `logs/{{ project_name | snake_case }}.log`
+{% endif %}
+{% if has_database %}
+- **Database**: Data is stored in {{ database_type | title }}{% if database_type == 'sqlite' %} database at `data/{{ project_name | snake_case }}.db`{% endif +%}
+{% endif %}
+{% if has_config_file %}
+- **Configuration**: Modify `config.{{ config_format }}` to customize behavior
+{% endif %}
+
+## Development
+
+### Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py                 # Application entry point
+├── src/                    # Source code
+│   ├── __init__.py
+│   ├── main_window.py      # Main window implementation
+│   ├── config.py           # Configuration management
+│   └── utils.py            # Utility functions
+├── tests/                  # Unit tests
+├── docs/                   # Documentation
+├── assets/                 # Images, icons, resources
+├── data/                   # Application data
+├── logs/                   # Log files
+├── requirements.txt        # Python dependencies
+└── README.md              # This file
+```
+
+{% if include_tests %}
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_main_window.py
+```
+{% endif %}
+
+{% if include_linting or include_formatting %}
+### Code Quality
+
+{% if include_formatting %}
+**Formatting** (Black):
+```bash
+black src/ tests/
+```
+{% endif %}
+
+{% if include_linting %}
+**Linting** (Flake8):
+```bash
+flake8 src/ tests/
+```
+
+**Static Analysis** (Pylint):
+```bash
+pylint src/
+```
+{% endif %}
+
+{% if include_type_checking %}
+**Type Checking** (MyPy):
+```bash
+mypy src/
+```
+{% endif %}
+{% endif %}
+
+## Contributing
+
+{% if init_git %}
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Run tests and quality checks
+5. Commit: `git commit -am 'Add feature'`
+6. Push: `git push origin feature-name`
+7. Create a Pull Request
+{% else %}
+Contributions are welcome! Please follow the coding standards and include tests for new features.
+{% endif %}
+
+## License
+
+{% if organization %}
+Copyright © {{ current_year }} {{ organization }}
+{% else %}
+Copyright © {{ current_year }} {{ author_name }}
+{% endif %}
+
+All rights reserved.
+
+## Support
+
+For questions, issues, or feature requests:
+{% if author_email %}
+- Email: {{ author_email }}
+{% endif %}
+{% if create_github_repo %}
+- GitHub Issues: <repository-url>/issues
+{% endif %}
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
+
+## Acknowledgments
+
+- Built with {% if gui_framework == 'customtkinter' %}[CustomTkinter](https://github.com/TomSchimansky/CustomTkinter){% elif gui_framework == 'pyqt6' %}[PyQt6](https://www.riverbankcomputing.com/software/pyqt/){% elif gui_framework == 'pyside6' %}[PySide6](https://doc.qt.io/qtforpython-6/){% elif gui_framework == 'tkinter' %}[Tkinter](https://docs.python.org/3/library/tkinter.html){% elif gui_framework == 'kivy' %}[Kivy](https://kivy.org/){% endif +%}
+- Generated with Project Architect

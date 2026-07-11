@@ -1,0 +1,192 @@
+# {{ project_name }} - Implementation Plan
+
+## Project Overview
+
+**Project:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Type:** {% if api_type == 'rest_api' %}REST API{% elif api_type == 'full_stack' %}Full Stack Web App{% elif api_type == 'microservice' %}Microservice{% endif +%}
+**Framework:** {{ web_framework | title }}
+
+## Development Phases
+
+### Phase 1: Foundation (Complete)
+
+**Status:** ✅ Complete
+
+- [x] Project structure created
+- [x] Virtual environment configured
+- [x] {{ web_framework | title }} framework set up
+- [x] Entry point configured
+{% if has_database %}- [x] Database connection configured{% endif +%}
+{% if has_authentication %}- [x] Authentication setup{% endif +%}
+{% if init_git %}- [x] Git repository initialized{% endif %}
+
+### Phase 2: Core API (In Progress)
+
+**Priority:** High  
+**Target:** Version {{ project_version }}
+
+#### Task 1: Base Endpoints
+- [ ] Health check endpoint (`GET /health`)
+- [ ] API info endpoint (`GET /api`)
+- [ ] Error handling middleware
+- [ ] Response formatting
+
+{% if has_database %}
+#### Task 2: Database Models
+- [ ] Define core models
+- [ ] Set up migrations
+- [ ] Create seed data
+- [ ] Add model validation
+{% endif %}
+
+{% if has_authentication %}
+#### Task 3: Authentication
+- [ ] User registration (`POST /api/v1/auth/register`)
+- [ ] User login (`POST /api/v1/auth/login`)
+{% if auth_type == 'jwt' %}- [ ] Token refresh (`POST /api/v1/auth/refresh`){% endif +%}
+- [ ] Protected route middleware
+{% endif %}
+
+### Phase 3: Business Logic
+
+**Priority:** High  
+**Target:** Version {{ project_version | replace('.0', '.1') }}
+
+#### Task 4: Core Resources
+- [ ] Define resource endpoints
+- [ ] Implement CRUD operations
+- [ ] Add validation
+- [ ] Handle relationships
+
+#### Task 5: Business Rules
+- [ ] Implement domain logic
+- [ ] Add data transformations
+- [ ] Create utility functions
+
+### Phase 4: Advanced Features
+
+**Priority:** Medium
+
+{% if has_caching %}
+#### Task 6: Caching
+- [ ] Set up Redis connection
+- [ ] Cache frequently accessed data
+- [ ] Implement cache invalidation
+{% endif %}
+
+{% if has_celery %}
+#### Task 7: Background Tasks
+- [ ] Configure Celery
+- [ ] Create task definitions
+- [ ] Set up task scheduling
+{% endif %}
+
+{% if has_cors %}
+#### Task 8: CORS Configuration
+- [ ] Configure allowed origins
+- [ ] Set up preflight handling
+{% endif %}
+
+### Phase 5: Quality & Testing
+
+**Priority:** High
+
+{% if include_tests %}
+#### Task 9: Testing
+- [ ] Write unit tests for endpoints
+- [ ] Write integration tests
+- [ ] Achieve 80%+ coverage
+{% endif %}
+
+{% if include_linting %}
+#### Task 10: Code Quality
+- [ ] Fix all linting issues
+- [ ] Add type hints
+{% endif %}
+
+### Phase 6: Deployment
+
+**Priority:** Medium
+
+{% if include_docker %}
+#### Task 11: Containerization
+- [ ] Optimize Dockerfile
+{% if include_docker_compose %}- [ ] Configure docker-compose{% endif +%}
+- [ ] Set up health checks
+{% endif %}
+
+#### Task 12: Production Prep
+- [ ] Configure production settings
+- [ ] Set up logging
+- [ ] Document deployment process
+
+## Technical Specifications
+
+### Architecture
+
+```
+{{ project_name | snake_case }}/
+├── main.py            # Entry point
+├── app/
+│   ├── routes.py      # API endpoints
+{% if has_database %}│   ├── models.py      # Data models
+{% endif %}│   └── config.py      # Configuration
+└── tests/             # Tests
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /health | Health check |
+| GET | /api | API info |
+{% if has_authentication %}| POST | /api/v1/auth/register | User registration |
+| POST | /api/v1/auth/login | User login |
+{% endif %}
+
+### Code Standards
+
+- Follow PEP 8 style guide
+- Maximum line length: 88 characters
+- Type hints for all functions
+- Docstrings for all endpoints
+- Consistent response format
+
+## Development Workflow
+
+### Adding an Endpoint
+
+1. Define route in `app/routes.py`
+2. Add request/response models
+{% if has_database %}3. Create/update database models{% endif +%}
+4. {% if include_tests %}Write tests{% endif +%}
+5. Update documentation
+6. Update CHANGELOG.md
+
+## Success Criteria
+
+- [ ] API starts without errors
+- [ ] All endpoints documented
+- [ ] Health check returns 200
+{% if include_tests %}- [ ] Test coverage >80%{% endif +%}
+{% if has_authentication %}- [ ] Authentication working{% endif +%}
+{% if has_database %}- [ ] Database operations working{% endif +%}
+- [ ] Ready for deployment
+
+## Timeline Estimates
+
+- **Phase 1:** Complete ✅
+- **Phase 2:** 1-2 weeks
+- **Phase 3:** 1-2 weeks
+- **Phase 4:** 1 week
+- **Phase 5:** 1 week
+- **Phase 6:** 1 week
+
+**Total:** 5-7 weeks to v1.0.0
+
+---
+
+**Last Updated:** {{ current_date }}  
+**Author:** {{ author_name }}
+

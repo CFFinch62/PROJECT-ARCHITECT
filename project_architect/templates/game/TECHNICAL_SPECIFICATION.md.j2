@@ -1,0 +1,139 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}
+**Version:** {{ project_version }}
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+{% if organization %}**Organization:** {{ organization }}{% endif +%}
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+**Primary Goals:**
+- Provide a {% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif %}-based game with a clean, extensible game loop
+- Maintain high code quality through testing and quality assurance
+- Ensure maintainability and extensibility as gameplay features grow
+
+## 2. Core Features
+
+### 2.1 Game Window
+
+**Game Framework:** {% if game_framework == 'pygame' %}Pygame 2.5.0+{% elif game_framework == 'arcade' %}Arcade 2.6.17+{% elif game_framework == 'pyglet' %}Pyglet 2.0.0+{% elif game_framework == 'pgzero' %}Pygame Zero 1.2.1+{% endif %}
+
+**Window Configuration:**
+- Resolution: {{ screen_width }}x{{ screen_height }}
+- Fullscreen: {% if fullscreen %}Yes{% else %}No{% endif +%}
+{% if game_framework == 'pygame' %}- Target frame rate: {{ target_fps }} FPS{% endif %}
+
+**Game Loop:**
+{% if game_framework == 'pygame' %}- Manual loop in `Game.run()`: handle events, update state, draw frame, tick the clock{% elif game_framework == 'arcade' %}- Managed by `arcade.run()`, dispatching to `Game.on_update()` and `Game.on_draw()`{% elif game_framework == 'pyglet' %}- Managed by `pyglet.app.run()`, with `Game.update()` scheduled via `pyglet.clock.schedule_interval`{% elif game_framework == 'pgzero' %}- Managed by Pygame Zero's runtime, dispatching to the module-level `draw()`/`update()` hooks in `main.py`, which delegate to the `Game` instance{% endif %}
+
+### 2.2 Assets
+
+{% if has_sprites %}**Sprites/Images:** loaded from `assets/images/` via helpers in `src/utils.py`{% endif +%}
+{% if has_sound %}**Sound/Music:** loaded from `assets/sounds/` via helpers in `src/utils.py`{% endif +%}
+{% if not has_sprites and not has_sound %}No image or sound assets configured for this project.{% endif %}
+
+### 2.3 Game State
+
+{% if has_score_tracking %}- **Score tracking:** `Game.score`, initialized from `GameConfig.starting_score`{% endif +%}
+- Central configuration in `src/config.py` (`GameConfig`) for window size, timing, and asset paths
+
+{% if has_logging %}
+### 2.4 Logging System
+
+**Default Log Level:** {{ log_level }}
+
+**Log Outputs:**
+- File: `logs/{{ project_name | snake_case }}.log`
+- Console: stdout (for development)
+
+**Log Format:** `%(asctime)s - %(name)s - %(levelname)s - %(message)s`
+{% endif %}
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+**Core:**
+- Python 3.12+
+- {% if game_framework == 'pygame' %}Pygame 2.5.0+{% elif game_framework == 'arcade' %}Arcade 2.6.17+{% elif game_framework == 'pyglet' %}Pyglet 2.0.0+{% elif game_framework == 'pgzero' %}Pygame Zero 1.2.1+{% endif %}
+
+**Development Tools:**
+{% if include_tests %}- pytest 7.4+, pytest-cov 4.1+, pytest-mock 3.11+{% endif +%}
+{% if include_linting %}- flake8 6.0+, pylint 2.17+{% endif +%}
+{% if include_formatting %}- black 23.0+{% endif +%}
+{% if include_type_checking %}- mypy 1.5+{% endif %}
+
+### 3.2 Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py                 # Entry point{% if game_framework == 'pgzero' %} (Pygame Zero script){% endif +%}
+├── src/                    # Source code
+│   ├── __init__.py
+│   ├── game.py             # Core game loop and state
+│   ├── config.py           # Window, timing, and asset settings
+│   └── utils.py            # Asset-loading helpers
+├── tests/                  # Unit tests
+│   ├── __init__.py
+│   ├── test_game.py
+│   └── conftest.py
+{% if has_sprites %}├── assets/images/           # Sprite/image assets
+{% endif %}{% if has_sound %}├── assets/sounds/            # Sound/music assets
+{% endif %}├── logs/                    # Log files
+├── docs/                    # Documentation
+├── requirements.txt         # Dependencies
+├── setup.py                # Package setup
+├── pytest.ini               # Test configuration
+└── README.md                 # Project documentation
+```
+
+## 4. Quality Assurance
+
+{% if include_tests %}
+### 4.1 Testing Strategy
+
+**Framework:** pytest
+
+**Test Types:**
+- Unit tests for game state and configuration (no display required)
+{% if game_framework in ['arcade', 'pyglet'] %}- Integration tests for windowed rendering (require a display/OpenGL context, e.g. `xvfb`){% endif %}
+
+**Test Execution:**
+```bash
+pytest                          # Run all tests
+pytest --cov=src               # With coverage
+pytest tests/test_game.py      # Specific test file
+```
+{% endif %}
+
+{% if include_linting or include_formatting or include_type_checking %}
+### 4.2 Code Quality Standards
+
+{% if include_formatting %}**Code Formatting:** Black, line length 88{% endif +%}
+{% if include_linting %}**Linting:** Flake8 + Pylint{% endif +%}
+{% if include_type_checking %}**Type Checking:** MyPy, type hints on all public functions{% endif +%}
+{% endif %}
+
+## 5. Performance Requirements
+
+{% if game_framework == 'pygame' %}- Target frame rate: {{ target_fps }} FPS sustained{% else %}- Smooth, consistent frame pacing under normal load{% endif +%}
+- Game window launches in under 3 seconds
+- Memory usage: < 200MB under normal operation
+
+## 6. Future Enhancements
+
+- Additional levels/scenes and a scene-management system
+- Menu screens (start, pause, game over)
+{% if not has_sound %}- Sound and music support{% endif +%}
+{% if not has_score_tracking %}- Score tracking and a high-score table{% endif +%}
+- Save/load game state
+- Gamepad/controller input support
+
+---
+
+**Document Version:** 1.0
+**Last Updated:** {{ current_date }}
+**Author:** {{ author_name }}

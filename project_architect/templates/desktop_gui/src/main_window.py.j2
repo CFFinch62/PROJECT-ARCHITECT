@@ -1,0 +1,395 @@
+"""
+{{ project_name }} - Main Application Window
+
+{% if gui_framework == 'customtkinter' %}CustomTkinter{% elif gui_framework == 'pyqt6' %}PyQt6{% elif gui_framework == 'pyside6' %}PySide6{% elif gui_framework == 'tkinter' %}Tkinter{% elif gui_framework == 'kivy' %}Kivy{% endif %} implementation of the main application window.
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+"""
+
+{% if gui_framework == 'customtkinter' %}
+import customtkinter as ctk
+from typing import Optional
+{% elif gui_framework == 'pyqt6' %}
+from PyQt6.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QMenuBar, QToolBar, QStatusBar, QLabel, QPushButton
+)
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QAction
+{% elif gui_framework == 'pyside6' %}
+from PySide6.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QMenuBar, QToolBar, QStatusBar, QLabel, QPushButton
+)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
+{% elif gui_framework == 'tkinter' %}
+import tkinter as tk
+from tkinter import ttk, messagebox
+{% elif gui_framework == 'kivy' %}
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+{% endif %}
+{% if has_logging %}
+import logging
+{% endif %}
+
+
+{% if gui_framework == 'customtkinter' %}
+class MainWindow(ctk.CTk):
+    """Main application window using CustomTkinter."""
+    
+    def __init__(self):
+        """Initialize the main window."""
+        super().__init__()
+        
+        {% if has_logging %}
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Initializing main window")
+        {% endif %}
+        
+        # Window configuration
+        self.title("{{ project_name }}")
+        self.geometry("{{ minimum_resolution }}")
+        {% if not window_resizable %}
+        self.resizable(False, False)
+        {% endif %}
+        
+        # Create UI elements
+        self._create_widgets()
+        self._setup_layout()
+        {% if has_menu_bar or has_toolbar or has_status_bar %}
+        self._create_additional_elements()
+        {% endif %}
+    
+    def _create_widgets(self):
+        """Create the main window widgets."""
+        # Main frame
+        self.main_frame = ctk.CTkFrame(self)
+        
+        # Welcome label
+        self.welcome_label = ctk.CTkLabel(
+            self.main_frame,
+            text="Welcome to {{ project_name }}",
+            font=ctk.CTkFont(size=24, weight="bold")
+        )
+        
+        # Description
+        self.description_label = ctk.CTkLabel(
+            self.main_frame,
+            text="{{ project_description }}",
+            font=ctk.CTkFont(size=12),
+            wraplength=600
+        )
+        
+        # Example button
+        self.action_button = ctk.CTkButton(
+            self.main_frame,
+            text="Click Me",
+            command=self._on_button_click
+        )
+    
+    def _setup_layout(self):
+        """Set up the window layout."""
+        self.main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        self.welcome_label.pack(pady=(0, 10))
+        self.description_label.pack(pady=(0, 20))
+        self.action_button.pack(pady=10)
+    
+    {% if has_menu_bar or has_toolbar or has_status_bar %}
+    def _create_additional_elements(self):
+        """Create menu bar, toolbar, and status bar."""
+        {% if has_status_bar %}
+        # Status bar
+        self.status_frame = ctk.CTkFrame(self, height=30)
+        self.status_frame.pack(side="bottom", fill="x")
+        
+        self.status_label = ctk.CTkLabel(
+            self.status_frame,
+            text="Ready",
+            anchor="w"
+        )
+        self.status_label.pack(side="left", padx=10)
+        {% endif %}
+    {% endif %}
+    
+    def _on_button_click(self):
+        """Handle button click event."""
+        {% if has_logging %}
+        self.logger.info("Button clicked")
+        {% endif %}
+        {% if has_status_bar %}
+        self.update_status("Button clicked!")
+        {% endif %}
+    
+    {% if has_status_bar %}
+    def update_status(self, message: str):
+        """Update the status bar message."""
+        self.status_label.configure(text=message)
+    {% endif %}
+
+
+{% elif gui_framework in ['pyqt6', 'pyside6'] %}
+class MainWindow(QMainWindow):
+    """Main application window using {{ 'PyQt6' if gui_framework == 'pyqt6' else 'PySide6' }}."""
+    
+    def __init__(self):
+        """Initialize the main window."""
+        super().__init__()
+        
+        {% if has_logging %}
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Initializing main window")
+        {% endif %}
+        
+        # Window configuration
+        self.setWindowTitle("{{ project_name }}")
+        self.resize({{ minimum_resolution.split('x')[0] }}, {{ minimum_resolution.split('x')[1] }})
+        
+        # Create UI elements
+        self._create_widgets()
+        self._setup_layout()
+        {% if has_menu_bar %}
+        self._create_menu_bar()
+        {% endif %}
+        {% if has_toolbar %}
+        self._create_toolbar()
+        {% endif %}
+        {% if has_status_bar %}
+        self._create_status_bar()
+        {% endif %}
+    
+    def _create_widgets(self):
+        """Create the main window widgets."""
+        # Central widget
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        
+        # Welcome label
+        self.welcome_label = QLabel("Welcome to {{ project_name }}")
+        font = self.welcome_label.font()
+        font.setPointSize(24)
+        font.setBold(True)
+        self.welcome_label.setFont(font)
+        self.welcome_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        # Description
+        self.description_label = QLabel("{{ project_description }}")
+        self.description_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.description_label.setWordWrap(True)
+        
+        # Example button
+        self.action_button = QPushButton("Click Me")
+        self.action_button.clicked.connect(self._on_button_click)
+    
+    def _setup_layout(self):
+        """Set up the window layout."""
+        layout = QVBoxLayout()
+        layout.addWidget(self.welcome_label)
+        layout.addWidget(self.description_label)
+        layout.addWidget(self.action_button)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        self.central_widget.setLayout(layout)
+    
+    {% if has_menu_bar %}
+    def _create_menu_bar(self):
+        """Create the menu bar."""
+        menubar = self.menuBar()
+        
+        # File menu
+        file_menu = menubar.addMenu("File")
+        exit_action = QAction("Exit", self)
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
+        
+        # Help menu
+        help_menu = menubar.addMenu("Help")
+        about_action = QAction("About", self)
+        help_menu.addAction(about_action)
+    {% endif %}
+    
+    {% if has_toolbar %}
+    def _create_toolbar(self):
+        """Create the toolbar."""
+        toolbar = QToolBar("Main Toolbar")
+        self.addToolBar(toolbar)
+    {% endif %}
+    
+    {% if has_status_bar %}
+    def _create_status_bar(self):
+        """Create the status bar."""
+        self.status_bar = self.statusBar()
+        self.status_bar.showMessage("Ready")
+    {% endif %}
+    
+    def _on_button_click(self):
+        """Handle button click event."""
+        {% if has_logging %}
+        self.logger.info("Button clicked")
+        {% endif %}
+        {% if has_status_bar %}
+        self.status_bar.showMessage("Button clicked!")
+        {% endif %}
+
+
+{% elif gui_framework == 'tkinter' %}
+class MainWindow:
+    """Main application window using Tkinter."""
+    
+    def __init__(self, root: tk.Tk):
+        """Initialize the main window."""
+        self.root = root
+        
+        {% if has_logging %}
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Initializing main window")
+        {% endif %}
+        
+        # Create UI elements
+        self._create_widgets()
+        self._setup_layout()
+        {% if has_menu_bar %}
+        self._create_menu_bar()
+        {% endif %}
+        {% if has_status_bar %}
+        self._create_status_bar()
+        {% endif %}
+    
+    def _create_widgets(self):
+        """Create the main window widgets."""
+        # Main frame
+        self.main_frame = ttk.Frame(self.root, padding="20")
+        
+        # Welcome label
+        self.welcome_label = ttk.Label(
+            self.main_frame,
+            text="Welcome to {{ project_name }}",
+            font=("TkDefaultFont", 24, "bold")
+        )
+        
+        # Description
+        self.description_label = ttk.Label(
+            self.main_frame,
+            text="{{ project_description }}",
+            wraplength=600
+        )
+        
+        # Example button
+        self.action_button = ttk.Button(
+            self.main_frame,
+            text="Click Me",
+            command=self._on_button_click
+        )
+    
+    def _setup_layout(self):
+        """Set up the window layout."""
+        self.main_frame.pack(fill="both", expand=True)
+        
+        self.welcome_label.pack(pady=(0, 10))
+        self.description_label.pack(pady=(0, 20))
+        self.action_button.pack(pady=10)
+    
+    {% if has_menu_bar %}
+    def _create_menu_bar(self):
+        """Create the menu bar."""
+        menubar = tk.Menu(self.root)
+        self.root.config(menu=menubar)
+        
+        # File menu
+        file_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Exit", command=self.root.quit)
+        
+        # Help menu
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=help_menu)
+    {% endif %}
+    
+    {% if has_status_bar %}
+    def _create_status_bar(self):
+        """Create the status bar."""
+        self.status_frame = ttk.Frame(self.root)
+        self.status_frame.pack(side="bottom", fill="x")
+        
+        self.status_label = ttk.Label(
+            self.status_frame,
+            text="Ready",
+            relief=tk.SUNKEN,
+            anchor=tk.W
+        )
+        self.status_label.pack(side="left", fill="x", expand=True)
+    {% endif %}
+    
+    def _on_button_click(self):
+        """Handle button click event."""
+        {% if has_logging %}
+        self.logger.info("Button clicked")
+        {% endif %}
+        messagebox.showinfo("Info", "Button clicked!")
+        {% if has_status_bar %}
+        self.update_status("Button clicked!")
+        {% endif %}
+    
+    {% if has_status_bar %}
+    def update_status(self, message: str):
+        """Update the status bar message."""
+        self.status_label.config(text=message)
+    {% endif %}
+    
+    def mainloop(self):
+        """Start the Tkinter main loop."""
+        self.root.mainloop()
+
+
+{% elif gui_framework == 'kivy' %}
+class MainWindow(BoxLayout):
+    """Main application window using Kivy."""
+    
+    def __init__(self, **kwargs):
+        """Initialize the main window."""
+        super().__init__(**kwargs)
+        self.orientation = 'vertical'
+        
+        {% if has_logging %}
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("Initializing main window")
+        {% endif %}
+        
+        # Create UI elements
+        self._create_widgets()
+    
+    def _create_widgets(self):
+        """Create the main window widgets."""
+        # Welcome label
+        self.add_widget(Label(
+            text="Welcome to {{ project_name }}",
+            font_size='24sp',
+            size_hint=(1, 0.2)
+        ))
+        
+        # Description
+        self.add_widget(Label(
+            text="{{ project_description }}",
+            size_hint=(1, 0.3)
+        ))
+        
+        # Example button
+        button = Button(
+            text="Click Me",
+            size_hint=(None, None),
+            size=(200, 50),
+            pos_hint={'center_x': 0.5}
+        )
+        button.bind(on_press=self._on_button_click)
+        self.add_widget(button)
+    
+    def _on_button_click(self, instance):
+        """Handle button click event."""
+        {% if has_logging %}
+        self.logger.info("Button clicked")
+        {% endif %}
+        print("Button clicked!")
+{% endif %}

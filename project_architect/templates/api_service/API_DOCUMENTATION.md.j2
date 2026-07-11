@@ -1,0 +1,200 @@
+# {{ project_name }} - API Documentation
+
+## Overview
+
+**Base URL:** `http://localhost:{% if api_framework == 'fastapi' %}8000{% else %}5000{% endif %}`  
+**API Version:** v1  
+**Format:** JSON
+
+## Interactive Documentation
+
+{% if api_framework == 'fastapi' %}
+- **Swagger UI:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
+{% else %}
+- **Swagger UI:** http://localhost:5000/docs
+{% endif %}
+
+## Authentication
+
+{% if has_authentication %}
+{% if auth_type == 'jwt' %}
+### JWT Bearer Token
+
+Include the token in the Authorization header:
+```
+Authorization: Bearer <access_token>
+```
+
+### Obtain Token
+```http
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "user@example.com",
+    "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+    "access_token": "eyJ...",
+    "token_type": "bearer",
+    "expires_in": 1800
+}
+```
+{% elif auth_type == 'api_key' %}
+### API Key
+
+Include the API key in the header:
+```
+X-API-Key: <your_api_key>
+```
+{% endif %}
+{% else %}
+This API does not require authentication.
+{% endif %}
+
+## Endpoints
+
+{% if has_health_check %}
+### Health Check
+
+```http
+GET /health
+```
+
+**Response:**
+```json
+{
+    "status": "healthy",
+    "service": "{{ project_name }}",
+    "version": "{{ project_version }}"
+}
+```
+{% endif %}
+
+### List Items
+
+```http
+GET /api/v1/items?skip=0&limit=10
+```
+
+**Query Parameters:**
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| skip | int | 0 | Items to skip |
+| limit | int | 10 | Max items (1-100) |
+
+**Response:**
+```json
+{
+    "success": true,
+    "data": [
+        {"id": 1, "name": "Item 1", "description": "..."}
+    ],
+    "total": 100,
+    "skip": 0,
+    "limit": 10
+}
+```
+
+### Get Item
+
+```http
+GET /api/v1/items/{item_id}
+```
+
+**Response:**
+```json
+{
+    "success": true,
+    "data": {"id": 1, "name": "Item 1", "description": "..."}
+}
+```
+
+### Create Item
+
+```http
+POST /api/v1/items
+Content-Type: application/json
+
+{
+    "name": "New Item",
+    "description": "Item description"
+}
+```
+
+**Response (201):**
+```json
+{
+    "success": true,
+    "message": "Item created successfully",
+    "data": {"id": 1, "name": "New Item", "description": "..."}
+}
+```
+
+### Update Item
+
+```http
+PUT /api/v1/items/{item_id}
+Content-Type: application/json
+
+{
+    "name": "Updated Item",
+    "description": "Updated description"
+}
+```
+
+### Delete Item
+
+```http
+DELETE /api/v1/items/{item_id}
+```
+
+**Response:**
+```json
+{
+    "success": true,
+    "message": "Item deleted successfully"
+}
+```
+
+## Error Responses
+
+### 400 Bad Request
+```json
+{"success": false, "error": "BAD_REQUEST", "detail": "Invalid input"}
+```
+
+### 401 Unauthorized
+```json
+{"success": false, "error": "UNAUTHORIZED", "detail": "Invalid credentials"}
+```
+
+### 404 Not Found
+```json
+{"success": false, "error": "NOT_FOUND", "detail": "Item not found"}
+```
+
+### 422 Validation Error
+```json
+{
+    "detail": [
+        {"loc": ["body", "name"], "msg": "field required", "type": "value_error.missing"}
+    ]
+}
+```
+
+### 500 Internal Server Error
+```json
+{"success": false, "error": "INTERNAL_ERROR", "detail": "An error occurred"}
+```
+
+---
+
+**Version:** {{ project_version }}  
+**Updated:** {{ current_date }}
+

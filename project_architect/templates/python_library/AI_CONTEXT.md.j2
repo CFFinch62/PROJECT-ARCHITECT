@@ -1,0 +1,134 @@
+# {{ project_name }} - AI Context
+
+## Quick Project Overview
+
+**Project Name:** {{ project_name }}  
+**Type:** Python Library  
+**Python:** {{ min_python_version }}+  
+**Purpose:** {{ project_description }}  
+**Author:** {{ author_name }}
+
+## Architecture at a Glance
+
+```
+{{ project_name | snake_case }}/
+├── src/
+│   ├── __init__.py      # Package exports
+│   ├── core.py          # Main functionality
+│   ├── utils.py         # Utility functions
+│   └── exceptions.py    # Custom exceptions
+├── tests/
+│   ├── conftest.py      # pytest fixtures
+│   └── test_core.py     # Core tests
+{% if include_docs %}├── docs/                # MkDocs documentation{% endif +%}
+├── pyproject.toml       # Package config
+└── README.md
+```
+
+## Key Technologies
+
+- **Python:** {{ min_python_version }}+
+{% if has_type_hints %}- **Type Hints:** Full typing support{% endif +%}
+{% if has_async %}- **Async:** asyncio support{% endif +%}
+{% if has_cli %}- **CLI:** {{ cli_framework }}{% endif +%}
+{% if include_tests %}- **Testing:** pytest{% endif +%}
+{% if include_docs %}- **Docs:** MkDocs{% endif %}
+
+## Development Patterns
+
+### Package Structure
+- Public API in `src/__init__.py`
+- Core logic in `src/core.py`
+- Utilities in `src/utils.py`
+- Exceptions in `src/exceptions.py`
+
+### Common Operations
+
+**Install for development:**
+```bash
+pip install -e .
+```
+
+{% if include_tests %}**Run tests:**
+```bash
+pytest --cov=src
+```
+{% endif %}
+
+**Build package:**
+```bash
+python -m build
+```
+
+## Code Conventions
+
+### Naming
+- **Modules:** snake_case (`my_module.py`)
+- **Classes:** PascalCase (`MyClass`)
+- **Functions:** snake_case (`my_function`)
+- **Constants:** UPPER_SNAKE (`MY_CONSTANT`)
+
+### Docstrings (Google Style)
+```python
+def function(arg: str) -> dict:
+    """Short description.
+    
+    Args:
+        arg: Argument description
+    
+    Returns:
+        Return value description
+    """
+```
+
+## Current State
+
+**Phase:** Initial Development  
+**Version:** {{ project_version }}
+
+### Implemented
+- ✅ Package structure
+- ✅ Core functionality
+- ✅ Exception classes
+{% if include_tests %}- ✅ Test suite{% endif %}
+
+### In Progress
+- Business logic
+- Additional features
+
+## AI Assistant Guidelines
+
+### When Helping
+
+1. **Maintain API:** Don't break public interface
+2. **Add Types:** Use type hints everywhere
+3. **Write Tests:** {% if include_tests %}Include pytest tests{% endif +%}
+4. **Document:** Add docstrings
+5. **Be Consistent:** Match existing patterns
+
+### Adding a Feature
+
+1. Add implementation in appropriate module
+2. Export in `src/__init__.py` if public
+{% if include_tests %}3. Write tests{% endif +%}
+4. Update documentation
+
+## Quick Reference
+
+### Important Files
+- `src/__init__.py` - Public API
+- `src/core.py` - Main logic
+- `pyproject.toml` - Package config
+
+### Environment Setup
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -e ".[dev]"
+```
+
+---
+
+**Generated:** {{ current_date }}  
+**Generator:** Project Architect
+

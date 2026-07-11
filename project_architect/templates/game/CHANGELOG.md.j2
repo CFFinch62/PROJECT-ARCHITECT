@@ -1,0 +1,45 @@
+# Changelog
+
+All notable changes to {{ project_name }} will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned Features
+- Additional features to be determined
+
+## [{{ project_version }}] - {{ current_date }}
+
+### Added
+- Initial project setup
+- Game loop and window with {% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif +%}
+- {{ screen_width }}x{{ screen_height }} game window{% if fullscreen %} (fullscreen){% endif +%}
+{% if has_sprites %}- Sprite/image asset loading{% endif +%}
+{% if has_sound %}- Sound and music asset loading{% endif +%}
+{% if has_score_tracking %}- Score tracking{% endif +%}
+{% if has_logging %}- Logging system with file and console output{% endif +%}
+{% if include_tests %}- Unit testing framework with pytest{% endif +%}
+{% if include_linting %}- Code linting with Flake8 and Pylint{% endif +%}
+{% if include_formatting %}- Code formatting with Black{% endif +%}
+{% if include_type_checking %}- Static type checking with MyPy{% endif +%}
+{% if init_git %}- Git repository initialization{% endif +%}
+{% if create_venv %}- Virtual environment setup{% endif +%}
+- Project documentation (README, this CHANGELOG)
+- Basic project structure and organization
+
+### Technical Details
+- Python {{ "3.12" }} as minimum version
+- {% if game_framework == 'pygame' %}Pygame {{ "2.5.0" }}+{% elif game_framework == 'arcade' %}Arcade {{ "2.6.17" }}+{% elif game_framework == 'pyglet' %}Pyglet {{ "2.0.0" }}+{% elif game_framework == 'pgzero' %}Pygame Zero {{ "1.2.1" }}+{% endif %} for the game framework
+- Modular code structure following best practices
+- Professional development setup
+
+---
+
+## Notes
+
+- This project was generated using Project Architect
+- Generated on {{ current_date }}
+- Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "- Organization: " + organization if organization else "" }}

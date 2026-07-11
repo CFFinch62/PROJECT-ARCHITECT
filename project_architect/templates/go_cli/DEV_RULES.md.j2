@@ -1,0 +1,174 @@
+# {{ project_name }} - Development Rules
+
+## Core Principles
+
+### 1. Code Quality Over Speed
+- Write clean, idiomatic Go first
+- Optimize only when a profiler says to
+- Test thoroughly before committing
+
+### 2. Consistency is Key
+- Follow the existing package layout (`cmd/`, `internal/`)
+- Match existing command patterns when adding new ones
+- Let `gofmt` settle all formatting debates
+
+### 3. Communication
+{% if has_logging %}- Log important events at the right level (`slog.Info`, `slog.Error`, etc.)
+{% endif %}
+- Document changes in CHANGELOG.md
+- Write clear commit messages
+- Comment complex logic, not obvious logic
+
+## Development Standards
+
+### Package Size
+- Keep packages focused on one responsibility
+- Split a package when it accumulates unrelated concerns, not at an arbitrary line count
+- `internal/` packages are private to this module by Go's own enforcement - don't try to make them importable elsewhere
+
+### Code Quality Checklist
+
+Before committing code, ensure:
+- [ ] `gofmt -l .` reports no files (run `make fmt`)
+{% if include_linting %}- [ ] `golangci-lint run ./...` passes (`make lint`)
+{% endif %}
+- [ ] `go vet ./...` is clean
+{% if include_tests %}- [ ] Tests written for new behavior
+- [ ] `go test ./...` passes (`make test`)
+{% endif %}
+- [ ] Exported identifiers have doc comments
+- [ ] CHANGELOG.md updated with changes
+- [ ] No `fmt.Println` debug statements left in command code (use logging or remove)
+
+## Testing Requirements
+
+{% if include_tests %}
+### Unit Tests
+- **Requirement:** exported functions with real logic should have tests
+- **Location:** `<file>_test.go` next to the file under test (Go convention, not a separate `tests/` directory)
+- **Focus:** command behavior via testable entry points (`Run`, `NewRootCmd().Execute()`, etc.) that accept `io.Writer`, not by capturing real stdout
+
+### What to Test
+- **Yes:** command output, flag parsing, config loading/defaults, error paths
+- **No:** third-party library internals (Cobra/urfave-cli's own behavior is already tested upstream)
+{% else %}
+### Manual Testing
+- Test all new commands manually before committing: `go run ./cmd <command>`
+- Verify `--help` output stays accurate
+- Check error messages are clear
+{% endif %}
+
+## Git Workflow
+
+### Branching Strategy
+- `main`: production-ready code
+- `feature/*`: new features
+- `fix/*`: bug fixes
+
+### Commit Guidelines
+
+**Format:**
+```
+<type>(<scope>): <subject>
+
+<body>
+```
+
+**Types:** feat, fix, docs, style, refactor, test, chore
+
+**Example:**
+```
+feat(cli): add config subcommand
+
+Adds `{{ project_name | snake_case | replace('_', '-') }} config show` to print
+the currently loaded configuration.
+```
+
+## Error Handling Rules
+
+### Always Wrap Errors with Context
+```go
+// Good
+if err != nil {
+	return fmt.Errorf("loading config from %s: %w", path, err)
+}
+
+// Bad
+if err != nil {
+	return err  // caller has no idea where this came from
+}
+```
+
+### User-Facing Errors
+- Command errors should be short, actionable sentences (Cobra/urfave-cli print `RunE`/`Action` errors to stderr automatically)
+{% if has_logging %}- Use logging for diagnostic detail; keep the returned error message itself terse
+{% endif %}
+- Never leak internal implementation details (file paths, stack traces) in user-facing error text unless `--verbose` is set
+
+{% if has_logging %}
+### Logging Requirements
+- **debug:** detailed diagnostic information, only shown with `--verbose`
+- **info:** normal operational messages
+- **warn:** recoverable issues
+- **error:** failures that need attention
+{% endif %}
+
+## Security Rules
+
+### Never Commit
+- API keys, tokens, or credentials
+- Private keys or certificates
+
+### Use Environment Variables for Secrets
+```go
+// Good
+token := os.Getenv("{{ project_name | snake_case | upper }}_TOKEN")
+
+// Bad
+const token = "sk-abc123..."
+```
+
+### Validate All Input
+- Validate file paths passed via flags (avoid unintended path traversal when writing files)
+- Check argument counts/types before use (`cobra.ExactArgs`, manual checks in stdlib mode, etc.)
+
+## Documentation Rules
+
+### Required Documentation
+- **Package doc comments:** one per package, on the primary file
+- **Exported identifiers:** doc comments starting with the identifier's name
+- **README.md:** keep install/usage instructions current
+- **CHANGELOG.md:** document all user-facing changes
+
+## Dependency Management
+
+### Adding Dependencies
+1. Must serve a clear purpose - prefer the standard library when it's sufficient
+2. Run `go mod tidy` after adding an import so `go.mod`/`go.sum` stay accurate
+3. Check the module's license and maintenance status before adopting it
+
+### Version Pinning
+`go.mod` pins exact versions automatically via `go.sum` checksums - there's no manual pinning step like in some other ecosystems. Use `go get module@version` to bump a dependency deliberately, then commit the updated `go.mod`/`go.sum` together.
+
+## Code Review Checklist
+
+### For Reviewers
+- [ ] Code follows project conventions
+- [ ] Errors are wrapped with useful context
+{% if include_tests %}- [ ] Tests cover new behavior
+{% endif %}
+- [ ] No unhandled errors (`errcheck` should already catch most of these)
+- [ ] Breaking CLI changes documented
+
+### For Authors
+- [ ] `make fmt`{% if include_linting %} && make lint{% endif %}{% if include_tests %} && make test{% endif %} all pass locally
+- [ ] Self-reviewed the diff
+- [ ] PR description explains the "why"
+
+---
+
+**Remember:** These rules exist to keep the codebase predictable and easy to return to after time away. When in doubt, match existing patterns.
+
+**Project:** {{ project_name }}
+**Author:** {{ author_name }}
+**Last Updated:** {{ current_date }}

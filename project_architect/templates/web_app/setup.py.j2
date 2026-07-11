@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""
+Setup script for {{ project_name }}
+
+Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "Organization: " + organization if organization else "" }}
+"""
+
+from setuptools import setup, find_packages
+from pathlib import Path
+
+readme_file = Path(__file__).parent / "README.md"
+long_description = readme_file.read_text(encoding="utf-8") if readme_file.exists() else ""
+
+setup(
+    name="{{ project_name | snake_case }}",
+    version="{{ project_version }}",
+    author="{{ author_name }}",
+    {% if author_email %}author_email="{{ author_email }}",{% endif +%}
+    description="{{ project_description }}",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(),
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.12",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires=">=3.12",
+    install_requires=[
+        {% if web_framework == 'fastapi' %}"fastapi>=0.104.0",
+        "uvicorn[standard]>=0.24.0",
+        {% elif web_framework == 'flask' %}"flask>=3.0.0",
+        {% elif web_framework == 'django' %}"django>=4.2.0",
+        {% endif %}
+        "python-dotenv>=1.0.0",
+    ],
+    extras_require={
+        "dev": [
+            {% if include_tests %}"pytest>=7.4.0",
+            "pytest-cov>=4.1.0",
+            {% endif %}
+            {% if include_linting %}"flake8>=6.0.0",{% endif +%}
+            {% if include_formatting %}"black>=23.0.0",{% endif +%}
+            {% if include_type_checking %}"mypy>=1.5.0",{% endif +%}
+        ],
+    },
+    include_package_data=True,
+    zip_safe=False,
+)

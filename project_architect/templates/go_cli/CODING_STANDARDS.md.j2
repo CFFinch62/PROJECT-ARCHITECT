@@ -1,0 +1,209 @@
+# {{ project_name }} - Coding Standards
+
+## Go Style Guide
+
+This project follows standard Go conventions: [Effective Go](https://go.dev/doc/effective_go) and the community [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments).
+
+**Key Points:**
+- Formatting is enforced by `gofmt` - never hand-format, run `make fmt`
+- Indentation: tabs (gofmt's default, not configurable)
+- Imports: grouped (standard library, then third-party) and sorted; `goimports` handles this automatically
+- Package names: short, lowercase, no underscores or mixedCaps
+
+## Naming Conventions
+
+### Packages
+```go
+// Good
+package cli
+package config
+
+// Bad
+package CLI       // no initialisms in package names
+package cli_utils  // no underscores
+```
+
+### Exported vs. Unexported
+```go
+// Exported: PascalCase, needs a doc comment
+// Execute runs the CLI application.
+func Execute() error { ... }
+
+// Unexported: camelCase, doc comment optional but encouraged for non-trivial logic
+func parseLogLevel(level string) slog.Level { ... }
+```
+
+### Variables and Constants
+```go
+// Good
+var defaultTimeout = 30 * time.Second
+const maxRetries = 3
+
+// Acronyms stay uppercase
+var apiURL string
+var userID int
+```
+
+## Code Organization
+
+### File Structure
+```go
+// Package doc comment (one file per package needs this)
+package cli
+
+import (
+	// standard library first
+	"fmt"
+	"os"
+
+	// then third-party, alphabetized
+	"github.com/spf13/cobra"
+
+	// then local packages
+	"{{ module_path if module_path else project_name | snake_case }}/internal/version"
+)
+
+// Exported types and functions first, doc-commented
+// ...
+
+// Unexported helpers last
+// ...
+```
+
+### Import Order
+1. Standard library
+2. Third-party modules
+3. Local (this module's) packages
+
+`goimports` (or `make fmt` if it's wired to run it) keeps this ordered automatically - don't hand-sort.
+
+## Documentation Standards
+
+### Doc Comments
+```go
+// Load reads configuration from path. If the file does not exist, the
+// default configuration is returned instead of an error.
+func Load(path string) (*Config, error) {
+	// ...
+}
+```
+
+Doc comments start with the identifier's name and are complete sentences. `go doc` and `pkg.go.dev` render these directly.
+
+## Error Handling
+
+### Always Check and Wrap Errors
+```go
+// Good
+data, err := os.ReadFile(path)
+if err != nil {
+	return fmt.Errorf("reading config %s: %w", path, err)
+}
+
+// Bad
+data, _ := os.ReadFile(path)  // silently swallows the error
+```
+
+### Sentinel and Typed Errors
+```go
+var ErrNotFound = errors.New("not found")
+
+// Check with errors.Is / errors.As, not string comparison
+if errors.Is(err, ErrNotFound) {
+	// ...
+}
+```
+
+### Don't Panic in Library Code
+`internal/cli`, `internal/config`, and `internal/version` should return errors, not panic. Only `cmd/main.go` decides what happens on failure (it calls `os.Exit(1)`).
+
+{% if include_tests %}
+## Testing Standards
+
+### Test Structure
+```go
+package config
+
+import "testing"
+{% if use_testify %}
+import "github.com/stretchr/testify/assert"
+{% endif %}
+
+func TestLoad_MissingFileReturnsDefault(t *testing.T) {
+	cfg, err := Load("does-not-exist.{{ config_format if has_config_file else 'yaml' }}")
+	{% if use_testify %}
+	assert.NoError(t, err)
+	{% else %}
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	{% endif %}
+}
+```
+
+### Test Naming
+- Test files: `<file>_test.go`, next to the file under test (Go convention - not a separate `tests/` directory)
+- Test functions: `Test<Function>_<Scenario>` (e.g. `TestLoad_MissingFileReturnsDefault`)
+
+### Table-Driven Tests
+For functions with several input/output cases, prefer a table-driven test over repeated near-identical test functions:
+```go
+func TestParseLogLevel(t *testing.T) {
+	cases := []struct {
+		input string
+		want  slog.Level
+	}{
+		{"debug", slog.LevelDebug},
+		{"warn", slog.LevelWarn},
+		{"unknown", slog.LevelInfo},
+	}
+	for _, c := range cases {
+		if got := parseLogLevel(c.input); got != c.want {
+			t.Errorf("parseLogLevel(%q) = %v, want %v", c.input, got, c.want)
+		}
+	}
+}
+```
+{% endif %}
+
+## Best Practices
+
+### General Principles
+1. **Accept interfaces, return structs** - e.g. `Run(args []string, stdout, stderr io.Writer)` not `*os.File`
+2. **Keep `cmd/main.go` thin** - it should only wire things together and set the exit code
+3. **Don't over-abstract** - a single-file `internal/cli/cli.go` is fine until it genuinely needs splitting
+4. **Zero-value usefulness** - design structs so their zero value is usable where practical
+
+### Comments
+```go
+// Good: explains WHY
+// Use text handler (not JSON) since output is meant for a human terminal.
+handler := slog.NewTextHandler(os.Stderr, nil)
+
+// Bad: states the obvious
+// Create a new handler
+handler := slog.NewTextHandler(os.Stderr, nil)
+```
+
+## File Organization
+
+- Keep packages focused: `cli`, `config`, `version` each do one thing
+- A package growing past a few files is a normal, expected way to split responsibilities (unlike file-count limits in some other languages) - split along responsibility lines, not an arbitrary line count
+
+## Version Control
+
+### Commit Messages
+```
+feat: add config subcommand
+fix: handle missing config file gracefully
+docs: update installation instructions
+test: add table-driven tests for parseLogLevel
+```
+
+**Types:** feat, fix, docs, style, refactor, test, chore
+
+---
+
+**Project:** {{ project_name }}
+**Author:** {{ author_name }}
+**Generated:** {{ current_date }}

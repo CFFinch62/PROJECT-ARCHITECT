@@ -1,0 +1,89 @@
+# {{ project_name }} - Development Process
+
+## Workflow
+
+```
+Design → HTML Structure → CSS Styling → JavaScript → Test → Deploy
+```
+
+## Phase 1: Setup ✅
+
+- [x] Project structure created
+- [x] Base HTML template
+- [x] CSS framework configured
+- [x] JavaScript entry point
+{% if init_git %}- [x] Git initialized{% endif %}
+
+## Phase 2: Structure
+
+### HTML Tasks
+- [ ] Create semantic layout
+- [ ] Add meta tags for SEO
+- [ ] Include accessibility attributes
+{% if has_multiple_pages %}- [ ] Create additional pages{% endif %}
+
+## Phase 3: Styling
+
+### CSS Tasks
+{% if use_css_variables %}- [ ] Define CSS variables{% endif +%}
+- [ ] Style navigation
+- [ ] Style main content
+{% if has_footer %}- [ ] Style footer{% endif +%}
+{% if has_responsive %}- [ ] Add responsive breakpoints{% endif +%}
+{% if has_dark_mode %}- [ ] Implement dark mode{% endif %}
+
+## Phase 4: Interactivity
+
+### JavaScript Tasks
+- [ ] Initialize app
+{% if has_navigation %}- [ ] Navigation functionality{% endif +%}
+{% if has_dark_mode %}- [ ] Theme toggle{% endif +%}
+{% if has_api_integration %}- [ ] API integration{% endif +%}
+{% if has_local_storage %}- [ ] Local storage{% endif %}
+
+## Phase 5: Testing
+
+- [ ] Cross-browser testing
+- [ ] Mobile responsiveness
+- [ ] Accessibility audit
+- [ ] Performance check
+
+## Phase 6: Deployment
+
+- [ ] Optimize assets
+- [ ] Minify CSS/JS
+- [ ] Deploy to hosting
+
+## Development Session Template
+
+```markdown
+# Session - YYYY-MM-DD
+
+## Goals
+- [ ] Goal 1
+- [ ] Goal 2
+
+## Completed
+- What was done
+
+## Issues
+- Problems encountered
+
+## Next
+- [ ] Next task
+```
+
+## Browser Testing Checklist
+
+| Browser | Desktop | Mobile |
+|---------|---------|--------|
+| Chrome | ⬜ | ⬜ |
+| Firefox | ⬜ | ⬜ |
+| Safari | ⬜ | ⬜ |
+| Edge | ⬜ | ⬜ |
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}
+

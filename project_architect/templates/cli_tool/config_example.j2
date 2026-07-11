@@ -1,0 +1,44 @@
+{% if config_format == 'yaml' %}
+# {{ project_name }} - Example Configuration
+# Copy this file to config.yaml and adjust as needed.
+
+application:
+  name: {{ project_name }}
+  version: {{ project_version }}
+{% if has_logging %}
+logging:
+  level: {{ log_level }}
+{% endif %}
+{% elif config_format == 'json' %}
+{
+  "application": {
+    "name": "{{ project_name }}",
+    "version": "{{ project_version }}"
+  }{% if has_logging %},
+  "logging": {
+    "level": "{{ log_level }}"
+  }{% endif +%}
+}
+{% elif config_format == 'toml' %}
+# {{ project_name }} - Example Configuration
+# Copy this file to config.toml and adjust as needed.
+
+[application]
+name = "{{ project_name }}"
+version = "{{ project_version }}"
+{% if has_logging %}
+[logging]
+level = "{{ log_level }}"
+{% endif %}
+{% elif config_format == 'ini' %}
+; {{ project_name }} - Example Configuration
+; Copy this file to config.ini and adjust as needed.
+
+[application]
+name = {{ project_name }}
+version = {{ project_version }}
+{% if has_logging %}
+[logging]
+level = {{ log_level }}
+{% endif %}
+{% endif %}

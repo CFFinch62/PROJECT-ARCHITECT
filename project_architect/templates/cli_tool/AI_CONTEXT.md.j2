@@ -1,0 +1,156 @@
+# {{ project_name }} - AI Context
+
+## Quick Project Overview
+
+**Project Name:** {{ project_name }}  
+**Type:** Command-Line Tool  
+**Technology:** Python 3.12 + {% if cli_framework == 'click' %}Click{% elif cli_framework == 'typer' %}Typer{% elif cli_framework == 'argparse' %}Argparse{% endif +%}
+**Purpose:** {{ project_description }}  
+**Author:** {{ author_name }}
+
+## Architecture at a Glance
+
+```
+{{ project_name | snake_case }}/
+├── {{ project_name | snake_case }}.py   # CLI entry point
+├── src/
+│   ├── __init__.py
+│   ├── commands/          # CLI command modules
+│   ├── core/              # Core business logic
+│   ├── utils/             # Helper utilities
+│   └── config.py          # Configuration management
+├── tests/                 # pytest unit tests
+{% if has_config_file %}├── config.{{ config_format }}  # Configuration file{% endif +%}
+└── logs/                  # Application logs
+```
+
+## Key Technologies
+
+- **CLI Framework:** {% if cli_framework == 'click' %}Click 8.1+ (composable commands){% elif cli_framework == 'typer' %}Typer 0.9+ (modern, type hints){% elif cli_framework == 'argparse' %}Argparse (Python built-in){% endif +%}
+{% if has_config_file %}- **Config:** {{ config_format | upper }} format{% endif +%}
+{% if has_logging %}- **Logging:** Python logging with {{ log_level }} level{% endif +%}
+{% if include_tests %}- **Testing:** pytest with coverage{% endif +%}
+{% if include_linting %}- **Quality:** Flake8, Pylint{% endif +%}
+{% if has_autocomplete %}- **Shell Completion:** Bash/Zsh autocomplete{% endif %}
+
+## Development Patterns
+
+### File Structure
+- Each module stays under 300 lines (soft limit)
+- Commands in separate files under `src/commands/`
+- Business logic separate from CLI in `src/core/`
+
+### Common Operations
+
+**Run CLI:**
+```bash
+python {{ project_name | snake_case }}.py --help
+python {{ project_name | snake_case }}.py <command> [options]
+```
+
+{% if include_tests %}**Run Tests:**
+```bash
+pytest                    # All tests
+pytest --cov=src         # With coverage
+pytest tests/test_X.py   # Specific file
+```
+{% endif %}
+
+{% if has_autocomplete %}**Enable Shell Completion:**
+```bash
+# Bash
+eval "$(_{{ project_name | upper | replace(' ', '_') }}_COMPLETE=bash_source {{ project_name | snake_case }}.py)"
+
+# Zsh
+eval "$(_{{ project_name | upper | replace(' ', '_') }}_COMPLETE=zsh_source {{ project_name | snake_case }}.py)"
+```
+{% endif %}
+
+## Code Conventions
+
+### Naming
+- **Files/Modules:** snake_case (e.g., `cli_commands.py`)
+- **Classes:** PascalCase (e.g., `ConfigManager`)
+- **Functions/Variables:** snake_case (e.g., `run_command`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `DEFAULT_TIMEOUT`)
+
+### Documentation
+- Docstrings for all commands and functions (Google style)
+- Type hints for function parameters and returns
+- Command help text for all CLI options
+
+### Error Handling
+{% if has_logging %}- Use logging for errors: `logger.error(f"Failed: {e}")`{% else %}- Print errors clearly with context{% endif +%}
+- Exit with appropriate codes (0=success, 1=error)
+- Show user-friendly error messages
+
+## Current State
+
+**Phase:** Initial Development  
+**Version:** {{ project_version }}  
+**Status:** Foundation complete, adding commands
+
+### Implemented
+- ✅ CLI framework ({{ cli_framework }})
+{% if has_config_file %}- ✅ Configuration system{% endif +%}
+{% if has_logging %}- ✅ Logging infrastructure{% endif +%}
+- ✅ Project structure
+
+### In Progress
+- Command implementation
+- Core business logic
+{% if include_tests %}- Unit test coverage{% endif %}
+
+### Planned
+- Additional commands
+{% if has_plugins %}- Plugin system{% endif +%}
+{% if has_autocomplete %}- Shell completion{% endif +%}
+- Documentation completion
+
+## AI Assistant Guidelines
+
+### When Helping with This Project
+
+1. **Respect Structure:** Keep modules focused and under 300 lines
+2. **Follow CLI Patterns:** Use {{ cli_framework }} decorators correctly
+3. **Add Tests:** {% if include_tests %}Include pytest tests for commands{% else %}Suggest testing approaches{% endif +%}
+4. **Document:** Add docstrings and help text
+5. **Be Consistent:** Match existing code patterns
+
+### Common Tasks
+
+**Adding a New Command:**
+1. Create command in `src/commands/`
+2. Add business logic to `src/core/`
+3. {% if include_tests %}Write tests in tests/{% endif +%}
+4. {% if has_config_file %}Update config if needed{% endif +%}
+5. Update CHANGELOG.md
+
+**Debugging Issues:**
+{% if has_logging %}- Check logs (default: stderr or log file){% endif +%}
+- Run with verbose flag: `--verbose` or `-v`
+{% if include_tests %}- Run relevant tests: `pytest tests/test_X.py -v`{% endif %}
+
+## Quick Reference
+
+### Important Files
+- `{{ project_name | snake_case }}.py` - CLI entry point
+- `src/commands/` - Command implementations
+{% if has_config_file %}- `config.{{ config_format }}` - Configuration{% endif +%}
+- `requirements.txt` - Dependencies
+- `README.md` - User documentation
+
+### Environment Setup
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python {{ project_name | snake_case }}.py --help
+```
+
+---
+
+This document provides context for AI assistants working on {{ project_name }}.  
+**Generated:** {{ current_date }}  
+**Generator:** Project Architect
+

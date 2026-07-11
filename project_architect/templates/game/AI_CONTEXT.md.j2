@@ -1,0 +1,177 @@
+# {{ project_name }} - AI Context
+
+## Quick Project Overview
+
+**Project Name:** {{ project_name }}
+**Type:** Game
+**Technology:** Python 3.12 + {% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif +%}
+**Purpose:** {{ project_description }}
+**Author:** {{ author_name }}
+
+## Architecture at a Glance
+
+```
+{{ project_name | snake_case }}/
+├── main.py              # Entry point{% if game_framework == 'pgzero' %} (Pygame Zero script - defines WIDTH/HEIGHT/TITLE/draw()/update()){% endif +%}
+├── src/
+│   ├── game.py           # Game class - loop and state ({% if game_framework == 'pygame' %}manual loop{% elif game_framework == 'arcade' %}arcade.Window subclass{% elif game_framework == 'pyglet' %}pyglet.window.Window subclass{% elif game_framework == 'pgzero' %}plain state object{% endif %})
+│   ├── config.py         # GameConfig - window size, timing, asset paths
+│   └── utils.py          # Asset-loading helpers
+├── tests/                # pytest unit tests
+{% if has_sprites %}├── assets/images/        # Sprite/image assets
+{% endif %}{% if has_sound %}├── assets/sounds/         # Sound/music assets
+{% endif %}└── logs/                 # Application logs
+```
+
+## Key Technologies
+
+- **Game framework:** {% if game_framework == 'pygame' %}Pygame 2.5.0+ (manual game loop, full control){% elif game_framework == 'arcade' %}Arcade 2.6.17+ (modern OpenGL-based, event-driven){% elif game_framework == 'pyglet' %}Pyglet 2.0.0+ (lightweight, no dependencies, event-driven){% elif game_framework == 'pgzero' %}Pygame Zero 1.2.1+ (near-zero boilerplate, runtime owns the loop){% endif +%}
+{% if include_tests %}- **Testing:** pytest with coverage{% endif +%}
+{% if include_linting %}- **Quality:** Flake8, Pylint{% endif +%}
+{% if include_formatting %}- **Formatting:** Black (88 chars){% endif %}
+
+## Development Patterns
+
+### File Structure
+- Each module stays under 300 lines (soft limit)
+- Clear separation: game loop/state (`game.py`), settings (`config.py`), asset helpers (`utils.py`)
+- Tests mirror source structure in `tests/`
+
+### Common Operations
+
+**Run the Game:**
+```bash
+python3 main.py
+```
+
+{% if include_tests %}**Run Tests:**
+```bash
+pytest                    # All tests
+pytest --cov=src         # With coverage
+pytest tests/test_X.py   # Specific file
+```
+{% endif %}
+
+{% if include_formatting %}**Format Code:**
+```bash
+black src/ tests/
+```
+{% endif %}
+
+{% if include_linting %}**Check Quality:**
+```bash
+flake8 src/ tests/
+pylint src/
+```
+{% endif %}
+
+## Code Conventions
+
+### Naming
+- **Files/Modules:** snake_case (e.g., `game.py`)
+- **Classes:** PascalCase (e.g., `Game`, `GameConfig`)
+- **Functions/Variables:** snake_case (e.g., `load_image`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `MAX_LIVES`)
+
+### Documentation
+- Docstrings for all public functions/classes (Google style)
+- Type hints for function parameters and returns
+- Inline comments for complex logic only
+
+### Error Handling
+{% if has_logging %}- Use logging for errors: `logger.error(f"Failed: {e}")`{% else %}- Print errors clearly with context{% endif +%}
+- Catch specific exceptions, not bare `except:`
+
+## Current State
+
+**Phase:** Initial Development
+**Version:** {{ project_version }}
+**Status:** Foundation complete (window + loop), gameplay not yet implemented
+
+### Implemented
+- ✅ {{ game_framework | title }} game window and loop
+{% if has_logging %}- ✅ Logging infrastructure{% endif +%}
+- ✅ Project structure
+
+### In Progress
+- Core gameplay logic (`Game.update()` / `Game.draw()` are placeholders)
+{% if has_sprites %}- Sprite rendering{% endif +%}
+{% if has_sound %}- Sound integration{% endif +%}
+{% if include_tests %}- Unit test coverage{% endif %}
+
+### Planned
+- Menus, pause, and game-over flow
+{% if has_score_tracking %}- High-score tracking{% endif +%}
+- Additional levels/scenes
+
+## AI Assistant Guidelines
+
+### When Helping with This Project
+
+1. **Respect Structure:** Keep modules focused and under 300 lines
+2. **Follow Style:** Use Black formatting (88 chars), PEP 8 conventions
+3. **Add Tests:** {% if include_tests %}Include pytest tests for new logic; window-creation tests for {% if game_framework in ['arcade', 'pyglet'] %}this framework {% endif %}need a display, so keep gameplay logic testable without one{% else %}Suggest testing approaches{% endif +%}
+4. **Document:** Add docstrings and type hints
+5. **Be Consistent:** Match existing code patterns; `Game.update(dt)`/`Game.draw(...)` are the extension points for new gameplay
+
+### Common Tasks
+
+**Adding a New Feature:**
+1. Add state to `Game.__init__()` in `src/game.py`
+2. Implement behavior in `Game.update()` (and `Game.draw()` if it renders)
+3. {% if include_tests %}Write tests in `tests/test_game.py`{% endif +%}
+4. Update CHANGELOG.md
+
+**Debugging Issues:**
+{% if has_logging %}- Check `logs/{{ project_name | snake_case }}.log` first{% endif +%}
+- Run with verbose logging: {% if has_logging %}set level to DEBUG{% else %}add print statements{% endif +%}
+{% if include_tests %}- Run relevant tests: `pytest tests/test_game.py -v`{% endif %}
+
+## Domain Knowledge
+
+**Project Purpose:** {{ project_description }}
+
+**Game Loop Flow:**
+1. Game launches (`main.py`)
+{% if game_framework == 'pygame' %}2. `Game.run()` starts the manual loop: handle events → update(dt) → draw() → flip
+{% elif game_framework == 'arcade' %}2. `arcade.run()` starts dispatching `Game.on_update(dt)` and `Game.on_draw()` each frame
+{% elif game_framework == 'pyglet' %}2. `pyglet.app.run()` starts dispatching `Game.on_draw()`; `Game.update(dt)` runs on a scheduled clock
+{% elif game_framework == 'pgzero' %}2. Pygame Zero's runtime calls the module-level `update(dt)`/`draw()` in `main.py`, which delegate to `Game`
+{% endif %}
+{% if has_score_tracking %}3. Score updates live in `Game.score`{% endif +%}
+{% if has_logging %}4. All actions logged to logs/{% endif %}
+
+**Key Components:**
+- `Game`: Core game loop and state{% if game_framework in ['arcade', 'pyglet'] %} (Window subclass){% endif +%}
+- `GameConfig`: Static settings (window size, FPS, asset paths)
+- `utils.py`: Asset-loading helpers
+
+## Quick Reference
+
+### Important Files
+- `main.py` - Entry point
+- `src/game.py` - Game loop and state
+- `src/config.py` - Settings
+- `requirements.txt` - Dependencies
+- `README.md` - User documentation
+- `TECHNICAL_SPECIFICATION.md` - Detailed specs
+
+### Dependencies
+```
+{% if game_framework == 'pygame' %}pygame>=2.5.0{% elif game_framework == 'arcade' %}arcade>=2.6.17{% elif game_framework == 'pyglet' %}pyglet>=2.0.0{% elif game_framework == 'pgzero' %}pgzero>=1.2.1{% endif +%}
+{% if include_tests %}pytest>=7.4.0{% endif +%}
+```
+
+### Environment Setup
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 main.py
+```
+
+---
+
+This document provides context for AI assistants working on {{ project_name }}.
+**Generated:** {{ current_date }}
+**Generator:** Project Architect

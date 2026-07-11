@@ -1,0 +1,132 @@
+# {{ project_name }} - Development Rules
+
+## HTML Standards
+
+### Semantic Markup
+```html
+<!-- Good -->
+<header>, <nav>, <main>, <article>, <section>, <footer>
+
+<!-- Avoid -->
+<div class="header">, <div class="nav">
+```
+
+### Accessibility
+- All images need `alt` attributes
+- Use proper heading hierarchy (h1 → h2 → h3)
+- Include ARIA labels where needed
+- Ensure keyboard navigation works
+
+## CSS Standards
+
+{% if css_framework == 'vanilla' %}
+### Naming Convention (BEM)
+```css
+.block {}
+.block__element {}
+.block--modifier {}
+
+/* Example */
+.card {}
+.card__title {}
+.card--featured {}
+```
+
+{% if use_css_variables %}
+### Use CSS Variables
+```css
+/* Good */
+color: var(--primary-color);
+
+/* Avoid */
+color: #2563eb;
+```
+{% endif %}
+{% elif css_framework == 'tailwind' %}
+### Tailwind Best Practices
+- Use utility classes in HTML
+- Extract components for repeated patterns
+- Avoid custom CSS when utilities exist
+{% elif css_framework == 'bootstrap' %}
+### Bootstrap Best Practices
+- Use Bootstrap classes before custom CSS
+- Extend with custom utilities sparingly
+- Follow Bootstrap's naming conventions
+{% endif %}
+
+### Mobile First
+```css
+/* Base styles for mobile */
+.element { }
+
+/* Then add breakpoints */
+@media (min-width: 768px) { }
+```
+
+## JavaScript Standards
+
+### Naming Conventions
+```javascript
+// Variables and functions: camelCase
+const userName = 'John';
+function getUserData() {}
+
+// Constants: UPPER_SNAKE_CASE
+const API_BASE_URL = '/api';
+
+// Classes: PascalCase
+class UserManager {}
+```
+
+{% if js_type == 'es6_modules' %}
+### ES6 Modules
+```javascript
+// Named exports
+export function helper() {}
+export const CONFIG = {};
+
+// Default export
+export default class Main {}
+
+// Imports
+import { helper } from './utils.js';
+```
+{% endif %}
+
+### Error Handling
+```javascript
+try {
+    await fetchData();
+} catch (error) {
+    console.error('Error:', error);
+    showUserMessage('Something went wrong');
+}
+```
+
+## File Organization
+
+### CSS Files
+- `variables.css` - Design tokens only
+- `style.css` - Component styles
+- `responsive.css` - Media queries only
+
+### JavaScript Files
+- One purpose per file
+- Export reusable functions
+- Keep files under 200 lines
+
+## Git Workflow
+
+### Commit Messages
+```
+feat: Add navigation component
+fix: Correct responsive breakpoints
+style: Format CSS files
+docs: Update README
+```
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}
+

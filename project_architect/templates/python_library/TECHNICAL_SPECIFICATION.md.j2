@@ -1,0 +1,102 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+**License:** {{ license_type }}  
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+## 2. Core Features
+
+### 2.1 Main Functionality
+
+- Core processing via `example_function()`
+- Object-oriented interface via `ExampleClass`
+{% if has_async %}- Async support with `process_async()`{% endif +%}
+{% if has_cli %}- CLI interface{% endif %}
+
+### 2.2 Exception Handling
+
+- `{{ project_name | pascal_case }}Error` - Base exception
+- `ConfigurationError` - Config issues
+- `ValidationError` - Input validation
+- `NotFoundError` - Resource not found
+- `OperationError` - Operation failures
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+- Python {{ min_python_version }}+
+{% if has_type_hints %}- typing-extensions{% endif +%}
+{% if has_cli %}- {{ cli_framework }}{% endif +%}
+{% if include_tests %}- pytest{% endif %}
+
+### 3.2 Package Structure
+
+```
+src/
+├── __init__.py      # Public API
+├── core.py          # Core logic
+├── utils.py         # Utilities
+└── exceptions.py    # Exceptions
+```
+
+## 4. API Reference
+
+### Functions
+
+```python
+def example_function(data, options=None) -> dict:
+    """Process input data."""
+```
+
+### Classes
+
+```python
+class ExampleClass:
+    def __init__(self, name, config=None): ...
+    def process(self, data) -> dict: ...
+{% if has_async %}    async def process_async(self, data) -> dict: ...{% endif +%}
+```
+
+## 5. Quality Assurance
+
+{% if include_tests %}
+### Testing
+- Framework: pytest
+- Coverage target: 80%+
+- Run: `pytest --cov=src`
+{% endif %}
+
+### Code Quality
+- Style: PEP 8
+- Line length: 88 chars
+{% if has_type_hints %}- Type hints required{% endif %}
+
+## 6. Distribution
+
+{% if publish_to_pypi %}
+### PyPI Publishing
+
+```bash
+python -m build
+twine upload dist/*
+```
+{% endif %}
+
+### Installation
+
+```bash
+pip install {{ project_name | snake_case }}
+```
+
+---
+
+**Version:** 1.0  
+**Updated:** {{ current_date }}
+

@@ -1,0 +1,176 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Overview
+
+{{ project_name }} is a {% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif %}-based game built with Python {{ current_year }}.
+
+**Version:** {{ project_version }}
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+{% if organization %}**Organization:** {{ organization }}{% endif %}
+
+## Features
+
+- {{ screen_width }}x{{ screen_height }} game window{% if fullscreen %} (fullscreen){% endif +%}
+{% if has_sprites %}- Sprite/image asset loading{% endif +%}
+{% if has_sound %}- Sound and music support{% endif +%}
+{% if has_score_tracking %}- Score tracking{% endif +%}
+{% if has_logging %}- Comprehensive logging system{% endif +%}
+- Professional code structure and organization
+{% if include_tests %}- Unit testing with pytest{% endif +%}
+{% if include_linting or include_formatting %}- Code quality tools ({% if include_linting %}linting{% endif %}{% if include_linting and include_formatting %}, {% endif %}{% if include_formatting %}formatting{% endif %}){% endif %}
+
+## Requirements
+
+- Python 3.12 or higher
+- {% if game_framework == 'pygame' %}Pygame 2.5.0+{% elif game_framework == 'arcade' %}Arcade 2.6.17+{% elif game_framework == 'pyglet' %}Pyglet 2.0.0+{% elif game_framework == 'pgzero' %}Pygame Zero 1.2.1+{% endif %}
+
+## Installation
+
+### Quick Start
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd {{ project_name | snake_case }}
+   ```
+
+2. **Create virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the game**:
+   ```bash
+   {% if game_framework == 'pgzero' %}python3 -m pgzero main.py
+   # or: python3 main.py{% else %}python3 main.py{% endif +%}
+   ```
+
+### Development Installation
+
+For development with additional tools:
+
+```bash
+pip install -e ".[dev]"
+```
+
+## Controls
+
+- **Escape**: Quit the game
+- _Add your game's controls here as you build them out_
+
+## Development
+
+### Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py                 # Entry point{% if game_framework == 'pgzero' %} (also the Pygame Zero script){% endif +%}
+├── src/                    # Source code
+│   ├── __init__.py
+│   ├── game.py              # Core game loop and state
+│   ├── config.py            # Window, timing, and asset settings
+│   └── utils.py              # Asset-loading helpers
+├── tests/                  # Unit tests
+├── docs/                   # Documentation
+{% if has_sprites %}├── assets/images/           # Sprite/image assets
+{% endif %}{% if has_sound %}├── assets/sounds/            # Sound/music assets
+{% endif %}├── logs/                    # Log files
+├── requirements.txt        # Python dependencies
+└── README.md                # This file
+```
+
+{% if include_tests %}
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_game.py
+```
+{% endif %}
+
+{% if include_linting or include_formatting %}
+### Code Quality
+
+{% if include_formatting %}
+**Formatting** (Black):
+```bash
+black src/ tests/
+```
+{% endif %}
+
+{% if include_linting %}
+**Linting** (Flake8):
+```bash
+flake8 src/ tests/
+```
+
+**Static Analysis** (Pylint):
+```bash
+pylint src/
+```
+{% endif %}
+
+{% if include_type_checking %}
+**Type Checking** (MyPy):
+```bash
+mypy src/
+```
+{% endif %}
+{% endif %}
+
+## Contributing
+
+{% if init_git %}
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Run tests and quality checks
+5. Commit: `git commit -am 'Add feature'`
+6. Push: `git push origin feature-name`
+7. Create a Pull Request
+{% else %}
+Contributions are welcome! Please follow the coding standards and include tests for new features.
+{% endif %}
+
+## License
+
+{% if organization %}
+Copyright © {{ current_year }} {{ organization }}
+{% else %}
+Copyright © {{ current_year }} {{ author_name }}
+{% endif %}
+
+All rights reserved.
+
+## Support
+
+For questions, issues, or feature requests:
+{% if author_email %}
+- Email: {{ author_email }}
+{% endif %}
+{% if create_github_repo %}
+- GitHub Issues: <repository-url>/issues
+{% endif %}
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.
+
+## Acknowledgments
+
+- Built with {% if game_framework == 'pygame' %}[Pygame](https://www.pygame.org/){% elif game_framework == 'arcade' %}[Arcade](https://api.arcade.academy/){% elif game_framework == 'pyglet' %}[Pyglet](https://pyglet.org/){% elif game_framework == 'pgzero' %}[Pygame Zero](https://pygame-zero.readthedocs.io/){% endif +%}
+- Generated with Project Architect

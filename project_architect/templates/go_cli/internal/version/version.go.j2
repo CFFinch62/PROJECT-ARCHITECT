@@ -1,0 +1,8 @@
+// Package version holds build-time version information for {{ project_name }}.
+package version
+
+// Version is the current version of {{ project_name }}.
+// Override at build time with:
+//
+//	go build -ldflags "-X '{{ module_path if module_path else project_name | snake_case }}/internal/version.Version=x.y.z'"
+var Version = "{{ project_version }}"

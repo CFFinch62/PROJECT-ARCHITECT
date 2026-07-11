@@ -1,0 +1,204 @@
+# {{ project_name }} - Development Rules
+
+## Core Principles
+
+### 1. API-First Design
+- Design endpoints before implementation
+- Use consistent response formats
+- Document all endpoints
+
+### 2. Security First
+- Never commit secrets
+- Validate all input
+- Use proper authentication
+
+### 3. Code Quality
+- Follow established patterns
+- Write tests for endpoints
+- Keep modules focused
+
+## Development Standards
+
+### Module Size Rule
+- **Target:** < 300 lines per file
+- **Maximum:** 500 lines per file
+- **Action:** Split into multiple route files if needed
+
+### Code Quality Checklist
+
+Before committing code, ensure:
+- [ ] Code follows PEP 8 / project style guide
+{% if include_linting %}- [ ] No lint errors (`flake8 app/ tests/`){% endif +%}
+{% if include_tests %}- [ ] Tests written for new endpoints
+- [ ] All tests pass (`pytest`){% endif +%}
+- [ ] API documentation updated
+- [ ] CHANGELOG.md updated
+- [ ] No debug print statements
+- [ ] No hardcoded secrets
+
+## API Design Rules
+
+### Endpoint Naming
+- Use plural nouns: `/users`, `/items`
+- Use kebab-case: `/user-profiles`
+- Version prefix: `/api/v1/`
+
+### HTTP Methods
+- `GET`: Retrieve resources
+- `POST`: Create resources
+- `PUT`: Full update
+- `PATCH`: Partial update
+- `DELETE`: Remove resources
+
+### Status Codes
+- `200`: Success
+- `201`: Created
+- `400`: Bad request
+- `401`: Unauthorized
+- `403`: Forbidden
+- `404`: Not found
+- `422`: Validation error
+- `500`: Server error
+
+### Response Format
+```python
+# Good - Consistent format
+return {
+    "success": True,
+    "data": {"id": 1, "name": "Item"},
+    "message": "Item retrieved"
+}
+
+# Bad - Inconsistent
+return {"item": {"id": 1}}  # No success flag
+```
+
+## Testing Requirements
+
+{% if include_tests %}
+### Unit Tests
+- **Requirement:** All endpoints must have tests
+- **Coverage:** Target >80%
+- **Location:** `tests/` directory
+
+### API Testing
+```python
+from httpx import AsyncClient
+
+async def test_get_items(client: AsyncClient):
+    response = await client.get("/api/v1/items")
+    assert response.status_code == 200
+    assert response.json()["success"] is True
+```
+{% else %}
+### Manual Testing
+- Test all endpoints with curl/Postman
+- Document test scenarios
+- Verify status codes
+{% endif %}
+
+## Git Workflow
+
+### Commit Guidelines
+
+**Format:**
+```
+<type>(<scope>): <subject>
+```
+
+**Types:**
+- `feat`: New endpoint or feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `refactor`: Code restructure
+- `test`: Adding tests
+
+**Example:**
+```
+feat(api): Add user registration endpoint
+
+Added POST /api/v1/auth/register with email validation.
+Returns JWT token on success.
+
+Closes #123
+```
+
+## Error Handling Rules
+
+### API Errors
+```python
+from fastapi import HTTPException
+
+# Good - Proper error response
+raise HTTPException(
+    status_code=404,
+    detail={"code": "USER_NOT_FOUND", "message": "User not found"}
+)
+
+# Bad - Generic error
+raise Exception("Error!")
+```
+
+{% if has_database %}
+### Database Errors
+```python
+try:
+    db.session.commit()
+except IntegrityError:
+    db.session.rollback()
+    raise HTTPException(status_code=400, detail="Duplicate entry")
+```
+{% endif %}
+
+## Security Rules
+
+### Never Commit
+- API keys or secrets
+- Database credentials
+- .env files (use .env.example)
+- Private keys
+
+### Input Validation
+- Validate all request data
+- Use Pydantic models (FastAPI) or schemas
+- Sanitize user input
+- Limit request sizes
+
+{% if has_authentication %}
+### Authentication
+- Always verify tokens
+- Use secure password hashing
+- Implement rate limiting
+- Log authentication failures
+{% endif %}
+
+## Documentation Rules
+
+### Endpoint Documentation
+```python
+{% if web_framework == 'fastapi' %}
+@router.get("/items/{item_id}", response_model=ItemResponse)
+async def get_item(item_id: int):
+    """
+    Get item by ID.
+    
+    - **item_id**: The unique identifier of the item
+    
+    Returns the item details or 404 if not found.
+    """
+{% elif web_framework == 'flask' %}
+@api.route('/items/<int:item_id>')
+class ItemResource(Resource):
+    @api.doc('get_item')
+    @api.marshal_with(item_model)
+    def get(self, item_id):
+        """Get item by ID."""
+{% endif %}
+```
+
+---
+
+**Project:** {{ project_name }}  
+**Author:** {{ author_name }}  
+**Last Updated:** {{ current_date }}
+

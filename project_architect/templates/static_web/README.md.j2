@@ -1,0 +1,71 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── index.html          # Main HTML page
+├── src/
+│   ├── css/
+│   │   ├── style.css   # Main styles
+{% if use_css_variables %}│   │   ├── variables.css # CSS custom properties
+{% endif %}{% if has_responsive %}│   │   └── responsive.css # Responsive breakpoints
+{% endif %}│   ├── js/
+│   │   ├── main.js     # Main JavaScript
+│   │   └── utils.js    # Utility functions
+{% if has_api_integration %}│   │   └── api.js      # API utilities
+{% endif %}│   └── images/         # Image assets
+└── dev_sessions/       # Development logs
+```
+
+## Getting Started
+
+{% if use_npm %}
+### With npm
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+{% else %}
+### Without npm
+
+Simply open `index.html` in your browser, or use a local server:
+
+```bash
+# Python 3
+python -m http.server 3000
+
+# Then open http://localhost:3000
+```
+{% endif %}
+
+## Features
+
+- 🎨 **CSS Framework:** {{ css_framework | title }}
+{% if use_css_variables %}- 🎯 **CSS Variables:** Themeable design tokens{% endif +%}
+{% if has_dark_mode %}- 🌙 **Dark Mode:** Light/dark theme support{% endif +%}
+{% if has_responsive %}- 📱 **Responsive:** Mobile-first design{% endif +%}
+{% if has_api_integration %}- 🔌 **API Ready:** Fetch utilities included{% endif +%}
+{% if js_type == 'es6_modules' %}- 📦 **ES6 Modules:** Modern JavaScript modules{% endif %}
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Author
+
+{{ author_name }}
+
+## Version
+
+{{ project_version }}
+

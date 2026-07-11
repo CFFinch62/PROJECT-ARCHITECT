@@ -1,0 +1,55 @@
+# {{ project_name }} - Development Sessions
+
+## Purpose
+
+This directory tracks development sessions for the {{ project_name }} API service.
+
+## Session File Format
+
+**Filename:** `YYYY-MM-DD_session_N.md`
+
+```markdown
+# Development Session - YYYY-MM-DD
+
+## Session Goals
+- [ ] Goal 1
+- [ ] Goal 2
+
+## Work Completed
+- Description of work done
+
+## Endpoints Implemented/Modified
+- `METHOD /path`: Description
+
+## Problems & Solutions
+### Problem 1
+**Issue:** Description
+**Solution:** How resolved
+
+## Testing Done
+- Tests run and results
+
+## Next Steps
+- [ ] Next task 1
+```
+
+## Current Status
+
+**Project:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Phase:** Initial Development
+
+### Endpoints Status
+
+| Method | Endpoint | Status |
+|--------|----------|--------|
+{% if has_health_check %}| GET | /health | 🟢 Complete |{% endif +%}
+| GET | /api/v1/ | 🟢 Complete |
+| GET | /api/v1/items | 🟡 In Progress |
+| POST | /api/v1/items | 🟡 In Progress |
+
+---
+
+**Generated:** {{ current_date }}  
+**Author:** {{ author_name }}
+

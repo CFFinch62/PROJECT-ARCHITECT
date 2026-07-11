@@ -1,0 +1,192 @@
+# {{ project_name }} - Technical Specification
+
+## 1. Project Overview
+
+**Project Name:** {{ project_name }}  
+**Version:** {{ project_version }}  
+**Author:** {{ author_name }}{% if author_email %} <{{ author_email }}>{% endif +%}
+{% if organization %}**Organization:** {{ organization }}{% endif +%}
+**Created:** {{ current_date }}
+
+**Purpose:** {{ project_description }}
+
+**Primary Goals:**
+- Provide a {% if api_type == 'rest_api' %}RESTful API{% elif api_type == 'full_stack' %}full-stack web application{% elif api_type == 'microservice' %}microservice{% endif %} using {{ web_framework | title }}
+{% if has_database %}- Implement data persistence with {{ database_type | title }}{% endif +%}
+{% if has_authentication %}- Secure endpoints with {{ auth_type | upper }} authentication{% endif +%}
+- Maintain high code quality through testing
+
+## 2. Core Features
+
+### 2.1 API Endpoints
+
+**Framework:** {% if web_framework == 'flask' %}Flask 3.0+ with Flask-RESTX{% elif web_framework == 'fastapi' %}FastAPI 0.104+ with automatic OpenAPI{% elif web_framework == 'django' %}Django 4.2+ with Django REST Framework{% endif %}
+
+**Base URL:** `/api/v1`
+
+**Standard Endpoints:**
+- Health check: `GET /health`
+- API info: `GET /api`
+{% if has_authentication %}- Authentication: `POST /api/v1/auth/login`, `POST /api/v1/auth/register`{% endif %}
+
+{% if has_database %}
+### 2.2 Database
+
+**System:** {{ database_type | title }}
+{% if use_orm %}**ORM:** SQLAlchemy 2.0+{% endif %}
+
+**Configuration:**
+{% if database_type == 'sqlite' %}- Local SQLite for development
+- File: `./data/{{ project_name | snake_case }}.db`
+{% elif database_type == 'postgresql' %}- PostgreSQL 15+
+- Connection via DATABASE_URL environment variable
+{% elif database_type == 'mysql' %}- MySQL 8.0+
+- Connection via DATABASE_URL environment variable
+{% elif database_type == 'mongodb' %}- MongoDB 6.0+
+- Connection via MONGODB_URL environment variable
+{% endif %}
+{% endif %}
+
+{% if has_authentication %}
+### 2.3 Authentication
+
+**Method:** {{ auth_type | upper }}
+
+{% if auth_type == 'jwt' %}**JWT Configuration:**
+- Access token expiry: 15 minutes
+- Refresh token expiry: 7 days
+- Algorithm: HS256
+{% elif auth_type == 'oauth2' %}**OAuth2 Providers:**
+- Configure via environment variables
+- Callback URL: `/api/v1/auth/callback`
+{% endif %}
+{% endif %}
+
+{% if has_api_docs %}
+### 2.4 API Documentation
+
+{% if web_framework == 'fastapi' %}**Swagger UI:** `/docs` (automatic)
+**ReDoc:** `/redoc` (automatic)
+{% elif web_framework == 'flask' %}**Swagger UI:** `/api/docs`
+{% endif %}
+
+**OpenAPI Spec:** `/openapi.json`
+{% endif %}
+
+## 3. Technical Architecture
+
+### 3.1 Technology Stack
+
+**Core:**
+- Python 3.12+
+- {% if web_framework == 'flask' %}Flask 3.0+{% elif web_framework == 'fastapi' %}FastAPI 0.104+ with Uvicorn{% elif web_framework == 'django' %}Django 4.2+{% endif %}
+
+**Dependencies:**
+{% if has_database %}{% if database_type != 'mongodb' %}- SQLAlchemy 2.0+{% else %}- PyMongo 4.5+{% endif %}{% endif +%}
+{% if has_authentication %}{% if auth_type == 'jwt' %}- PyJWT 2.8+{% elif auth_type == 'oauth2' %}- Authlib 1.2+{% endif %}{% endif +%}
+{% if has_caching %}- Redis 5.0+{% endif +%}
+{% if has_celery %}- Celery 5.3+{% endif %}
+
+**Development Tools:**
+{% if include_tests %}- pytest 7.4+, pytest-asyncio, httpx{% endif +%}
+{% if include_linting %}- flake8, pylint{% endif +%}
+{% if include_formatting %}- black{% endif %}
+
+### 3.2 Project Structure
+
+```
+{{ project_name | snake_case }}/
+├── main.py                 # Application entry
+├── app/
+│   ├── __init__.py        # App factory
+│   ├── config.py          # Configuration
+│   ├── routes.py          # API routes
+{% if has_database %}│   ├── models.py          # Data models
+{% endif %}{% if has_authentication %}│   └── auth.py            # Authentication
+{% endif %}├── tests/
+│   ├── __init__.py
+│   └── test_api.py
+{% if include_docker %}├── Dockerfile
+{% if include_docker_compose %}├── docker-compose.yml
+{% endif %}{% endif %}├── .env.example
+├── requirements.txt
+└── README.md
+```
+
+## 4. API Response Format
+
+### Success Response
+```json
+{
+    "success": true,
+    "data": { ... },
+    "message": "Operation completed"
+}
+```
+
+### Error Response
+```json
+{
+    "success": false,
+    "error": {
+        "code": "ERROR_CODE",
+        "message": "Human readable message"
+    }
+}
+```
+
+## 5. Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+{% if has_database %}| DATABASE_URL | Database connection string | sqlite:///data/app.db |
+{% endif %}| SECRET_KEY | Application secret key | (required) |
+{% if has_authentication %}| JWT_SECRET | JWT signing key | (required) |
+{% endif %}| DEBUG | Enable debug mode | false |
+| PORT | Server port | {% if web_framework == 'fastapi' %}8000{% else %}5000{% endif %} |
+
+## 6. Quality Assurance
+
+{% if include_tests %}
+### Testing
+
+**Framework:** pytest with httpx
+
+**Test Execution:**
+```bash
+pytest                          # Run all tests
+pytest --cov=app               # With coverage
+pytest tests/test_api.py       # Specific tests
+```
+{% endif %}
+
+## 7. Deployment
+
+{% if include_docker %}
+### Docker
+
+```bash
+docker build -t {{ project_name | snake_case }} .
+docker run -p 8000:8000 {{ project_name | snake_case }}
+```
+
+{% if include_docker_compose %}**Docker Compose:**
+```bash
+docker-compose up -d
+```
+{% endif %}
+{% endif %}
+
+### Production Considerations
+- Use proper WSGI/ASGI server
+- Set DEBUG=false
+- Configure proper SECRET_KEY
+- Enable HTTPS
+{% if has_database %}- Use production database{% endif %}
+
+---
+
+**Document Version:** 1.0  
+**Last Updated:** {{ current_date }}  
+**Author:** {{ author_name }}
+

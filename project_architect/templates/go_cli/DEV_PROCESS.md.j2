@@ -1,0 +1,254 @@
+# {{ project_name }} - Development Process
+
+## Daily Development Workflow
+
+### 1. Start of Day
+```bash
+git pull origin main
+go mod tidy
+go build ./...
+```
+
+### 2. Working on a Feature
+
+#### Create Feature Branch
+```bash
+git checkout -b feature/feature-name
+```
+
+#### Development Cycle
+1. **Write/modify code**
+2. **{% if include_tests %}Run tests**: `go test ./internal/cli/... -v`{% else %}Test manually**: `go run ./cmd <command>`{% endif %}
+
+3. **Check quality**:
+   - `make fmt`
+   {% if include_linting %}
+   - `make lint`
+   {% endif %}
+4. **Commit changes**:
+   ```bash
+   git add <files>
+   git commit -m "feat: add feature description"
+   ```
+5. **Repeat** until feature complete
+
+#### Complete Feature
+```bash
+{% if include_tests %}
+go test ./...{% if test_coverage %} -cover{% endif %}
+
+
+{% endif %}
+git push origin feature/feature-name
+git checkout main
+git merge feature/feature-name
+git push origin main
+```
+
+### 3. End of Day
+- Commit or stash work in progress
+- Update CHANGELOG.md if features completed
+- Note any blockers
+
+## Feature Development Process
+
+### Phase 1: Planning
+1. **Understand requirements** - what command/flag is needed, what's the expected output?
+2. **Design approach** - does this belong in `internal/cli`, a new `internal/` package, or both?
+{% if include_tests %}
+3. **Write tests first (TDD)** - create `<name>_test.go`, write failing tests for expected behavior
+{% endif %}
+
+### Phase 2: Implementation
+1. Write the command/function, focusing on correctness first
+2. Refactor for clarity once it works
+3. Wrap errors with context at each layer
+
+### Phase 3: Quality Assurance
+{% if include_tests %}
+```bash
+go test ./... -v{% if test_coverage %} -cover{% endif %}
+
+```
+{% endif %}
+```bash
+make fmt
+{% if include_linting %}make lint
+{% endif %}go vet ./...
+```
+
+### Phase 4: Documentation
+1. Update doc comments on any new exported identifiers
+2. Update README.md if user-facing behavior changed
+3. Update CHANGELOG.md
+
+### Phase 5: Integration
+```bash
+git add .
+git commit -m "feat(scope): description"
+```
+{% if init_git %}Create a PR, link related issues, request review.
+{% else %}Merge to main once checks pass.
+{% endif %}
+
+## Bug Fix Process
+
+### 1. Reproduce
+- Get exact steps and expected vs. actual behavior
+{% if has_logging %}- Re-run with `--verbose` for more detail
+{% endif %}
+
+### 2. Identify Root Cause
+- Add temporary debug logging or use `dlv` (Delve debugger) if needed
+- Test hypotheses systematically
+
+### 3. {% if include_tests %}Write a Failing Test
+```go
+func TestBugFix(t *testing.T) {
+	// reproduces the bug; should fail before the fix
+}
+```
+
+### 4. Fix and Verify
+{% else %}Fix the Issue
+{% endif %}
+- Make minimal changes to fix
+- {% if include_tests %}Confirm the new test passes, then run the full suite{% else %}Verify the fix manually, check for regressions{% endif %}
+
+### 5. Commit
+```bash
+git commit -m "fix: brief description
+
+Detailed explanation of what was wrong and how it's fixed.
+
+Fixes #issue-number"
+```
+
+## Testing Workflow
+
+{% if include_tests %}
+### Running Tests
+
+```bash
+go test ./...                          # all tests
+go test ./internal/cli/... -v          # specific package, verbose
+go test ./...{% if test_coverage %} -cover{% endif %}
+                    # with coverage
+go test ./... -run TestHelloCommand    # specific test
+```
+
+### Writing Tests
+
+```go
+package cli
+
+import (
+	"bytes"
+	"testing"
+)
+
+func TestSomething(t *testing.T) {
+	buf := new(bytes.Buffer)
+	// ... exercise code, writing to buf instead of os.Stdout ...
+	if got, want := buf.String(), "expected output\n"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+```
+{% else %}
+### Manual Testing Checklist
+
+For each new command:
+- [ ] Normal operation works: `go run ./cmd <command> <args>`
+- [ ] Missing/invalid arguments produce a clear error
+- [ ] `--help` output is accurate
+{% if has_logging %}- [ ] `--verbose` produces useful debug output
+{% endif %}
+{% endif %}
+
+## Release Process
+
+### Pre-Release Checklist
+- [ ] {% if include_tests %}All tests passing{% else %}All commands manually tested{% endif %}
+
+{% if include_linting %}- [ ] No lint errors
+{% endif %}
+- [ ] Version updated in `internal/version/version.go`
+- [ ] CHANGELOG.md updated
+- [ ] Documentation current
+{% if init_git %}- [ ] All changes committed
+{% endif %}
+
+### Version Numbering (Semantic Versioning)
+- **MAJOR:** breaking CLI changes (2.0.0)
+- **MINOR:** new commands/flags, backward compatible (1.1.0)
+- **PATCH:** bug fixes (1.0.1)
+
+### Release Steps
+1. Update `internal/version.Version` (or plan to set it via `-ldflags` at build time)
+2. Update CHANGELOG.md - move Unreleased items to a new version section
+3. Commit and tag:
+   ```bash
+   git commit -am "chore: release version {{ project_version }}"
+   git tag v{{ project_version }}
+   git push origin main --tags
+   ```
+4. Build release binaries:
+   ```bash
+   GOOS=linux GOARCH=amd64 go build -o dist/{{ project_name | snake_case }}-linux-amd64 ./cmd
+   GOOS=darwin GOARCH=arm64 go build -o dist/{{ project_name | snake_case }}-darwin-arm64 ./cmd
+   GOOS=windows GOARCH=amd64 go build -o dist/{{ project_name | snake_case }}-windows-amd64.exe ./cmd
+   ```
+
+## Debugging Guide
+
+### Common Issues
+
+**"declared and not used" / "imported and not used":**
+- Go treats these as compile errors, not warnings - remove the unused code or reference it explicitly
+
+**Command not found after `go install`:**
+- Check `$GOPATH/bin` (or `$HOME/go/bin`) is on your `PATH`
+
+{% if has_config_file %}
+**Configuration not loading:**
+- Verify the config file path passed to `config.Load`
+- Check `{{ config_format }}` syntax is valid
+{% endif %}
+
+### Debug Tools
+
+**Delve debugger:**
+```bash
+dlv debug ./cmd -- hello World
+```
+
+**Print debugging:**
+```go
+fmt.Fprintf(os.Stderr, "DEBUG: value = %+v\n", value)
+```
+
+{% if has_logging %}
+**Verbose logging:**
+```bash
+go run ./cmd --verbose hello World
+```
+{% endif %}
+
+## Maintenance Tasks
+
+### Weekly
+- [ ] {% if include_tests %}Run full test suite{% else %}Test primary commands{% endif %}
+
+- [ ] Review and close completed issues
+
+### Monthly
+- [ ] Check for dependency updates: `go list -u -m all`
+- [ ] Update dependencies deliberately: `go get -u ./... && go mod tidy`
+- [ ] Re-run the full test suite after updating
+
+---
+
+**Project:** {{ project_name }}
+**Author:** {{ author_name }}
+**Generated:** {{ current_date }}

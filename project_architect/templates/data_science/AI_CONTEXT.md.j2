@@ -1,0 +1,79 @@
+# {{ project_name }} - AI Context
+
+## Project Overview
+
+**Name:** {{ project_name }}  
+**Type:** Data Science / Machine Learning  
+**Problem:** {{ problem_type | title }}  
+**Framework:** {{ ml_framework }}  
+**Version:** {{ project_version }}
+
+## Description
+
+{{ project_description }}
+
+## Architecture
+
+### Project Structure
+```
+├── notebooks/          # Jupyter notebooks for analysis
+├── src/               # Reusable Python modules
+├── data/raw/          # Original data (not in git)
+├── data/processed/    # Cleaned data (not in git)
+├── models/            # Trained models (not in git)
+└── tests/             # Unit tests
+```
+
+### Key Modules
+
+| Module | Purpose |
+|--------|---------|
+| `data_loader.py` | Data I/O utilities |
+| `preprocessing.py` | Data cleaning and transformation |
+| `features.py` | Feature engineering |
+| `model.py` | Model training and tuning |
+| `evaluate.py` | Model evaluation metrics |
+
+## ML Pipeline
+
+1. **Data Loading** → `src/data_loader.py`
+2. **Exploration** → `notebooks/01_exploration.ipynb`
+3. **Preprocessing** → `src/preprocessing.py`
+4. **Feature Engineering** → `src/features.py`
+5. **Modeling** → `src/model.py`
+6. **Evaluation** → `src/evaluate.py`
+
+## Configuration
+
+- **ML Framework:** {{ ml_framework }}
+- **Problem Type:** {{ problem_type }}
+{% if has_deep_learning %}- **Deep Learning:** Enabled{% endif +%}
+{% if has_gpu_support %}- **GPU Support:** Enabled{% endif +%}
+{% if experiment_tracking != 'none' %}- **Experiment Tracking:** {{ experiment_tracking }}{% endif +%}
+{% if has_data_versioning %}- **Data Versioning:** DVC{% endif %}
+
+## AI Assistant Guidelines
+
+### When Modifying Code
+1. Follow existing patterns in `src/` modules
+2. Add type hints to all functions
+3. Include docstrings with Args/Returns
+4. Update tests for new functionality
+
+### When Working with Data
+1. Never commit raw data to git
+2. Use `data_loader.py` for all I/O
+3. Document preprocessing steps
+4. Save intermediate results to `data/processed/`
+
+### When Training Models
+1. Use cross-validation for evaluation
+2. Log experiments{% if experiment_tracking != 'none' %} to {{ experiment_tracking }}{% endif +%}
+3. Save models to `models/` directory
+4. Document hyperparameters used
+
+---
+
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

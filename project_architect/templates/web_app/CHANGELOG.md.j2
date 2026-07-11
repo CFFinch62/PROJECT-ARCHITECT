@@ -1,0 +1,39 @@
+# Changelog
+
+All notable changes to {{ project_name }} will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Planned Features
+- Additional features to be determined
+
+## [{{ project_version }}] - {{ current_date }}
+
+### Added
+- Initial project setup
+- {% if web_framework == 'fastapi' %}FastAPI{% elif web_framework == 'flask' %}Flask{% elif web_framework == 'django' %}Django{% endif %} application with {{ api_type | replace('_', ' ') }} structure
+{% if has_database %}- {{ database_type | title }} database integration{% endif +%}
+{% if has_authentication %}- {{ auth_type | upper }} authentication{% endif +%}
+{% if has_api_docs %}- Automatic API documentation{% endif +%}
+{% if has_cors %}- CORS support{% endif +%}
+{% if has_caching %}- Redis caching{% endif +%}
+{% if has_celery %}- Celery background tasks{% endif +%}
+{% if include_docker %}- Docker configuration{% endif +%}
+{% if include_tests %}- Unit testing framework with {{ test_framework }}{% endif +%}
+{% if include_linting %}- Code linting with Flake8{% endif +%}
+{% if include_formatting %}- Code formatting with Black{% endif +%}
+{% if include_type_checking %}- Static type checking with MyPy{% endif +%}
+{% if init_git %}- Git repository initialization{% endif +%}
+- Project documentation (README, this CHANGELOG)
+
+---
+
+## Notes
+
+- This project was generated using Project Architect
+- Generated on {{ current_date }}
+- Author: {{ author_name }}{{ " <" + author_email + ">" if author_email else "" }}
+{{ "- Organization: " + organization if organization else "" }}

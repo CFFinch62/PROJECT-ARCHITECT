@@ -1,0 +1,76 @@
+# {{ project_name }} - AI Context
+
+## Project Overview
+
+**Name:** {{ project_name }}  
+**Type:** Static Web Application  
+**CSS Framework:** {{ css_framework }}  
+**Version:** {{ project_version }}
+
+## Description
+
+{{ project_description }}
+
+## Architecture
+
+### File Structure
+```
+├── index.html           # Entry point
+├── src/
+│   ├── css/            # Stylesheets
+│   ├── js/             # JavaScript modules
+│   └── images/         # Static assets
+└── dev_sessions/       # Development logs
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Main HTML page |
+| `src/css/style.css` | Main stylesheet |
+{% if use_css_variables %}| `src/css/variables.css` | CSS custom properties |
+{% endif %}| `src/js/main.js` | Application entry point |
+| `src/js/utils.js` | Utility functions |
+{% if has_api_integration %}| `src/js/api.js` | API fetch utilities |{% endif %}
+
+## Configuration
+
+- **CSS Framework:** {{ css_framework }}
+{% if use_css_variables %}- **CSS Variables:** Enabled{% endif +%}
+{% if has_dark_mode %}- **Dark Mode:** Enabled{% endif +%}
+{% if has_responsive %}- **Responsive:** Enabled{% endif +%}
+- **JavaScript:** {{ js_type }}
+{% if has_api_integration %}- **API Integration:** Enabled{% endif +%}
+{% if has_local_storage %}- **Local Storage:** Enabled{% endif %}
+
+## AI Assistant Guidelines
+
+### When Modifying HTML
+1. Maintain semantic HTML5 structure
+2. Keep accessibility attributes (aria-*, alt, etc.)
+3. Follow existing class naming conventions
+{% if css_framework == 'bootstrap' %}4. Use Bootstrap components and utilities{% endif +%}
+{% if css_framework == 'tailwind' %}4. Use Tailwind utility classes{% endif %}
+
+### When Modifying CSS
+{% if use_css_variables %}
+1. Use CSS variables from `variables.css`
+2. Add new variables for reusable values
+{% endif %}
+3. Follow mobile-first approach
+4. Keep specificity low
+
+### When Modifying JavaScript
+{% if js_type == 'es6_modules' %}
+1. Use ES6 module syntax
+2. Export functions that may be reused
+{% endif %}
+3. Handle errors gracefully
+4. Comment complex logic
+
+---
+
+**Author:** {{ author_name }}  
+**Generated:** {{ current_date }}
+

@@ -1,0 +1,176 @@
+# {{ project_name }} - Implementation Plan
+
+## Project Overview
+
+**Project:** {{ project_name }}
+**Version:** {{ project_version }}
+**Type:** Game
+**Framework:** {% if game_framework == 'pygame' %}Pygame{% elif game_framework == 'arcade' %}Arcade{% elif game_framework == 'pyglet' %}Pyglet{% elif game_framework == 'pgzero' %}Pygame Zero{% endif %}
+
+## Development Phases
+
+### Phase 1: Foundation (Complete)
+
+**Status:** ✅ Complete
+
+- [x] Project structure created
+- [x] Virtual environment configured
+- [x] Dependencies installed
+- [x] Game window and loop set up
+{% if has_logging %}- [x] Logging system configured{% endif +%}
+{% if init_git %}- [x] Git repository initialized{% endif %}
+
+### Phase 2: Core Gameplay (In Progress)
+
+**Priority:** High
+**Target:** Version {{ project_version }}
+
+#### Task 1: Player & Core Loop
+- [ ] Implement a player-controlled entity
+- [ ] Wire up keyboard/input handling beyond Escape-to-quit
+- [ ] Implement `Game.update()` with real gameplay logic
+- [ ] Implement `Game.draw()`/`on_draw()` with real rendering
+
+{% if has_sprites %}
+#### Task 2: Sprites & Rendering
+- [ ] Add sprite assets to `assets/images/`
+- [ ] Load and render sprites via `src/utils.py` helpers
+- [ ] Implement animation/frame handling if needed
+{% endif %}
+
+{% if has_sound %}
+#### Task 3: Audio
+- [ ] Add sound/music assets to `assets/sounds/`
+- [ ] Wire up sound effects to gameplay events
+- [ ] Add background music with volume control
+{% endif %}
+
+{% if has_score_tracking %}
+#### Task 4: Scoring
+- [ ] Increment score on relevant gameplay events
+- [ ] Display score prominently during play
+- [ ] Add a game-over / high-score screen
+{% endif %}
+
+### Phase 3: Advanced Features
+
+**Priority:** Medium
+**Target:** Version {{ project_version | replace('.0', '.1') }}
+
+#### Task 5: Game Flow
+- [ ] Start screen / main menu
+- [ ] Pause functionality
+- [ ] Game-over and restart flow
+- [ ] Difficulty progression (if applicable)
+
+#### Task 6: Polish
+- [ ] Visual polish (particles, transitions, screen shake)
+- [ ] Collision detection refinement
+- [ ] Performance profiling and optimization
+
+### Phase 4: Quality & Testing
+
+**Priority:** High
+**Target:** Ongoing
+
+{% if include_tests %}
+#### Task 7: Unit Testing
+- [ ] Write tests for game state transitions
+- [ ] Write tests for scoring/collision logic
+{% if game_framework in ['arcade', 'pyglet'] %}- [ ] Set up a virtual display (e.g. xvfb) for windowed integration tests{% endif +%}
+- [ ] Achieve meaningful coverage of `src/`
+{% endif %}
+
+{% if include_linting or include_formatting %}
+#### Task 8: Code Quality
+{% if include_formatting %}- [ ] Run Black formatter on all code{% endif +%}
+{% if include_linting %}- [ ] Fix all Flake8 issues
+- [ ] Fix all Pylint warnings{% endif +%}
+{% if include_type_checking %}- [ ] Add type hints throughout
+- [ ] Pass MyPy type checking{% endif +%}
+{% endif %}
+
+### Phase 5: Documentation & Release
+
+**Priority:** Medium
+**Target:** Version 1.0.0
+
+#### Task 9: Documentation
+- [ ] Complete README with controls and screenshots
+- [ ] Document gameplay mechanics
+- [ ] Add a demo GIF/video
+
+#### Task 10: Distribution
+- [ ] Package with PyInstaller for standalone builds
+- [ ] Test on target platforms (Windows, macOS, Linux)
+{% if create_github_repo %}- [ ] Publish to GitHub{% endif %}
+
+## Technical Notes
+
+### Architecture
+
+- **State:** `GameConfig` (static settings) + `Game` (runtime state) in `src/`
+- **Loop:** {% if game_framework == 'pygame' %}manual loop driven by `Game.run()`{% elif game_framework == 'arcade' %}driven by `arcade.run()` calling into `Game.on_update()`/`Game.on_draw()`{% elif game_framework == 'pyglet' %}driven by `pyglet.app.run()` with `Game.update()` scheduled on a clock{% elif game_framework == 'pgzero' %}driven by Pygame Zero, with `main.py`'s `draw()`/`update()` delegating to `Game`{% endif %}
+
+### Performance Targets
+
+{% if game_framework == 'pygame' %}- Sustained {{ target_fps }} FPS{% else %}- Smooth, consistent frame pacing{% endif +%}
+- Startup time: < 3 seconds
+- Memory usage: < 200MB
+
+## Development Workflow
+
+### Daily Development
+
+1. Create feature branch: `git checkout -b feature-name`
+2. Implement feature with tests
+3. Run quality checks:
+   {% if include_formatting %}- `black src/ tests/`{% endif +%}
+   {% if include_linting %}- `flake8 src/ tests/`{% endif +%}
+   {% if include_tests %}- `pytest`{% endif +%}
+4. Commit changes: `git commit -am "Description"`
+5. Push and create PR
+
+### Release Process
+
+1. Update version number
+2. Update CHANGELOG.md
+3. Run full test suite
+4. Tag release: `git tag v{{ project_version }}`
+
+## Risk Management
+
+**Frame Pacing / Performance:**
+- Risk: Dropped frames or stutter under load
+- Mitigation: Profile hot paths, minimize per-frame allocations, cap update work per frame
+
+{% if game_framework in ['arcade', 'pyglet'] %}
+**Headless/CI Testing:**
+- Risk: Window-creation code can't run in a headless CI environment
+- Mitigation: Mark windowed tests as `integration`, run them under a virtual display (e.g. `xvfb-run`)
+{% endif %}
+
+**Cross-Platform Compatibility:**
+- Risk: Platform-specific input/audio bugs
+- Mitigation: Test on Windows, macOS, and Linux before release
+
+## Success Criteria
+
+- [ ] Game launches and runs without errors
+- [ ] Core gameplay loop is fun and functional
+{% if include_tests %}- [ ] Meaningful test coverage for game logic{% endif +%}
+{% if include_linting %}- [ ] No linting errors{% endif +%}
+{% if game_framework == 'pygame' %}- [ ] Maintains {{ target_fps }} FPS on target hardware{% endif +%}
+- [ ] Complete documentation
+
+## Next Steps
+
+1. Complete Phase 2 core gameplay
+2. Implement comprehensive testing
+3. Playtest and iterate on feel/balance
+4. Prepare for v1.0.0 release
+
+---
+
+**Last Updated:** {{ current_date }}
+**Author:** {{ author_name }}
